@@ -1,0 +1,336 @@
+<!DOCTYPE html>
+<html lang="zh-CN" style="height: 100%">
+
+<head>
+  <meta charset="utf-8">
+  <title>Portfolio pareto front</title>
+</head>
+
+<body style="height: 100%; margin: 0">
+  <div style="position: absolute; top: 10px; left: 10px;">
+    <input type="file" id="fileInput">
+  </div>
+  <div id="container" style="height: 80%; width: 100%; margin-top: 40px;"></div>
+
+  <script type="text/javascript" src="https://cdn.jsdelivr.net/npm/echarts@5.4.3/dist/echarts.min.js"></script>
+  <script type="text/javascript">
+    var dom = document.getElementById('container');
+    var myChart = echarts.init(dom, null, {
+      renderer: 'canvas',
+      useDirtyRect: false
+    });
+    var app = {};
+
+    var option = {
+      xAxis: {
+        name: 'Risk', // X 轴标题
+        nameLocation: 'center', // 将坐标轴名称放置在轴线中心
+        nameGap: 50, // 调整坐标轴名称距离轴线的距离
+        nameTextStyle: {
+          fontSize: 16, // 调整坐标轴名称字体大小
+          // 其他样式属性，比如颜色等，也可以在这里设置
+        },
+        axisLabel: {
+          margin: 10, // 调整标签与轴线的距离
+          align: 'center' // 文字居中显示在轴线上
+        },
+        axisLine: {
+          lineStyle: {
+            color: 'black' // 设置 X 轴线颜色为黑色
+          }
+        }
+      },
+      yAxis: {
+        name: 'Return', // Y 轴标题
+        nameLocation: 'center', // 将坐标轴名称放置在轴线中心
+        nameGap: 50, // 调整坐标轴名称距离轴线的距离
+        nameTextStyle: {
+          fontSize: 16, // 调整坐标轴名称字体大小
+          // 其他样式属性，比如颜色等，也可以在这里设置
+        },
+        axisLabel: {
+          margin: 10, // 调整标签与轴线的距离
+          align: 'center', // 文字居中显示在轴线上
+          rotate: -90 // 逆时针旋转90度，使标签垂直显示
+        },
+        axisLine: {
+          lineStyle: {
+            color: 'black' // 设置 X 轴线颜色为黑色
+          }
+        }
+      },
+      series: [
+        {
+          data: [
+            {
+              name: [],
+              value: []
+            }
+          ],
+          type: 'scatter', // 使用散点图来显示坐标点
+          symbolSize: 10,
+          itemStyle: {
+            color: '#82B0D2'
+          },
+          emphasis: {
+            itemStyle: {
+              color: '#006AD2'
+            },
+            label: {
+              show: true,
+              formatter: function (params) {
+                return params.data.name + '\nTR: ' + params.value[1]/params.value[0] + ', Risk: ' + params.value[0] + ', Return: ' + params.value[1];
+
+              },
+              color: 'black',
+              backgroundColor: 'rgba(255, 255, 255, 0.7)',
+              borderColor: '#ccc',
+              borderWidth: 1,
+              padding: 5,
+              borderRadius: 5,
+              offset: [-20, -25] // 負數值會使標籤向左移動
+            }
+          }
+        },
+        {
+          type: 'scatter',
+          itemStyle: {
+            color: '#FA7F6F',  // 设置紅色
+          },
+          symbolSize: 10,  // 设置散点的大小
+          data: [
+            {
+              name: [],
+              value: []
+            }
+          ],
+          markLine: {
+            data: [],
+            silent: true, // 設置 markLine 為不可檢測滑鼠事件
+          },
+          emphasis: {
+            itemStyle: {
+              color: '#C82423'
+            },
+            label: {
+              show: true,
+              formatter: function (params) {
+                return params.data.name + '\nTR: ' + params.value[1]/params.value[0] + ', Risk: ' + params.value[0] + ', Return: ' + params.value[1];
+
+              },
+              color: 'black',
+              backgroundColor: 'rgba(255, 255, 255, 0.7)',
+              borderColor: '#ccc',
+              borderWidth: 1,
+              padding: 5,
+              borderRadius: 5,
+              offset: [-20, -20] // 負數值會使標籤向左移動
+            }
+          },
+          roam: true
+        },
+        {
+          type: 'scatter',
+          itemStyle: {
+            color: '#934B43',  // 设置顏色
+          },
+          symbolSize: 10,  // 设置散点的大小
+          data: [],
+          markLine: {
+            data: [],
+            silent: true, // 設置 markLine 為不可檢測滑鼠事件
+          },
+        }
+      ],
+      graphic: [
+        {
+            type: 'text',
+            left: 'center',  // 文字水平居中
+            top: 20,      // 距离底部的距离
+            style: {
+                text: 0 + ' points on the Pareto efficiency frontier.',  // 要显示的文字内容
+                fill: '#666',            // 文字颜色
+                fontSize: 18             // 文字大小
+            }
+        }
+    ],
+
+    };
+
+    var paretoName = [];
+
+    document.getElementById('fileInput').addEventListener('change', function (e) {
+      var file = e.target.files[0];
+      var reader = new FileReader();
+
+      reader.onload = function (event) {
+        var content = event.target.result;
+        var lines = content.split('\n').filter(line => line.trim() !== ''); // 按行分割内容
+        lines.shift(); // 移除第一項
+
+        var data = [];
+        var Info = [];
+
+        lines.forEach(function (line) {
+          var coordinates = line.split(','); // 假设坐标以逗号分隔
+
+          // 提取第三列和第四列的数据存入数组
+          data.push([parseFloat(coordinates[2]), parseFloat(coordinates[3])]);
+
+          // 提取第一列和第二列的数据存入数组
+          Info.push([coordinates[0] + "," + coordinates[1]]);
+        });
+
+        var pareto = findParetoFrontier(data, Info);
+        var pareto_line = [];
+        for (var i = 0; i < pareto.length - 1; i++) {
+          pareto_line.push([{ coord: pareto[i], symbol: 'none' }, { coord: pareto[i + 1], symbol: 'none' }])
+        }
+
+        option.series[0].data = [];
+        for (var i = 0; i < data.length; i++) {
+          option.series[0].data.push({}); // 添加一个空对象，用于存放数据
+          option.series[0].data[i].value = data[i];
+          option.series[0].data[i].name = Info[i];
+        }
+
+        option.series[1].data = [];
+        for (var i = 0; i < pareto.length; i++) {
+          option.series[1].data.push({}); // 添加一个空对象，用于存放数据
+          option.series[1].data[i].value = pareto[i];
+          option.series[1].data[i].name = paretoName[i];
+        }
+        option.series[1].markLine.data = pareto_line;
+        option.graphic[0].style = {
+          text: pareto.length + ' points on the Pareto efficiency frontier.',  // 要显示的文字内容
+          fill: '#666',            // 文字颜色
+          fontSize: 18             // 文字大小
+        }
+
+        myChart.setOption(option);
+      };
+
+      reader.readAsText(file);
+    });
+
+    // 獲取滑鼠位置的函數
+    function getMousePos(canvas, evt) {
+      var rect = canvas.getBoundingClientRect();
+      return {
+        x: evt.clientX - rect.left,
+        y: evt.clientY - rect.top
+      };
+    }
+
+    // 監聽滑鼠移動事件
+    myChart.getZr().on('mousemove', function (params) {
+      var pointInPixel = [params.offsetX, params.offsetY];
+      var pointInGrid = myChart.convertFromPixel('grid', pointInPixel);
+
+      // 先清除舊的 markLine 資料
+      option.series[2].markLine.data = [];
+
+      // 只更新 markLine 的資料
+      option.series[2].markLine.data = [
+        [{ coord: [0, 0], symbol: 'none' }, { coord: pointInGrid, symbol: 'none' }]
+      ];
+
+      // 更新特定部分的資料，而非整個散點圖
+      myChart.setOption(option);
+    });
+
+    // 監聽散點圖的點擊事件
+    myChart.getZr().on('click', function (params) {
+      var pointInPixel = [params.offsetX, params.offsetY];
+      var pointInGrid = myChart.convertFromPixel('grid', pointInPixel);
+
+      // 先清除舊的 markLine 資料
+      option.series[2].markLine.data = [];
+
+      // 設置直線的起點為點擊位置座標
+      var startCoord = pointInGrid;
+
+      // 監聽滑鼠移動事件，更新直線的終點
+      myChart.getZr().on('mousemove', function (params) {
+        var pointInPixel = [params.offsetX, params.offsetY];
+        var pointInGrid = myChart.convertFromPixel('grid', pointInPixel);
+
+        // 更新散點圖上的滑鼠跟隨直線
+        option.series[2].markLine.data = [
+          [{ coord: startCoord, symbol: 'none' }, { coord: pointInGrid, symbol: 'none' }]
+        ];
+
+        myChart.setOption(option);
+      });
+
+      // 在滑鼠左鍵鬆開後解除滑鼠移動事件的監聽
+      window.addEventListener('mouseup', function () {
+        myChart.getZr().off('mousemove');
+      });
+    });
+
+    // 初始保持空白坐标系
+    myChart.setOption(option);
+
+    window.addEventListener('resize', function () {
+      myChart.resize();
+    });
+
+
+    function findParetoFrontier(array, info) {
+      let paretoFrontier = [];
+      let Namepareto = [];
+      for (let i = 0; i < array.length; i++) {
+        let isPareto = true;
+        for (let j = 0; j < array.length; j++) {
+          if (i != j) {
+            let dominates = true;
+            for (let k = 0; k < array[i].length; k++) {
+              if (k == 0 && array[i][k] < array[j][k]) {
+                dominates = false;
+                break;
+              }
+              else if (k == 1 && array[i][k] > array[j][k]) {
+                dominates = false;
+                break;
+              }
+            }
+            if (dominates) {
+              isPareto = false;
+              break;
+            }
+          }
+        }
+        if (isPareto) {
+          Namepareto.push(info[i]);
+          paretoFrontier.push(array[i]);
+        }
+      }
+
+      let paretoData = [];
+
+      for (let i = 0; i < paretoFrontier.length; i++) {
+        paretoData.push({ name: Namepareto[i], value: paretoFrontier[i] });
+      }
+
+      paretoData.sort(sorstFunction);
+      
+      let Namepareto2 = paretoData.map(item => item.name);
+      let paretoFrontier2 = paretoData.map(item => item.value);
+
+      paretoName = Namepareto2;
+      return paretoFrontier2;
+    }
+
+    function sorstFunction(a, b) {
+      if (a.value[0] === b.value[0]) {
+        return 0;
+      }
+      else {
+        return (a.value[0] < b.value[0]) ? -1 : 1;
+      }
+    }
+  </script>
+</body>
+
+</html>
