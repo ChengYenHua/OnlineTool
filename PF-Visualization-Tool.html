@@ -12,6 +12,35 @@
         text-align: center;
         font-size: 20px;
       }
+      #dragContainer {
+          position: relative;
+          width: 100%;
+          height: 20px;
+          background-color: #fdf9ee;
+          margin-top: 50px; /* 为了让按钮距离上方有一定的空间 */
+      }
+      #leftRange {
+          width: 0%;
+          height: 100%;
+          background-color: #b5c4b1;
+          position: absolute;
+          top: 0;
+          left: 0;
+          z-index: 1;
+      }
+      #dragButton {
+          width: 100px;
+          height: 20px;
+          background-color: #96a48b;
+          position: absolute;
+          top: 0;
+          left: 0;
+          cursor: pointer;
+          border-radius: 10px;
+          text-align: center;
+          line-height: 20px;
+          z-index: 2; /* 确保按钮位于上层 */
+      }
     </style>
   </head>
 
@@ -23,10 +52,11 @@
       <button id="lineButton">Line</button>
     </div>
     <div id="fileInfo" style="width: 100%; position: absolute; top: 40px"></div>
-    <div
-      id="container"
-      style="height: 80%; width: 100%; margin-top: 60px"
-    ></div>
+    <div id="container" style="height: 80%; width: 100%; margin-top: 60px"></div>
+    <div id="dragContainer">
+      <div id="leftRange"></div>
+      <div id="dragButton">Gen.</div>
+    </div>
 
     <script
       type="text/javascript"
@@ -37,26 +67,31 @@
       var playButton = document.getElementById("playButton");
       var vsButton = document.getElementById("vsButton");
       var lineButton = document.getElementById("lineButton");
+      var dragButton = document.getElementById("dragButton");
+      var leftRange = document.getElementById("leftRange");
+      var dragContainer = document.getElementById("dragContainer");
       var myChart = echarts.init(dom, null, {
         renderer: "canvas",
         useDirtyRect: false,
       });
 
+      // 按鈕變數宣告區域
       var playing = false;
       var vs = false;
       var line = true;
+      var isDragging = false;
+      // 方法所需的參數宣告區域
       var generationIndex = 0;
-      var tmp_generationIndex = 0;
-      var tmp_generationIndex2 = 0;
+      var tmp_generationIndex = [];
       var generationsInterval;
       var generations = [];
-      var generations_2 = [];
       var max_generation = 0;
-      var file_1 = "";
-      var file_2 = "";
+      var file_name = [];
       var x_max = 0;
       var y_max = 0;
-
+      var num_file = 0;
+      var color = ['blue', 'red', 'yellow', 'green', 'gray'];
+      //myChart的初始參數
       var option = {
         xAxis: {
           min: 0,
@@ -117,7 +152,7 @@
           },
         ],
       };
-      // 圖檔相關
+      // 讀檔案的程式碼
       document
         .getElementById("fileInput")
         .addEventListener("change", function (e) {
@@ -139,19 +174,24 @@
 
             if (!vs) {
               generations = [];
-              generations_2 = [];
-              file_1 = fileName;
-              file_2 = "";
-              fileInfo.innerText = "Selected file: " + file_1;
+              file_name = [];
+              num_file = 0;
+              file_name[num_file] = fileName;
+              fileInfo.innerText = "Selected file: " + file_name[num_file];
               x_max = 0;
               y_max = 0;
             } else {
-              generations_2 = [];
-              file_2 = fileName;
-              fileInfo.innerText =
-                "Selected file: (Blue) " + file_1 + " vs. (Red) " + file_2;
+              file_name[num_file] = fileName;
+              var tmp = "Selected file: " + file_name[0];
+              
+              for(var i = 1; i <= num_file; i++) {
+                tmp = tmp + " vs. " + file_name[i];
+              }
+              fileInfo.innerText = tmp;
             }
+
             generationIndex = 0;
+            var tmp_generations = [];
 
             lines.forEach(function (line) {
               var data = line.trim().split(" ");
@@ -182,55 +222,13 @@
                 (a, b) => parseFloat(a.risk) - parseFloat(b.risk)
               );
 
-              if (!vs) {
-                generations.push(generationData);
-              } else {
-                generations_2.push(generationData);
-              }
+              tmp_generations.push(generationData);
             });
+            generations.push(tmp_generations);
 
-
-            // 添加数据到 series (藍色 第一個方法的)
-            var data = generations[generationIndex].map(function (item) {
-              return [parseFloat(item.risk), parseFloat(item.return_rate)];
-            });
-
-            if (line) {
-              option.series.push({
-                type: "line",
-                data: data,
-                name: "Generation " + (generationIndex + 1),
-                emphasis: {
-                  focus: "series",
-                },
-                // 设置线条样式，采用HSL颜色模型，调整亮度
-                lineStyle: {
-                  color: 'blue',
-                },
-                // 设置点的样式，采用相同的HSL颜色模型，调整亮度
-                itemStyle: {
-                  color: 'blue',
-                },
-              });
-            } else {
-              option.series.push({
-                type: "scatter",
-                data: data,
-                name: "Generation " + (generationIndex + 1),
-                emphasis: {
-                  focus: "series",
-                },
-                symbol: 'emptyCircle', // 设置散点图点的样式为空心圆形
-                symbolSize: 4, // 设置空心圆形点的大小
-                // 设置点的样式，采用相同的HSL颜色模型，调整亮度
-                itemStyle: {
-                  color: 'blue',
-                },
-              });
-            }
-            // 添加数据到 series (紅色 第二個方法的)
-            if (vs) {
-              var data = generations_2[generationIndex].map(function (item) {
+            // 添加数据到 series
+            for (var i = 0; i <= num_file; i++) {
+              var data = generations[i][generationIndex].map(function (item) {
                 return [parseFloat(item.risk), parseFloat(item.return_rate)];
               });
 
@@ -244,11 +242,12 @@
                   },
                   // 设置线条样式，采用HSL颜色模型，调整亮度
                   lineStyle: {
-                    color: 'red', // 这里210是蓝色的色相，可以根据需要调整
+                    color: color[i],
                   },
-                  // 设置点的样式，采用相同的HSL颜色模型，调整亮度
+                  symbol: 'emptyCircle', // 设置散点图点的样式为空心圆形
+                  symbolSize: 4 + 3 * (num_file - i), // 设置空心圆形点的大小
                   itemStyle: {
-                    color: 'red',
+                    color: color[i],
                   },
                 });
               } else {
@@ -260,14 +259,14 @@
                     focus: "series",
                   },
                   symbol: 'emptyCircle', // 设置散点图点的样式为空心圆形
-                  symbolSize: 4, // 设置空心圆形点的大小
-                  // 设置点的样式，采用相同的HSL颜色模型，调整亮度
+                  symbolSize: 4 + 3 * (num_file - i), // 设置空心圆形点的大小
                   itemStyle: {
-                    color: 'red',
+                    color: color[i],
                   },
                 });
               }
             }
+
             // 輸出Generation的文字
             if (!vs) {
               option.graphic[0].style = {
@@ -275,29 +274,37 @@
                 fill: "#666", // 文字颜色
                 fontSize: 18, // 文字大小
               };
-              max_generation = generations.length;
-              tmp_generationIndex = 0;
+              max_generation = generations[num_file].length;
+              tmp_generationIndex[num_file] = 0;
             } 
             else {
+              var tmp = "Generation: " + (generationIndex + 1);
+              tmp_generationIndex[0] = 0;
+              for (var i = 1; i <= num_file; i++) {
+                tmp = tmp + " vs. " + (generationIndex + 1);
+                tmp_generationIndex[i] = 0;
+                if (max_generation < generations[i].length) max_generation = generations[i].length;
+              }
+
               option.graphic[0].style = {
-                text:
-                  "Generation: " +
-                  (generationIndex + 1) +
-                  " vs. " +
-                  (generationIndex + 1), // 要显示的文字内容
+                text: tmp, // 要显示的文字内容
                 fill: "#666", // 文字颜色
                 fontSize: 18, // 文字大小
               };
-
-              if (generations.length > generations_2.length) {
-                max_generation = generations.length;
-              } else {
-                max_generation = generations_2.length;
-              }
-
-              tmp_generationIndex = 0;
-              tmp_generationIndex2 = 0;
             }
+            // 比較方法+1
+            num_file = num_file + 1;
+            // 计算拖曳范围的宽度
+            var dragRangeWidth = dragContainer.offsetWidth;
+            // 计算拖曳按钮的宽度
+            var buttonWidth = dragButton.offsetWidth;
+            // 计算拖曳按钮的新位置
+            var newPosition = generationIndex * ((dragRangeWidth - buttonWidth) / (max_generation - 1));
+            // 设置拖曳按钮的新位置
+            dragButton.style.left = newPosition + "px";
+            // 更新拖曳范围颜色
+            var halfWidth = dragButton.offsetWidth / 2;
+            leftRange.style.width = newPosition + halfWidth + "px";
 
             x_max = Math.ceil(x_max / 1000) * 1000;
             y_max = Math.ceil(y_max / 1000) * 1000;
@@ -305,7 +312,7 @@
             var x_interval = (x_max - 0) / 5;
             var y_interval = (y_max - 0) / 5;
 
-            // set xAxis
+            // set x-Axis
             option.xAxis = {
               min: 0,
               max: x_max,
@@ -329,7 +336,7 @@
                 }
               },
             }
-            // set yAxis
+            // set y-Axis
             option.yAxis = {
               min: 0,
               max: y_max,
@@ -360,26 +367,50 @@
 
           reader.readAsText(file);
         });
-
       // 初始保持空白坐标系
       myChart.setOption(option);
 
       window.addEventListener("resize", function () {
         myChart.resize();
       });
-
+      // 播放、暫停的判斷程式
       playButton.addEventListener("click", function () {
         if (!playing) {
           playing = true;
           playButton.innerText = "Pause";
-          generationsInterval = setInterval(drawNextGeneration, 700); // 设置每2秒绘制下一代
+          // 设置每0.7秒绘制下一代
+          generationsInterval = setInterval(function() {
+            generationIndex++;
+            if (generationIndex < max_generation) {
+              drawNextGeneration();
+              // 计算拖曳范围的宽度
+              var dragRangeWidth = dragContainer.offsetWidth;
+              // 计算拖曳按钮的宽度
+              var buttonWidth = dragButton.offsetWidth;
+              // 计算拖曳按钮的新位置
+              var newPosition = generationIndex * ((dragRangeWidth - buttonWidth) / (max_generation - 1));
+              // 设置拖曳按钮的新位置
+              dragButton.style.left = newPosition + "px";
+              // 更新拖曳范围颜色
+              var halfWidth = dragButton.offsetWidth / 2;
+              leftRange.style.width = newPosition + halfWidth + "px";
+            }
+            else if (generationIndex == max_generation) {
+              clearInterval(generationsInterval); // 所有代都已绘制完毕，停止绘制
+              playing = false;
+              playButton.innerText = "Play";
+            } 
+            else {
+              generationIndex = -1;
+            }
+          }, 700);
         } else {
           playing = false;
           playButton.innerText = "Play";
           clearInterval(generationsInterval); // 停止绘制
         }
       });
-
+      // 是否有比較多個方法
       vsButton.addEventListener("click", function () {
         if (!vs) {
           vs = true;
@@ -389,7 +420,7 @@
           vsButton.innerText = "VS.";
         }
       });
-
+      // 效率前緣有無連線
       lineButton.addEventListener("click", function () {
         if (!line) {
           line = true;
@@ -398,161 +429,70 @@
           line = false;
           lineButton.innerText = "no Line";
         }
+        drawNextGeneration();
       });
-
+      // 更新網頁顯示介面的程式碼
       function drawNextGeneration() {
-        generationIndex++;
-        if (generationIndex < max_generation) {
-          if (!vs) {
-            option.series = []; // 清空 series
-            if (generationIndex < generations.length) {
-              var generation = generations[generationIndex];
-              var data = generation.map(function (item) {
-                return [parseFloat(item.risk), parseFloat(item.return_rate)];
-              });
+        option.series = []; // 清空 series
+        var tmp_text = "Generation: ";
+        for (var i = 0; i < num_file; i++) {
+          var tmp_g = generationIndex;
+          if (tmp_g + 1 > generations[i].length) tmp_g = generations[i].length - 1;
 
-              if(line){
-                option.series.push({
-                  type: "line",
-                  data: data,
-                  name: "Generation " + (generationIndex + 1),
-                  emphasis: {
-                    focus: "series",
-                  },
-                  lineStyle: {
-                    color: 'blue',
-                  },
-                  itemStyle: {
-                    color: 'blue',
-                  },
-                });
-              } else {
-                option.series.push({
-                  type: "scatter",
-                  data: data,
-                  name: "Generation " + (generationIndex + 1),
-                  emphasis: {
-                    focus: "series",
-                  },
-                  symbol: 'emptyCircle', // 设置散点图点的样式为空心圆形
-                  symbolSize: 4, // 设置空心圆形点的大小
-                  itemStyle: {
-                    color: 'blue',
-                  },
-                });
-              }
-            }
+          var generation = generations[i][tmp_g];
+          var data = generation.map(function (item) {
+            return [parseFloat(item.risk), parseFloat(item.return_rate)];
+          });
 
-            option.graphic[0].style = {
-              text: "Generation: " + (generationIndex + 1), // 要显示的文字内容
-              fill: "#666", // 文字颜色
-              fontSize: 18, // 文字大小
-            };
-            tmp_generationIndex = generationIndex;
+          if(line){
+            option.series.push({
+              type: "line",
+              data: data,
+              name: "Generation " + (tmp_g + 1),
+              emphasis: {
+                focus: "series",
+              },
+              symbol: 'emptyCircle', // 设置散点图点的样式为空心圆形
+              symbolSize: 4 + 3 * (num_file -1 - i), // 设置空心圆形点的大小
+              lineStyle: {
+                color: color[i],
+              },
+              itemStyle: {
+                color: color[i],
+              },
+            });
           } else {
-            option.series = []; // 清空 series
-            
-            var g1 = generationIndex;
-            var g2 = generationIndex;
-            if (g1 + 1 > generations.length) g1 = generations.length - 1;
-            if (g2 + 1 > generations_2.length) g2 = generations_2.length - 1;
-
-            var generation = generations[g1];
-            var data = generation.map(function (item) {
-              return [parseFloat(item.risk), parseFloat(item.return_rate)];
+            option.series.push({
+              type: "scatter",
+              data: data,
+              name: "Generation " + (tmp_g + 1),
+              emphasis: {
+                focus: "series",
+              },
+              symbol: 'emptyCircle', // 设置散点图点的样式为空心圆形
+              symbolSize: 4 + 3 * (num_file - 1 - i), // 设置空心圆形点的大小
+              itemStyle: {
+                color: color[i],
+              },
             });
-
-            if(line){
-              option.series.push({
-                type: "line",
-                data: data,
-                name: "Generation " + (g1 + 1),
-                emphasis: {
-                  focus: "series",
-                },
-                lineStyle: {
-                  color: "blue",
-                },
-                itemStyle: {
-                  color: "blue",
-                },
-              });
-            } else {
-              option.series.push({
-                type: "scatter",
-                data: data,
-                name: "Generation " + (g1 + 1),
-                emphasis: {
-                  focus: "series",
-                },
-                symbol: 'emptyCircle', // 设置散点图点的样式为空心圆形
-                symbolSize: 4, // 设置空心圆形点的大小
-                itemStyle: {
-                  color: "blue",
-                },
-              });
-            }
-
-            var generation = generations_2[g2];
-            var data = generation.map(function (item) {
-              return [parseFloat(item.risk), parseFloat(item.return_rate)];
-            });
-
-            if (line) {
-              option.series.push({
-                type: "line",
-                data: data,
-                name: "Generation " + (g2 + 1),
-                emphasis: {
-                  focus: "series",
-                },
-                lineStyle: {
-                  color: "red",
-                },
-                itemStyle: {
-                  color: "red",
-                },
-              });
-            } else {
-              option.series.push({
-                type: "scatter",
-                data: data,
-                name: "Generation " + (g2 + 1),
-                emphasis: {
-                  focus: "series",
-                },
-                lineStyle: {
-                  color: "red",
-                },
-                symbol: 'emptyCircle', // 设置散点图点的样式为空心圆形
-                symbolSize: 4, // 设置空心圆形点的大小
-                itemStyle: {
-                  color: "red",
-                },
-              });
-            }
-
-            option.graphic[0].style = {
-              text: "Generation: " + (g1 + 1) + " vs. " + (g2 + 1), // 要显示的文字内容
-              fill: "#666", // 文字颜色
-              fontSize: 18, // 文字大小
-            };
-            tmp_generationIndex = g1;
-            tmp_generationIndex2 = g2;
           }
 
-          myChart.setOption(option);
-        } 
-        else if (generationIndex == max_generation) {
-          clearInterval(generationsInterval); // 所有代都已绘制完毕，停止绘制
-          playing = false;
-          playButton.innerText = "Play";
-        } 
-        else {
-          generationIndex = -1;
+          tmp_generationIndex[i] = tmp_g;
+          if (i == 0) tmp_text = tmp_text + (tmp_g + 1);
+          else if (i > 0) tmp_text = tmp_text + " vs. " + (tmp_g + 1);
         }
+
+        option.graphic[0].style = {
+          text: tmp_text, // 要显示的文字内容
+          fill: "#666", // 文字颜色
+          fontSize: 18, // 文字大小
+        };
+
+        myChart.setOption(option);
       }
-      //還有bug，不確定怎麼看誰是0或是誰是1
+
+
+      // 鼠標放到點上，顯示Info框框 (還有bug，不確定怎麼看誰是0或是誰是1)
       function handleMouseOver(params) {
         var dataIndex = params.dataIndex;
         var seriesIndex = params.seriesIndex;
@@ -567,10 +507,11 @@
         popup.style.padding = "10px";
 
         // 检查使用哪个数组的数据
-        if (seriesIndex == 0) {
-            seriesIndex = tmp_generationIndex;
+        for (var i = 0; i < num_file; i++) {
+          if (seriesIndex == i) {
+            seriesIndex = tmp_generationIndex[i];
             //console.log(seriesIndex);
-            generation = generations[seriesIndex][dataIndex];
+            generation = generations[i][seriesIndex][dataIndex];
             popup.innerHTML = `
                 <p style="font-size: 12px">Generation: ${seriesIndex + 1}</p>
                 <p style="font-size: 12px">Stocks Number: ${generation.num_files}</p>
@@ -578,30 +519,20 @@
                 <p style="font-size: 12px">Risk: ${generation.risk}</p>
                 <p style="font-size: 12px">Return: ${generation.return_rate}</p>
             `;
-        } else if (seriesIndex == 1) {
-            seriesIndex = tmp_generationIndex2;
-            //console.log(seriesIndex);
-            generation = generations_2[seriesIndex][dataIndex];
-            popup.innerHTML = `
-                <p style="font-size: 12px">Generation: ${seriesIndex + 1}</p>
-                <p style="font-size: 12px">Stocks Number: ${generation.num_files}</p>
-                <p style="font-size: 12px">Stocks Infomation: ${generation.stocks.join(", ")}</p>
-                <p style="font-size: 12px">Risk: ${generation.risk}</p>
-                <p style="font-size: 12px">Return: ${generation.return_rate}</p>
-            `;
+          }
         }
-        document.body.appendChild(popup); // 将弹出框添加到 body 中，确保位于最上层
 
+        // 将弹出框添加到 body 中，确保位于最上层
+        document.body.appendChild(popup); 
         // 获取鼠标指向的位置
         var mouseX = params.event.offsetX;
         var mouseY = params.event.offsetY;
-
         // 设置弹出框位置
         popup.style.position = "absolute";
         popup.style.left = mouseX + 10 + "px";
         popup.style.top = mouseY + 10 + "px"; // 向下偏移 10 像素
       }
-
+      // 鼠標離開，Info框框消失
       function handleMouseOut(params) {
         var fileInfo = document.getElementById("fileInfo");
         var popup = document.getElementById("popup");
@@ -609,14 +540,38 @@
             document.body.removeChild(popup); // 从 body 中移除弹出框
         }
       }
-
       // 鼠标悬停事件
       myChart.off("mouseover");
       myChart.on("mouseover", handleMouseOver);
-
       // 鼠标离开事件
       myChart.off("mouseout");
       myChart.on("mouseout", handleMouseOut);
+      // 按下鼠标左键时开始拖曳
+      dragButton.addEventListener("mousedown", function(event) {
+          isDragging = true;
+      });
+      // 放开鼠标左键时停止拖曳
+      document.addEventListener("mouseup", function(event) {
+          isDragging = false;
+      });
+      // 鼠标移动时更新拖曳按钮位置及 generationIndex
+      document.addEventListener("mousemove", function(event) {
+        if (isDragging) {
+          // 计算拖曳的位置
+          var offsetX = event.clientX - dragButton.offsetWidth / 2; // 将鼠标指针置于按钮中心
+          var maxOffset = dragContainer.offsetWidth; // 拖曳范围的最大偏移值
+          var newPosition = Math.min(Math.max(offsetX, 0), maxOffset - dragButton.offsetWidth); // 限制拖曳范围在页面内部
+          // 更新拖曳按钮位置
+          dragButton.style.left = newPosition + "px";
+          // 计算 generationIndex
+          generationIndex = Math.ceil((max_generation - 1) * (newPosition / maxOffset));
+          // 更新拖曳范围颜色
+          var halfWidth = dragButton.offsetWidth / 2;
+          leftRange.style.width = offsetX + halfWidth + "px";
+
+          drawNextGeneration();
+        }
+      });
     </script>
   </body>
 </html>
