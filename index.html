@@ -9,6 +9,7 @@
 <body style="height: 100%; margin: 0">
   <div style="position: absolute; top: 10px; left: 10px;">
     <input type="file" id="fileInput">
+    <button onclick="redirectToAnotherPage()">PF Visualization Tool</button>
   </div>
   <div id="container" style="height: 80%; width: 100%; margin-top: 40px;"></div>
 
@@ -269,6 +270,9 @@
       });
     });
 
+    function redirectToAnotherPage() {
+      window.location.href = '另一個網頁的URL';
+    }
     // 初始保持空白坐标系
     myChart.setOption(option);
 
