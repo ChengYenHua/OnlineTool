@@ -25,16 +25,17 @@
       #leftRange {
           width: 0%;
           height: 100%;
-          background-color: #b5c4b1;
+          background-color: #96d364;
           position: absolute;
           top: 0;
           left: 0;
           z-index: 1;
+          border: 1px dashed black; /* 添加黑色边框 */
       }
       #dragButton {
           width: 100px;
           height: 20px;
-          background-color: #96a48b;
+          background-color: #96d364;
           position: absolute;
           top: 0;
           left: 0;
@@ -44,6 +45,7 @@
           line-height: 20px;
           z-index: 2; /* 确保按钮位于上层 */
           user-select: none; /* 禁止文字被選擇和複製 */
+          border: 1px solid black; /* 添加黑色边框 */
       }
     </style>
   </head>
@@ -153,7 +155,7 @@
           },
         },
         legend: {
-          bottom: '15%',
+          bottom: '10%',
         },
         series: [],
         graphic: [
@@ -331,6 +333,11 @@
           }
           var reader = new FileReader();
           var fileInfo = document.getElementById("fileInfo");
+
+          // 清空先前的数据
+          option.series = []; // 清空 series
+          myChart.clear();
+          myChart.setOption(option); // 更新图表
 
           reader.onload = function (event) {
             var content = event.target.result;
@@ -514,6 +521,8 @@
       // 更新網頁顯示介面的程式碼
       function drawNextGeneration() {
         option.series = []; // 清空 series
+        
+        //畫其他方法找到的前緣
         var tmp_text = "Generation: ";
         for (var i = 0; i < num_file; i++) {
           var tmp_g = generationIndex;
@@ -524,9 +533,12 @@
             return [parseFloat(item.risk), parseFloat(item.return_rate)];
           });
 
-          if(line){
+          var tmp_id = i;
+          if (PF_line) tmp_id = tmp_id + 1;
+
+          if (line){
             option.series[i] = ({
-              id: i,
+              z: tmp_id,
               type: "line",
               data: data,
               //name: "Generation " + (tmp_g + 1),
@@ -547,7 +559,7 @@
             });
           } else {
             option.series[i] = ({
-              id: i,
+              z: tmp_id,
               type: "scatter",
               data: data,
               //name: "Generation " + (tmp_g + 1),
@@ -570,6 +582,7 @@
           else if (i > 0) tmp_text = tmp_text + " vs. " + (tmp_g + 1);
         }
 
+        //畫最佳的效率前緣
         if (PF_line) {
           var generation = PF_generations[0];
           var data = generation.map(function (item) {
@@ -578,7 +591,7 @@
 
           if(line){
             option.series[num_file] = ({
-              id: num_file,
+              z: 0,
               type: "line",
               data: data,
               name: PF_file_name.replace(".txt", ""),
@@ -596,7 +609,7 @@
             });
           } else {
             option.series[num_file] = ({
-              id: num_file,
+              z: 0,
               type: "scatter",
               data: data,
               name: PF_file_name.replace(".txt", ""),
@@ -640,21 +653,7 @@
         popup.style.padding = "10px";
 
         // 检查使用哪个数组的数据
-        for (var i = 0; i < num_file; i++) {
-          if (seriesIndex == i) {
-            seriesIndex = tmp_generationIndex[i];
-            //console.log(seriesIndex);
-            generation = generations[i][seriesIndex][dataIndex];
-            popup.innerHTML = `
-                <p style="font-size: 12px">Generation: ${seriesIndex + 1}</p>
-                <p style="font-size: 12px">Stocks Number: ${generation.num_files}</p>
-                <p style="font-size: 12px">Stocks Infomation: ${generation.stocks.join(", ")}</p>
-                <p style="font-size: 12px">Risk: ${generation.risk}</p>
-                <p style="font-size: 12px">Return: ${generation.return_rate}</p>
-            `;
-          }
-        }
-        if (PF_line) {
+        if (seriesIndex == num_file) {
           seriesIndex = 0;
           generation = PF_generations[seriesIndex][dataIndex];
           popup.innerHTML = `
@@ -663,6 +662,21 @@
               <p style="font-size: 12px">Risk: ${generation.risk}</p>
               <p style="font-size: 12px">Return: ${generation.return_rate}</p>
           `;
+        } else {
+          for (var i = 0; i < num_file; i++) {
+            if (seriesIndex == i) {
+              seriesIndex = tmp_generationIndex[i];
+              //console.log(seriesIndex);
+              generation = generations[i][seriesIndex][dataIndex];
+              popup.innerHTML = `
+                  <p style="font-size: 12px">Generation: ${seriesIndex + 1}</p>
+                  <p style="font-size: 12px">Stocks Number: ${generation.num_files}</p>
+                  <p style="font-size: 12px">Stocks Infomation: ${generation.stocks.join(", ")}</p>
+                  <p style="font-size: 12px">Risk: ${generation.risk}</p>
+                  <p style="font-size: 12px">Return: ${generation.return_rate}</p>
+              `;
+            }
+          }
         }
 
         // 将弹出框添加到 body 中，确保位于最上层
