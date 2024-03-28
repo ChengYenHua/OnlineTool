@@ -12,9 +12,11 @@
         text-align: center;
         font-size: 20px;
       }
+      /*進度軸的 CSS */
       #dragContainer {
-          position: relative;
-          width: 100%;
+          position: absolute;
+          left: 10%;
+          width: 80%;
           height: 20px;
           background-color: #fdf9ee;
           margin-top: 50px; /* 为了让按钮距离上方有一定的空间 */
@@ -40,6 +42,7 @@
           text-align: center;
           line-height: 20px;
           z-index: 2; /* 确保按钮位于上层 */
+          user-select: none; /* 禁止文字被選擇和複製 */
       }
     </style>
   </head>
@@ -57,6 +60,7 @@
       <div id="leftRange"></div>
       <div id="dragButton">Gen.</div>
     </div>
+    <div id="legendContainer"></div>
 
     <script
       type="text/javascript"
@@ -79,7 +83,10 @@
       var playing = false;
       var vs = false;
       var line = true;
-      var isDragging = false;
+      var genbarDragging = false;
+      var legendDragging = false;
+      var legend_offsetX = 0;
+      var legend_offsetY = 0;
       // 方法所需的參數宣告區域
       var generationIndex = 0;
       var tmp_generationIndex = [];
@@ -91,6 +98,7 @@
       var y_max = 0;
       var num_file = 0;
       var color = ['blue', 'red', 'yellow', 'green', 'gray'];
+      var legend_type = ['circle', 'rect', 'triangle', 'diamond', 'roundRect'];
       //myChart的初始參數
       var option = {
         xAxis: {
@@ -138,6 +146,9 @@
             },
           },
         },
+        legend: {
+          bottom: '20%',
+        },
         series: [],
         graphic: [
           {
@@ -157,6 +168,9 @@
         .getElementById("fileInput")
         .addEventListener("change", function (e) {
           var file = e.target.files[0];
+          if (!file) {
+            return; // 如果没有选择文件，不执行后续操作
+          }
           var reader = new FileReader();
           var fileInfo = document.getElementById("fileInfo");
 
@@ -175,6 +189,7 @@
             if (!vs) {
               generations = [];
               file_name = [];
+              max_generation = 0;
               num_file = 0;
               file_name[num_file] = fileName;
               fileInfo.innerText = "Selected file: " + file_name[num_file];
@@ -225,86 +240,19 @@
               tmp_generations.push(generationData);
             });
             generations.push(tmp_generations);
-
-            // 添加数据到 series
-            for (var i = 0; i <= num_file; i++) {
-              var data = generations[i][generationIndex].map(function (item) {
-                return [parseFloat(item.risk), parseFloat(item.return_rate)];
-              });
-
-              if (line) {
-                option.series.push({
-                  type: "line",
-                  data: data,
-                  name: "Generation " + (generationIndex + 1),
-                  emphasis: {
-                    focus: "series",
-                  },
-                  // 设置线条样式，采用HSL颜色模型，调整亮度
-                  lineStyle: {
-                    color: color[i],
-                  },
-                  symbol: 'emptyCircle', // 设置散点图点的样式为空心圆形
-                  symbolSize: 4 + 3 * (num_file - i), // 设置空心圆形点的大小
-                  itemStyle: {
-                    color: color[i],
-                  },
-                });
-              } else {
-                option.series.push({
-                  type: "scatter",
-                  data: data,
-                  name: "Generation " + (generationIndex + 1),
-                  emphasis: {
-                    focus: "series",
-                  },
-                  symbol: 'emptyCircle', // 设置散点图点的样式为空心圆形
-                  symbolSize: 4 + 3 * (num_file - i), // 设置空心圆形点的大小
-                  itemStyle: {
-                    color: color[i],
-                  },
-                });
-              }
-            }
-
-            // 輸出Generation的文字
-            if (!vs) {
-              option.graphic[0].style = {
-                text: "Generation: " + (generationIndex + 1), // 要显示的文字内容
-                fill: "#666", // 文字颜色
-                fontSize: 18, // 文字大小
-              };
-              max_generation = generations[num_file].length;
-              tmp_generationIndex[num_file] = 0;
-            } 
-            else {
-              var tmp = "Generation: " + (generationIndex + 1);
-              tmp_generationIndex[0] = 0;
-              for (var i = 1; i <= num_file; i++) {
-                tmp = tmp + " vs. " + (generationIndex + 1);
-                tmp_generationIndex[i] = 0;
-                if (max_generation < generations[i].length) max_generation = generations[i].length;
-              }
-
-              option.graphic[0].style = {
-                text: tmp, // 要显示的文字内容
-                fill: "#666", // 文字颜色
-                fontSize: 18, // 文字大小
-              };
-            }
+            
+            // 記住最好的generaton
+            if (max_generation < generations[num_file].length) max_generation = generations[num_file].length;
             // 比較方法+1
             num_file = num_file + 1;
-            // 计算拖曳范围的宽度
-            var dragRangeWidth = dragContainer.offsetWidth;
-            // 计算拖曳按钮的宽度
-            var buttonWidth = dragButton.offsetWidth;
-            // 计算拖曳按钮的新位置
-            var newPosition = generationIndex * ((dragRangeWidth - buttonWidth) / (max_generation - 1));
+            //更新畫布
+            drawNextGeneration();
+
             // 设置拖曳按钮的新位置
-            dragButton.style.left = newPosition + "px";
+            dragButton.style.left = 0 + "px";
             // 更新拖曳范围颜色
             var halfWidth = dragButton.offsetWidth / 2;
-            leftRange.style.width = newPosition + halfWidth + "px";
+            leftRange.style.width = 0 + halfWidth + "px";
 
             x_max = Math.ceil(x_max / 1000) * 1000;
             y_max = Math.ceil(y_max / 1000) * 1000;
@@ -445,34 +393,42 @@
           });
 
           if(line){
-            option.series.push({
+            option.series[i] = ({
+              id: i,
               type: "line",
               data: data,
-              name: "Generation " + (tmp_g + 1),
+              //name: "Generation " + (tmp_g + 1),
+              name: file_name[i].replace(".txt", ""),
               emphasis: {
                 focus: "series",
               },
-              symbol: 'emptyCircle', // 设置散点图点的样式为空心圆形
-              symbolSize: 4 + 3 * (num_file -1 - i), // 设置空心圆形点的大小
+              symbol: legend_type[i], // 设置散点图点的样式为空心圆形
+              symbolSize: 6, // 设置空心圆形点的大小
               lineStyle: {
                 color: color[i],
               },
               itemStyle: {
-                color: color[i],
+                color: '#ffffff',
+                borderWidth: 2, //設置邊框寬度
+                borderColor: color[i], //設置邊框顏色
               },
             });
           } else {
-            option.series.push({
+            option.series[i] = ({
+              id: i,
               type: "scatter",
               data: data,
-              name: "Generation " + (tmp_g + 1),
+              //name: "Generation " + (tmp_g + 1),
+              name: file_name[i].replace(".txt", ""),
               emphasis: {
                 focus: "series",
               },
-              symbol: 'emptyCircle', // 设置散点图点的样式为空心圆形
-              symbolSize: 4 + 3 * (num_file - 1 - i), // 设置空心圆形点的大小
+              symbol: legend_type[i], // 设置散点图点的样式为空心圆形
+              symbolSize: 6, // 设置空心圆形点的大小
               itemStyle: {
-                color: color[i],
+                color: '#ffffff',
+                borderWidth: 2, //設置邊框寬度
+                borderColor: color[i], //設置邊框顏色
               },
             });
           }
@@ -487,7 +443,6 @@
           fill: "#666", // 文字颜色
           fontSize: 18, // 文字大小
         };
-
         myChart.setOption(option);
       }
 
@@ -548,30 +503,56 @@
       myChart.on("mouseout", handleMouseOut);
       // 按下鼠标左键时开始拖曳
       dragButton.addEventListener("mousedown", function(event) {
-          isDragging = true;
+        genbarDragging = true;
       });
       // 放开鼠标左键时停止拖曳
       document.addEventListener("mouseup", function(event) {
-          isDragging = false;
+        genbarDragging = false;
       });
       // 鼠标移动时更新拖曳按钮位置及 generationIndex
       document.addEventListener("mousemove", function(event) {
-        if (isDragging) {
+        if (genbarDragging) {
           // 计算拖曳的位置
-          var offsetX = event.clientX - dragButton.offsetWidth / 2; // 将鼠标指针置于按钮中心
+          var halfWidth = dragButton.offsetWidth / 2;
+          var offsetX = event.clientX - dragContainer.offsetWidth / 8 - halfWidth; // 将鼠标指针置于按钮中心
+          if (offsetX < halfWidth) offsetX = 0;
           var maxOffset = dragContainer.offsetWidth; // 拖曳范围的最大偏移值
           var newPosition = Math.min(Math.max(offsetX, 0), maxOffset - dragButton.offsetWidth); // 限制拖曳范围在页面内部
           // 更新拖曳按钮位置
           dragButton.style.left = newPosition + "px";
           // 计算 generationIndex
-          generationIndex = Math.ceil((max_generation - 1) * (newPosition / maxOffset));
+          generationIndex = Math.ceil((max_generation - 1) * (newPosition / (maxOffset - dragButton.offsetWidth)));
           // 更新拖曳范围颜色
-          var halfWidth = dragButton.offsetWidth / 2;
-          leftRange.style.width = offsetX + halfWidth + "px";
+          leftRange.style.width = newPosition + halfWidth + "px";
 
           drawNextGeneration();
         }
       });
+      // 監聽滑鼠按下圖例事件
+      legendContainer.addEventListener('mousedown', function(e) {
+        legendDragging = true;
+        // 計算滑鼠在圖例容器內的相對位置
+        offsetX = e.clientX - legendContainer.offsetLeft;
+        offsetY = e.clientY - legendContainer.offsetTop;
+      });
+      // 監聽滑鼠釋放圖例事件
+      document.addEventListener('mouseup', function() {
+        legendDragging = false;
+      });
+      // 監聽滑鼠移動圖例事件
+      document.addEventListener('mousemove', function(e) {
+        if (legendDragging) {
+          // 防止超出畫面範圍
+          var x = e.clientX - offsetX;
+          var y = e.clientY - offsetY;
+          if (x < 0) x = 0;
+          if (y < 0) y = 0;
+          // 移動圖例容器
+          legendContainer.style.left = x + 'px';
+          legendContainer.style.top = y + 'px';
+        }
+      });
+    
     </script>
   </body>
 </html>
