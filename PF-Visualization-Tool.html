@@ -11,6 +11,7 @@
         transform: translateX(-50%);
         text-align: center;
         font-size: 20px;
+        user-select: none; /* 禁止文字被選擇和複製 */
       }
       /*進度軸的 CSS */
       #dragContainer {
@@ -49,7 +50,10 @@
 
   <body style="height: 100%; margin: 0">
     <div style="position: absolute; top: 10px; left: 10px">
-      <input type="file" id="fileInput" />
+      <label for="fileInput">Input file: </label>
+      <input type="file" id="fileInput" accept=".txt"/>
+      <label for="PFfile">Input PF file: </label>
+      <input type="file" id="PFfile" accept=".txt"/>
       <button id="playButton">Play</button>
       <button id="vsButton">VS.</button>
       <button id="lineButton">Line</button>
@@ -60,7 +64,6 @@
       <div id="leftRange"></div>
       <div id="dragButton">Gen.</div>
     </div>
-    <div id="legendContainer"></div>
 
     <script
       type="text/javascript"
@@ -84,9 +87,12 @@
       var vs = false;
       var line = true;
       var genbarDragging = false;
-      var legendDragging = false;
       var legend_offsetX = 0;
       var legend_offsetY = 0;
+      // 比較用的效率前緣參數宣告區域
+      var PF_file_name = "";
+      var PF_generations = [];
+      var PF_line = false;
       // 方法所需的參數宣告區域
       var generationIndex = 0;
       var tmp_generationIndex = [];
@@ -147,7 +153,7 @@
           },
         },
         legend: {
-          bottom: '20%',
+          bottom: '15%',
         },
         series: [],
         graphic: [
@@ -245,6 +251,132 @@
             if (max_generation < generations[num_file].length) max_generation = generations[num_file].length;
             // 比較方法+1
             num_file = num_file + 1;
+            //更新畫布
+            drawNextGeneration();
+
+            // 设置拖曳按钮的新位置
+            dragButton.style.left = 0 + "px";
+            // 更新拖曳范围颜色
+            var halfWidth = dragButton.offsetWidth / 2;
+            leftRange.style.width = 0 + halfWidth + "px";
+
+            x_max = Math.ceil(x_max / 1000) * 1000;
+            y_max = Math.ceil(y_max / 1000) * 1000;
+
+            var x_interval = (x_max - 0) / 5;
+            var y_interval = (y_max - 0) / 5;
+
+            // set x-Axis
+            option.xAxis = {
+              min: 0,
+              max: x_max,
+              interval: x_interval, // 设置刻度标签的间隔
+              name: "Risk",
+              nameLocation: "center",
+              nameGap: 50,
+              nameTextStyle: {
+                fontSize: 16,
+              },
+              axisLabel: {
+                formatter: function (value, index) {
+                    return parseFloat(value.toFixed(0)).toLocaleString(); // 格式化标签显示的内容为整数
+                },
+                margin: 10, // 设置刻度标签的边距
+                align: "center" // 设置刻度标签水平居中对齐
+              },
+              axisLine: {
+                lineStyle: {
+                  color: "black",
+                }
+              },
+            }
+            // set y-Axis
+            option.yAxis = {
+              min: 0,
+              max: y_max,
+              interval: y_interval, // 设置刻度标签的间隔
+              name: "Return",
+              nameLocation: "center",
+              nameGap: 50,
+              nameTextStyle: {
+                fontSize: 16,
+              },
+              axisLabel: {
+                formatter: function (value, index) {
+                    return parseFloat(value.toFixed(0)).toLocaleString(); // 格式化标签显示的内容为整数
+                },
+                margin: 10, // 设置刻度标签的边距
+                align: "center", // 设置刻度标签水平居中对齐
+                rotate: 90,
+              },
+              axisLine: {
+                lineStyle: {
+                  color: "black",
+                }
+              },
+            }
+
+            myChart.setOption(option);
+          };
+
+          reader.readAsText(file);
+        });
+      // 讀PF檔案的程式碼
+      document
+        .getElementById("PFfile")
+        .addEventListener("change", function (e) {
+          var file = e.target.files[0];
+          if (!file) {
+            return; // 如果没有选择文件，不执行后续操作
+          }
+          var reader = new FileReader();
+          var fileInfo = document.getElementById("fileInfo");
+
+          reader.onload = function (event) {
+            var content = event.target.result;
+            var lines = content
+              .split("\n")
+              .filter((line) => line.trim() !== "");
+            var fileName = file.name;
+
+            PF_file_name = fileName;
+            PF_line = true;
+            generationIndex = 0;
+
+            lines.forEach(function (line) {
+              var data = line.trim().split(" ");
+              var generation = data[0].substring(1);
+              var portfolios = data.slice(1);
+              var generationData = [];
+
+              portfolios.forEach(function (portfolio) {
+                var info = portfolio.split(",");
+                var num_files = info[0];
+                var stocks = info[1].split(";");
+                var risk = info[2];
+                var return_rate = info[3];
+                var portfolioData = {
+                  num_files: num_files,
+                  stocks: stocks,
+                  risk: risk,
+                  return_rate: return_rate,
+                };
+                generationData.push(portfolioData);
+
+                if (x_max < parseFloat(risk)) x_max = parseFloat(risk);
+                if (y_max < parseFloat(return_rate)) y_max = parseFloat(return_rate);
+              });
+
+              // 对 generationData 按照 risk 从小到大排序
+              generationData.sort(
+                (a, b) => parseFloat(a.risk) - parseFloat(b.risk)
+              );
+
+              PF_generations.push(generationData);
+            });
+
+            
+            
             //更新畫布
             drawNextGeneration();
 
@@ -423,8 +555,8 @@
               emphasis: {
                 focus: "series",
               },
-              symbol: legend_type[i], // 设置散点图点的样式为空心圆形
-              symbolSize: 6, // 设置空心圆形点的大小
+              symbol: legend_type[i], // 设置散点图点的样式
+              symbolSize: 6, // 设置空心的大小
               itemStyle: {
                 color: '#ffffff',
                 borderWidth: 2, //設置邊框寬度
@@ -436,6 +568,48 @@
           tmp_generationIndex[i] = tmp_g;
           if (i == 0) tmp_text = tmp_text + (tmp_g + 1);
           else if (i > 0) tmp_text = tmp_text + " vs. " + (tmp_g + 1);
+        }
+
+        if (PF_line) {
+          var generation = PF_generations[0];
+          var data = generation.map(function (item) {
+            return [parseFloat(item.risk), parseFloat(item.return_rate)];
+          });
+
+          if(line){
+            option.series[num_file] = ({
+              id: num_file,
+              type: "line",
+              data: data,
+              name: PF_file_name.replace(".txt", ""),
+              emphasis: {
+                focus: "series",
+              },
+              symbol: 'circle', // 设置散点图点的样式
+              symbolSize: 9, // 设置空心的大小
+              lineStyle: {
+                color: '#FFBB66',
+              },
+              itemStyle: {
+                color: '#FFBB66',
+              },
+            });
+          } else {
+            option.series[num_file] = ({
+              id: num_file,
+              type: "scatter",
+              data: data,
+              name: PF_file_name.replace(".txt", ""),
+              emphasis: {
+                focus: "series",
+              },
+              symbol: 'circle', // 设置散点图点的样式
+              symbolSize: 9, // 设置空心圆的大小
+              itemStyle: {
+                color: '#FFBB66',
+              },
+            });
+          }
         }
 
         option.graphic[0].style = {
@@ -453,6 +627,10 @@
         var seriesIndex = params.seriesIndex;
         //console.log("dataIndex = " + dataIndex);
         //console.log("seriesIndex = " + seriesIndex);
+
+        if (dataIndex == undefined || seriesIndex == undefined) {
+          return;
+        }
 
         var generation;
         var fileInfo = document.getElementById("fileInfo");
@@ -475,6 +653,16 @@
                 <p style="font-size: 12px">Return: ${generation.return_rate}</p>
             `;
           }
+        }
+        if (PF_line) {
+          seriesIndex = 0;
+          generation = PF_generations[seriesIndex][dataIndex];
+          popup.innerHTML = `
+              <p style="font-size: 12px">Stocks Number: ${generation.num_files}</p>
+              <p style="font-size: 12px">Stocks Infomation: ${generation.stocks.join(", ")}</p>
+              <p style="font-size: 12px">Risk: ${generation.risk}</p>
+              <p style="font-size: 12px">Return: ${generation.return_rate}</p>
+          `;
         }
 
         // 将弹出框添加到 body 中，确保位于最上层
@@ -526,30 +714,6 @@
           leftRange.style.width = newPosition + halfWidth + "px";
 
           drawNextGeneration();
-        }
-      });
-      // 監聽滑鼠按下圖例事件
-      legendContainer.addEventListener('mousedown', function(e) {
-        legendDragging = true;
-        // 計算滑鼠在圖例容器內的相對位置
-        offsetX = e.clientX - legendContainer.offsetLeft;
-        offsetY = e.clientY - legendContainer.offsetTop;
-      });
-      // 監聽滑鼠釋放圖例事件
-      document.addEventListener('mouseup', function() {
-        legendDragging = false;
-      });
-      // 監聽滑鼠移動圖例事件
-      document.addEventListener('mousemove', function(e) {
-        if (legendDragging) {
-          // 防止超出畫面範圍
-          var x = e.clientX - offsetX;
-          var y = e.clientY - offsetY;
-          if (x < 0) x = 0;
-          if (y < 0) y = 0;
-          // 移動圖例容器
-          legendContainer.style.left = x + 'px';
-          legendContainer.style.top = y + 'px';
         }
       });
     
