@@ -346,9 +346,14 @@
               .filter((line) => line.trim() !== "");
             var fileName = file.name;
 
+            PF_generations = []
             PF_file_name = fileName;
             PF_line = true;
             generationIndex = 0;
+            if (num_file == 0) {
+              x_max = 0;
+              y_max = 0;
+            }
 
             lines.forEach(function (line) {
               var data = line.trim().split(" ");
