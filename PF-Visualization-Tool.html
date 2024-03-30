@@ -2,6 +2,7 @@
 <html lang="zh-CN" style="height: 100%">
   <head>
     <meta charset="utf-8" />
+    <meta name="viewport" content="width=device-width, initial-scale=1.0">
     <title>Portfolio PF Visualization Tool</title>
     <style>
       #fileInfo {
@@ -47,6 +48,12 @@
           user-select: none; /* 禁止文字被選擇和複製 */
           border: 1px solid black; /* 添加黑色边框 */
       }
+      .textbox {
+        width: 1000px;
+        height: 200px;
+        padding: 10px;
+        margin: 100px;
+      }
     </style>
   </head>
 
@@ -65,6 +72,9 @@
     <div id="dragContainer">
       <div id="leftRange"></div>
       <div id="dragButton">Gen.</div>
+    </div>
+    <div class="textbox" id="myTextBox">
+      <p>Infomation</p>
     </div>
 
     <script
@@ -201,8 +211,10 @@
               num_file = 0;
               file_name[num_file] = fileName;
               fileInfo.innerText = "Selected file: " + file_name[num_file];
-              x_max = 0;
-              y_max = 0;
+              if (!PF_line) {
+                x_max = 0;
+                y_max = 0;
+              }
             } else {
               file_name[num_file] = fileName;
               var tmp = "Selected file: " + file_name[0];
@@ -316,6 +328,10 @@
                   color: "black",
                 }
               },
+            }
+
+            if (PF_line && num_file > 0) {
+              drawText();
             }
 
             myChart.setOption(option);
@@ -452,6 +468,10 @@
                   color: "black",
                 }
               },
+            }
+
+            if (PF_line && num_file > 0) {
+              drawText();
             }
 
             myChart.setOption(option);
@@ -637,9 +657,77 @@
         };
         myChart.setOption(option);
       }
+      // 更新與前緣比對的文字
+      function drawText() {
+        // 检查PF_generations中的数据是否在generations中，如果不在则输出
+        document.getElementById("myTextBox").innerHTML = "";
+        var myTextBox = document.getElementById("myTextBox");
+        for (var k = 0; k < num_file; k++) {
+          var count_num = 0;
+          var tmp = generations[k].length - 1;
+          for (var i = 0; i < PF_generations[0].length; i++) {
+            var found = false;
+            var PF_stocks = PF_generations[0][i].stocks.toString();
+            
+            for (var j = 0; j < generations[k][tmp].length; j++) {
+              var tmp_stocks = generations[k][tmp][j].stocks.toString();
+              
+              if (PF_stocks == tmp_stocks) {
+                found = true;
+                break;
+              }
+            }
 
+            if (!found) {
+              count_num = count_num + 1;
+              // 在页面上输出信息
+              var pre = document.createElement("pre");
+              var tmp_info = PF_generations[0][i];
+              pre.innerText = "檔數: " + tmp_info.num_files + "\n" +
+                "成分股: " + tmp_info.stocks.join(", ") + "\n" +
+                "風險: " + tmp_info.risk + "\n" +
+                "報酬: " + tmp_info.return_rate;
+              myTextBox.appendChild(pre);
+            }
+          }
+          var p = document.createElement("p");
+          console.log(file_name[k].replace(".txt", ""));
+          p.innerText = file_name[k].replace(".txt", "") + "有" + count_num + "個前緣沒有找到!";
+          myTextBox.appendChild(p);
 
-      // 鼠標放到點上，顯示Info框框 (還有bug，不確定怎麼看誰是0或是誰是1)
+          count_num = 0;
+          for (var i = 0; i < generations[k][tmp].length; i++) {
+            var found = false;
+            var tmp_stocks = generations[k][tmp][i].stocks.toString();
+            
+            for (var j = 0; j < PF_generations[0].length; j++) {
+              var PF_stocks = PF_generations[0][j].stocks.toString();
+              if (PF_stocks == tmp_stocks) {
+                found = true;
+                break;
+              }
+            }
+
+            if (!found) {
+              count_num = count_num + 1;
+              // 在页面上输出信息
+              var pre = document.createElement("pre");
+              var tmp_info = generations[k][tmp][i];
+              pre.innerText = "檔數: " + tmp_info.num_files + "\n" +
+                "成分股: " + tmp_info.stocks.join(", ") + "\n" +
+                "風險: " + tmp_info.risk + "\n" +
+                "報酬: " + tmp_info.return_rate;
+              myTextBox.appendChild(pre);
+            }
+          }
+          var p = document.createElement("p");
+          p.innerText = file_name[k].replace(".txt", "") + "有" + count_num + "個前緣被支配!";
+          myTextBox.appendChild(p);
+        }
+        
+      }
+
+      // 鼠標放到點上，顯示Info框框
       function handleMouseOver(params) {
         var dataIndex = params.dataIndex;
         var seriesIndex = params.seriesIndex;
