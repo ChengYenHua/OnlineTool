@@ -668,8 +668,18 @@
           for (var i = 0; i < PF_generations[0].length; i++) {
             var found = false;
             var PF_stocks = PF_generations[0][i].stocks.toString();
+            var Similarity = 0;
+            var Similarity_j = 0;
             
             for (var j = 0; j < generations[k][tmp].length; j++) {
+              var pfStocks = PF_generations[0][i].stocks;
+              var genStocks = generations[k][tmp][j].stocks;
+              var commonStocksCount = countCommonStocks(pfStocks, genStocks);
+              if (commonStocksCount > Similarity) {
+                Similarity = commonStocksCount;
+                Similarity_j = j;
+              }
+
               var tmp_stocks = generations[k][tmp][j].stocks.toString();
               
               if (PF_stocks == tmp_stocks) {
@@ -688,6 +698,18 @@
                 "風險: " + tmp_info.risk + "\n" +
                 "報酬: " + tmp_info.return_rate;
               myTextBox.appendChild(pre);
+
+              var info = document.createElement("info");
+              info.innerText = "最接近的投資組合\n";
+              myTextBox.appendChild(info);
+
+              var closepre = document.createElement("closepre");
+              tmp_info = generations[k][tmp][Similarity_j];
+              closepre.innerText = "檔數: " + tmp_info.num_files + "\n" +
+                "成分股: " + tmp_info.stocks.join(", ") + "\n" +
+                "風險: " + tmp_info.risk + "\n" +
+                "報酬: " + tmp_info.return_rate;
+              myTextBox.appendChild(closepre);
             }
           }
           var p = document.createElement("p");
@@ -725,6 +747,19 @@
           myTextBox.appendChild(p);
         }
         
+      }
+      // 比較成分股相似度的程式碼
+      function countCommonStocks(pfStocks, genStocks) {
+        var count = 0;
+        for (var i = 0; i < pfStocks.length; i++) {
+            for (var j = 0; j < genStocks.length; j++) {
+                if (pfStocks[i] === genStocks[j]) {
+                    count++;
+                    break; // 如果找到相同的股票，跳出内部循环
+                }
+            }
+        }
+        return count;
       }
 
       // 鼠標放到點上，顯示Info框框
