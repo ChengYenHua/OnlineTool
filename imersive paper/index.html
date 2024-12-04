@@ -79,19 +79,25 @@
     .mid-border {
         border-bottom: 1px solid black;
     }
-
+    .top-border {
+        border-top: 2px solid black;
+    }
+    .makecell {
+        text-align: center;
+        white-space: pre-wrap;
+    }
     .equation {
-            display: flex;
-            justify-content: space-between;
-            align-items: center;
-            margin: 10px 0;
-        }
-        .equation .formula {
-            flex: 1;
-        }
-        .equation .number {
-            margin-left: 10px;
-        }
+        display: flex;
+        justify-content: space-between;
+        align-items: center;
+        margin: 10px 0;
+    }
+    .equation .formula {
+        flex: 1;
+    }
+    .equation .number {
+        margin-left: 10px;
+    }
   </style>
 
 </head>
@@ -600,21 +606,165 @@
         </p>
 
         <p>
-          The Evo-Panel 2.0 draws the probability color at that position according to the color bar; if the position dissatisfies the threshold, the system slashes the position with a red line to distinguish and shows the threshold’s color in the grid point. <a href="#Deploy_example">Figure 8d</a> is an example of no sensor in the map. Each point has a uniform threshold of 0.3, denoting positions falling below this threshold with a slashed red line while displaying the corresponding light blue color representing the threshold value on the grid. Meanwhile, the “map check” shows the satisfying proportion of the threshold, that is, the number of grid points satisfying the threshold divided by the total number of grid points. This checker assists researchers in verifying if the map satisfies the deployment optimization problem’s restriction. As there is no sensor on the map, the "map check" in <a href="#Deploy_example">Figure 8d</a> shows a satisfactory proportion of $0\%$. We place one sensor in a 5$\times$5 map, since the map (<a href="#Deploy_example">Figure 8e</a>) needs one sensor to satisfy all positions' threshold. Then we doubled the map's size to 10x10. The 10x10 map necessitates at least 4 sensors to satisfy the threshold for each position (<a href="#Deploy_example">Figure 8f</a>). We keep twice the map size to 20x20, the map can use 16 sensors to satisfy the threshold (<a href="#Deploy_example">Figure 8g</a>). However, putting 16 sensors in <a href="#Deploy_example">Figure 8g</a> results in overlapping many detection areas. According to Equation \ref{equ:Deployment_DetectionProbability_betweenSensors}, the sensor could be reduced while still satisfying all the position’s thresholds. Consequently, the 20x20 map only needs 12 sensors (<a href="#Deploy_example">Figure 8h</a>).
+          The Evo-Panel 2.0 draws the probability color at that position according to the color bar; if the position dissatisfies the threshold, the system slashes the position with a red line to distinguish and shows the threshold’s color in the grid point. <a href="#Deploy_example">Figure 8d</a> is an example of no sensor in the map. Each point has a uniform threshold of 0.3, denoting positions falling below this threshold with a slashed red line while displaying the corresponding light blue color representing the threshold value on the grid. Meanwhile, the “map check” shows the satisfying proportion of the threshold, that is, the number of grid points satisfying the threshold divided by the total number of grid points. This checker assists researchers in verifying if the map satisfies the deployment optimization problem’s restriction. As there is no sensor on the map, the "map check" in <a href="#Deploy_example">Figure 8d</a> shows a satisfactory proportion of $0\%$. We place one sensor in a 5$\times$5 map, since the map (<a href="#Deploy_example">Figure 8e</a>) needs one sensor to satisfy all positions' threshold. Then we doubled the map's size to 10x10. The 10x10 map necessitates at least 4 sensors to satisfy the threshold for each position (<a href="#Deploy_example">Figure 8f</a>). We keep twice the map size to 20x20, the map can use 16 sensors to satisfy the threshold (<a href="#Deploy_example">Figure 8g</a>). However, putting 16 sensors in <a href="#Deploy_example">Figure 8g</a> results in overlapping many detection areas. According to Equation 2, the sensor could be reduced while still satisfying all the position’s thresholds. Consequently, the 20x20 map only needs 12 sensors (<a href="#Deploy_example">Figure 8h</a>).
+        </p>
+
+        <figure id="Deploy_example_50x50" class="text-center" style="text-align: left;">
+          <div style="display: flex; justify-content: center; gap: 10px;">
+            <div style="text-align: center;">
+              <img src="img/03 Deploy/Deploy_50x50_0.3threshold.svg" width="255" height="220">
+              <p>(a)</p>
+            </div>
+            <div style="text-align: center;">
+              <img src="img/03 Deploy/Deploy50x50_QTS_300Beginning.svg" width="255" height="220">
+              <p>(b)</p>
+            </div>
+            <div style="text-align: center;">
+              <img src="img/03 Deploy/Deploy50x50_QTS_108Middle.svg" width="255" height="220">
+              <p>(c)</p>
+            </div>
+            <div style="text-align: center;">
+              <img src="img/03 Deploy/Deploy50x50_QTS_62End.svg" width="255" height="220">
+              <p>(d)</p>
+            </div>
+          </div>
+          <div style="display: flex; justify-content: center; gap: 10px;">
+            <div style="text-align: center;">
+              <img src="img/03 Deploy/Deploy_50x50_62_connect.svg" width="255" height="220">
+              <p>(e)</p>
+            </div>
+            <div style="text-align: center;">
+              <img src="img/03 Deploy/Deploy_50x50_62_box.svg" width="255" height="220">
+              <p>(f)</p>
+            </div>
+            <div style="text-align: center;">
+              <img src="img/03 Deploy/Deploy_50x50_58_not_fill.svg" width="255" height="220">
+              <p>(g)</p>
+            </div>
+            <div style="text-align: center;">
+              <img src="img/03 Deploy/Deploy_50x50_60.svg" width="255" height="220">
+              <p>(h)</p>
+            </div>
+          </div>
+          <figcaption>
+            <strong>Figure 9:</strong> An illustration of a deployment problem in Evo-Panel 2.0. (a) The threshold of 50x50 map size is uniformly set to 0.3. (b) In the early stage of the Entanglement-QTS search, this map is almost red due to the sensor's high density and extensive overlap. (c) In the middle stage, the number of sensors decreases, and some positions display a green color detection probability. (d) At the end of Entanglement-QTS, Evo-Panel 2.0 shows that the entire color of all positions is mostly green, indicating that Entanglement-QTS reduces the cost of the sensor and finds an optimal solution for 62 sensors. (e) Evo-Panel 2.0 shows a demonstration of the connectivity of sensors within a distance of five. (f) Utilizing Evo-Panel 2.0, users have the capacity to manually refine the algorithm's optimal solution. By removing a sensor within the white box, a successful reduction in sensor count is achieved while maintaining adherence to the constraints. (g) Observing <a href="#Deploy_example_50x50">Figure 9f</a>, we identified overcrowding in the black box, prompting the removal of three sensors, resulting in an incomplete map check. (h) Afterward, two sensors were placed within the black box to fulfill the threshold requirement across the entire map, marking the map check status as "complete" once more. Evo-Panel 2.0 enabled users to save data with the final optimized result.
+          </figcaption>
+        </figure>
+
+        <p>
+          Subsequently, we extend the map size from <a href="#Deploy_example">Figure 8h</a> to <a href="#Deploy_example_50x50">Figure 9a</a>, encompassing dimensions of 50x50 units. For the convenience of observation and analysis, the thresholds continue to be uniformly set at 0.3. The complexity increases exponentially with the size of the map since each grid position has two options to either place a sensor or not. Therefore, the deployment problem needs metaheuristics to search for an optimal solution. In the early stage of Entanglement-QTS’s [<a href="#ref_35">35</a>] search (<a href="#Deploy_example_50x50">Figure 9b</a>), the algorithm stochastically deploys the sensor such that there are several overlapping areas. As the iteration progresses to the middle stage, the metaheuristic finds that some sensors can be removed, resulting in some red areas decreasing gradually to yellow and green color (<a href="#Deploy_example_50x50">Figure 9c</a>). When Entanglement-QTS ended searching, it found a good solution that required just 62 sensors to satisfy the contraction (<a href="#Deploy_example_50x50">Figure 9d</a>). The majority of areas in <a href="#Deploy_example_50x50">Figure 9d</a> are green and light blue, indicating that the metaheuristic lets most positions' detection probability be near the threshold (light blue color). With the help of Evo-Panel 2.0, it’s easy to see the sensors evenly distributed in the 50x50 map. Besides, based on the distributed result of the deployment problem, some studies have expanded the problem to analyze the connection, as the base stations or sensors need to connect to each other. For example, if the distance between two sensors is too far, the quality of sending packages would decline or be lost. Consequently, Evo-Panel 2.0 additionally provides a function that can detect sensor connections (<a href="#Deploy_example_50x50">Figure 9e</a>). The connection distance is set by the user or protocol. The Evo-Panel 2.0 allows for the determination of the optimal configuration and optimal connections among individual sensors, thereby optimizing communication and information exchange to enhance overall system efficiency. Furthermore, it aids in identifying potential areas for improvement to create a more coordinated and efficient sensor deployment scheme.
         </p>
 
         <p>
-          Subsequently, we extend the map size from <a href="#Deploy_example">Figure 8h</a> to Fig. \ref{fig:Deploy_50x50_0.3threshold}, encompassing dimensions of 50x50 units. For the convenience of observation and analysis, the thresholds continue to be uniformly set at 0.3. The complexity increases exponentially with the size of the map since each grid position has two options to either place a sensor or not. Therefore, the deployment problem needs metaheuristics to search for an optimal solution. In the early stage of Entanglement-QTS’s [<a href="#ref_35">35</a>] search (Fig.  \ref{fig:Deploy50x50_QTS_300Beginning}), the algorithm stochastically deploys the sensor such that there are several overlapping areas. As the iteration progresses to the middle stage, the metaheuristic finds that some sensors can be removed, resulting in some red areas decreasing gradually to yellow and green color (Fig. \ref{fig:Deploy50x50_QTS_108Middle}). When Entanglement-QTS ended searching, it found a good solution that required just 62 sensors to satisfy the contraction (Fig. \ref{fig:Deploy50x50_QTS_62End}). The majority of areas in Fig. \ref{fig:Deploy50x50_QTS_62End} are green and light blue, indicating that the metaheuristic lets most positions’ detection probability be near the threshold (light blue color). With the help of Evo-Panel 2.0, it’s easy to see the sensors evenly distributed in the 50x50 map (Fig. \ref{fig:Deploy50x50_QTS_62End}). Besides, based on the distributed result of the deployment problem, some studies have expanded the problem to analyze the connection, as the base stations or sensors need to connect to each other. For example, if the distance between two sensors is too far, the quality of sending packages would decline or be lost. Consequently, Evo-Panel 2.0 additionally provides a function that can detect sensor connections (Fig. \ref{fig:Deploy_50x50_62_connect}). The connection distance is set by the user or protocol. The Evo-Panel 2.0 allows for the determination of the optimal configuration and optimal connections among individual sensors, thereby optimizing communication and information exchange to enhance overall system efficiency. Furthermore, it aids in identifying potential areas for improvement to create a more coordinated and efficient sensor deployment scheme.
-        </p>
-
-        <p>
-          With the help of Evo-Panel 2.0, researchers can observe the sensor distribution, whether any regions are too dense, and how the detection probability superposition occurs. Moreover, we could see if this problem has a better solution and then use the interactive system to quickly find a solution that is better than the metaheuristic. Through the interactive system, researchers could add or remove the sensor to adjust the result, therefore obtaining a better solution. In Fig. \ref{fig:Deploy_50x50_62_box}, we discovered that the bottom left corner is somewhat dense. Therefore, we removed one sensor from the bottom left corner (white box), reducing the total number of sensors from 62 to 61. Next, we discovered that the middle black box’s sensor could also decrease. Therefore, we remove three sensors (Fig. \ref{fig:Deploy_50x50_58_not_fill}) and add two sensors in the black box (Fig. \ref{fig:Deploy_50x50_60}). It still satisfies the threshold. In addition, we can save, photograph, or record a video of the improved result to do additional research, such as writing a paper.
+          With the help of Evo-Panel 2.0, researchers can observe the sensor distribution, whether any regions are too dense, and how the detection probability superposition occurs. Moreover, we could see if this problem has a better solution and then use the interactive system to quickly find a solution that is better than the metaheuristic. Through the interactive system, researchers could add or remove the sensor to adjust the result, therefore obtaining a better solution. In <a href="#Deploy_example_50x50">Figure 9f</a>, we discovered that the bottom left corner is somewhat dense. Therefore, we removed one sensor from the bottom left corner (white box), reducing the total number of sensors from 62 to 61. Next, we discovered that the middle black box’s sensor could also decrease. Therefore, we remove three sensors (<a href="#Deploy_example_50x50">Figure 9g</a>) and add two sensors in the black box (<a href="#Deploy_example_50x50">Figure 9h</a>). It still satisfies the threshold. In addition, we can save, photograph, or record a video of the improved result to do additional research, such as writing a paper.
         </p>
 
         <h3>2.File of Deployment Combinatorial Optimization Interface</h3>
 
+        <div class="table-header">TABLE III: The format and example <i>epin</i> file of the deployment combinatorial optimization interface. The file contains the map's size, sensing range, connection distance, threshold limit, and placement of each generation.</div>
+
+        <table>
+          <thead>
+              <tr>
+                  <th colspan="3" class="top-border"></th>
+              </tr>
+          </thead>
+          <tbody>
+              <tr>
+                  <td>1</td>
+                  <td>Map :</td>
+                  <td>Map :</td>
+              </tr>
+              <tr>
+                  <td>2</td>
+                  <td><span class="grey"><i>m</i> x <i>n</i></span></td>
+                  <td>3x3</td>
+              </tr>
+              <tr>
+                  <td>3</td>
+                  <td>Sensing_range : <span class="grey"><i>SensingRange</i></span></td>
+                  <td>Sensing_range : 3</td>
+              </tr>
+              <tr>
+                  <td>4</td>
+                  <td>Connect : <span class="grey"><i>ConnectionDistance</i></span></td>
+                  <td>Connect : 3</td>
+              </tr>
+              <tr>
+                  <td>5</td>
+                  <td>Limit :</td>
+                  <td>Limit :</td>
+              </tr>
+              <tr>
+                  <td>6</td>
+                  <td></td>
+                  <td>0.3 0.3 0.3</td>
+              </tr>
+              <tr>
+                  <td>7</td>
+                  <td><span class="grey"><i>EachPosition'sThreshold</i></span></td>
+                  <td>0.3 0.3 0.3</td>
+              </tr>
+              <tr>
+                  <td>8</td>
+                  <td></td>
+                  <td>0.3 0.3 0.3</td>
+              </tr>
+              <tr>
+                  <td>9</td>
+                  <td>Particle :</td>
+                  <td>Particle :</td>
+              </tr>
+              <tr>
+                  <td>10</td>
+                  <td>*1 <span class="grey"><i>ThisGeneration'sFitness</i></span> :</td>
+                  <td>*1 4 :</td>
+              </tr>
+              <tr>
+                  <td>11</td>
+                  <td></td>
+                  <td>1 0 0</td>
+              </tr>
+              <tr>
+                  <td>12</td>
+                  <td><span class="grey"><i>Sensor'sPosition</i></span></td>
+                  <td>0 1 1</td>
+              </tr>
+              <tr>
+                  <td>13</td>
+                  <td class="makecell">...</td>
+                  <td class="makecell">...</td>
+              </tr>
+              <tr>
+                  <td>14</td>
+                  <td>*<span class="grey"><i>g ThisGeneration'sFitness</i></span> :</td>
+                  <td>*100 2 :</td>
+              </tr>
+              <tr>
+                  <td>15</td>
+                  <td></td>
+                  <td>0 0 1</td>
+              </tr>
+              <tr>
+                  <td>16</td>
+                  <td><span class="grey"><i>Sensor'sPosition</i></span></td>
+                  <td>0 0 0</td>
+              </tr>
+              <tr>
+                  <td>17</td>
+                  <td></td>
+                  <td>1 0 0</td>
+              </tr>
+          </tbody>
+          <tfoot>
+              <tr>
+                  <th colspan="3" class="bottom-border"></th>
+              </tr>
+          </tfoot>
+        </table>
+
         <p>
-          The deployment problem is one kind of discrete value-encoded problem that needs to consider the whole map since each sensor can affect the detection probability of nearby positions. TABLE \ref{table7} is the \textit{epin} file of the deployment combinatorial optimization interface. The left section of TABLE \ref{table7} delineates the required format necessary for user-generated outputs to ensure compatibility with Evo-Panel 2.0. Meanwhile, the right side of TABLE \ref{table7} presents an illustrative \textit{epin} file, serving as an example of a deployment combinatorial optimization interface.
+          The deployment problem is one kind of discrete value-encoded problem that needs to consider the whole map since each sensor can affect the detection probability of nearby positions. TABLE III is the <i>epin</i> file of the deployment combinatorial optimization interface. The left section of TABLE III delineates the required format necessary for user-generated outputs to ensure compatibility with Evo-Panel 2.0. Meanwhile, the right side of TABLE III presents an illustrative <i>epin</i> file, serving as an example of a deployment combinatorial optimization interface.
         </p>
 
         <h3>Permutation Combinatorial Optimization Interface</h3>
@@ -625,38 +775,174 @@
 
         <h3>1.Function Introduction</h3>
 
+        <figure id="ACO_burma14" class="text-center" style="text-align: left;">
+          <div style="display: flex; justify-content: center; gap: 10px;">
+            <div style="text-align: center;">
+              <img src="img/04 Arrange/Arrange_ACO_burma14_1st.svg" width="255" height="220">
+              <p>(a)</p>
+            </div>
+            <div style="text-align: center;">
+              <img src="img/04 Arrange/Arrange_ACO_burma14_Mid.svg" width="255" height="220">
+              <p>(b)</p>
+            </div>
+            <div style="text-align: center;">
+              <img src="img/04 Arrange/Arrange_ACO_burma14_Post.svg" width="255" height="220">
+              <p>(c)</p>
+            </div>
+            <div style="text-align: center;">
+              <img src="img/04 Arrange/Arrange_ACO_burma14_End.svg" width="255" height="220">
+              <p>(d)</p>
+            </div>
+          </div>
+          <div style="display: flex; justify-content: center; gap: 10px;">
+            <div style="text-align: center;">
+              <img src="img/04 Arrange/Arrange_ACO_burma14_End_PathUsage.svg" width="255" height="220">
+              <p>(e)</p>
+            </div>
+            <div style="text-align: center;">
+              <img src="img/04 Arrange/Arrange_ACO_burma14_End_Zoomin_Info.svg" width="255" height="220">
+              <p>(f)</p>
+            </div>
+            <div style="text-align: center;">
+              <img src="img/04 Arrange/Arrange_ACO_burma14_End_Reset_noGrid.svg" width="255" height="220">
+              <p>(g)</p>
+            </div>
+            <div style="text-align: center;">
+              <img src="img/04 Arrange/Arrange_ACO_burma14_End_Info.svg" width="255" height="220">
+              <p>(h)</p>
+            </div>
+          </div>
+          <figcaption>
+            <strong>Figure 10:</strong> The demonstration of a permutation problem in Evo-Panel 2.0. (a) The system displays the location; the x1- and x2-axis represent the coordinates according to the log file. One black point represents one location. The system draws the road color according to the distance. This picture shows the beginning of ACO solving Burma 14. (b) As the iteration increases, ACO finds a better solution, which path length is 7353. (c) In the later stages of ACO's evolutionary process, it discovers a route connecting all cities through a shorter path, resulting in cooler color representations (ranging from green to dark blue) for all paths. (d) At the end of ACO, it finds an optimal solution that all the path colors are close to blue. The path is the shortest solution in Burma 14, in which the fitness is 3505. (e) By disabling the “align grid line” and enabling the “path usage,” the system displays the path traversed by the metaheuristic. These functions can assist users in analyzing the metaheuristic's properties and trends. All gray roads are those that are being abandoned by ACO. (f) Increasing the magnification (zooming in) and moving closer to an unclear location in order to observe it more clearly. Here we can see both of these cities are located along the same x2-axis. In addition, clicking the location (city) can reveal additional information, such as the location's name and coordinates. (g) Users can return to the initial solution space at any preferred generation after the adjustment, which displays the overview paths. (h) The "detailed information" can display the exact path length for each path.
+          </figcaption>
+        </figure>
+
         <p>
-          Evo-Panel 2.0 can display the algorithmic process in permutation and linear problems. Taking TSP solving Burma 14 (one of TSP problems in the TSP library [<a href="#ref_37">37</a>]) as an example, the system draws the user-specified map, x1- and x2-axis coordinated positions, and every location on the map (Fig. \ref{fig:Arrange_ACO_burma14_1st}). The system displays both the solution space and the algorithm’s process in the middle. The black dot represents all the locations (cities) in Burma 14, which has 14 cities that the salesman must visit. When the algorithm begins (Fig. \ref{fig:Arrange_ACO_burma14_1st}), the system draws the road in a red-to-blue hue based on distance. The distance corresponds with the color bar on the right-hand side of the screen. The color is closer to red if the distance is longer and closer to blue if the distance is shorter. Evo-Panel 2.0 displays the changes in roads as the number of iterations increases (from Fig. \ref{fig:Arrange_ACO_burma14_1st} to Fig. \ref{fig:Arrange_ACO_burma14_End}). Researchers can easily determine whether the metaheuristic changed the path or which shortest road was found by the metaheuristic. At the beginning of ant colony optimization (ACO), some roads are red or orange because the metaheuristic has not yet discovered shorter paths. As the metaheuristic continues, the red line decreases (Fig. \ref{fig:Arrange_ACO_burma14_Mid}). When the evolutionary process goes to the post-period, as depicted in Fig. \ref{fig:Arrange_ACO_burma14_Post}, most roads are green, which means the metaheuristic found an optimal path. At the end of the evolutionary process (Fig. \ref{fig:Arrange_ACO_burma14_End}, metaheuristics find the shortest path in Burma 14.
+          Evo-Panel 2.0 can display the algorithmic process in permutation and linear problems. Taking TSP solving Burma 14 (one of TSP problems in the TSP library [<a href="#ref_37">37</a>]) as an example, the system draws the user-specified map, x1- and x2-axis coordinated positions, and every location on the map (<a href="#ACO_burma14">Figure 10a</a>). The system displays both the solution space and the algorithm's process in the middle. The black dot represents all the locations (cities) in Burma 14, which has 14 cities that the salesman must visit. When the algorithm begins, the system draws the road in a red-to-blue hue based on distance. The distance corresponds with the color bar on the right-hand side of the screen. The color is closer to red if the distance is longer and closer to blue if the distance is shorter. Evo-Panel 2.0 displays the changes in roads as the number of iterations increases (from <a href="#ACO_burma14">Figure 10a</a> to <a href="#ACO_burma14">Figure 10d</a>). Researchers can easily determine whether the metaheuristic changed the path or which shortest road was found by the metaheuristic. At the beginning of ant colony optimization (ACO), some roads are red or orange because the metaheuristic has not yet discovered shorter paths. As the metaheuristic continues, the red line decreases (<a href="#ACO_burma14">Figure 10b</a>). When the evolutionary process goes to the post-period, as depicted in <a href="#ACO_burma14">Figure 10c</a>, most roads are green, which means the metaheuristic found an optimal path. At the end of the evolutionary process (<a href="#ACO_burma14">Figure 10d</a>), metaheuristics find the shortest path in Burma 14.
         </p>
 
         <p>
-          After outlining the ACO process, we proceed to introduce several functionalities within the permutation interface. In Fig. \ref{fig:Arrange_ACO_burma14_End_PathUsage}, we deactivate the "aligned grid line" while activating the "path usage" feature to enhance graph visibility. The "aligned grid line" serves as an auxiliary guide for city alignment, while the "path usage" function provides insights into road alterations. By comparing current and prior paths, it enables an analysis of metaheuristic trends. The varying shades of gray denote the recency of road usage, allowing users to discern the most recently traversed routes. Lighter shades indicate older generations, whereas darker shades signify more recent generations. In Fig. \ref{fig:Arrange_ACO_burma14_End_PathUsage}, the track fades and becomes whiter with the time of metaheuristic not go, indicating that the ant's pheromone volatilizes over time. Researchers can analyze if the metaheuristic expends computational time redundantly, thereby enabling the identification of areas with potential for enhancement. Besides, the interface in Evo-Panel 2.0 can be "zoomed in" and "moved" to the area of interest (Fig. \ref{fig:Arrange_ACO_burma14_End_Zoomin_Info}) to analyze two nearby locations. “Zoom-in” and “zoom-out” allow users to analyze the solution space with greater detail and a broader perspective. If you move the mouse over a city, our visualization tool can display information about the city, including the city's name and the location of the x1 and x2 axes. When we move the mouse over these two nearby cities in Fig. \ref{fig:Arrange_ACO_burma14_End_Zoomin_Info}, the system shows that their x2-axis coordinates are identical. After observing particular regions, we can “reset solution space” to quickly return to the initial solution space (Fig. \ref{fig:Arrange_ACO_burma14_End_Reset_noGrid}). After adjusting the solution space through zooming in and out, it is simple to reset it with one click. In the end, we can view “detailed information” regarding the length of all paths (Fig. \ref{fig:Arrange_ACO_burma14_End_Info}), allowing us to carefully examine each path and conduct additional research.
+          After outlining the ACO process, we proceed to introduce several functionalities within the permutation interface. In <a href="#ACO_burma14">Figure 10e</a>, we deactivate the “aligned grid line” while activating the "path usage" feature to enhance graph visibility. The "aligned grid line" serves as an auxiliary guide for city alignment, while the “path usage” function provides insights into road alterations. By comparing current and prior paths, it enables an analysis of metaheuristic trends. The varying shades of gray denote the recency of road usage, allowing users to discern the most recently traversed routes. Lighter shades indicate older generations, whereas darker shades signify more recent generations. In <a href="#ACO_burma14">Figure 10e</a>, the track fades and becomes whiter with the time of metaheuristic not go, indicating that the ant's pheromone volatilizes over time. Researchers can analyze if the metaheuristic expends computational time redundantly, thereby enabling the identification of areas with potential for enhancement. Besides, the interface in Evo-Panel 2.0 can be "zoomed in" and "moved" to the area of interest (<a href="#ACO_burma14">Figure 10f</a>) to analyze two nearby locations. “Zoom-in” and “zoom-out” allow users to analyze the solution space with greater detail and a broader perspective. If you move the mouse over a city, our visualization tool can display information about the city, including the city's name and the location of the x1 and x2 axes. When we move the mouse over these two nearby cities in <a href="#ACO_burma14">Figure 10f</a>, the system shows that their x2-axis coordinates are identical. After observing particular regions, we can “reset solution space” to quickly return to the initial solution space (<a href="#ACO_burma14">Figure 10g</a>). After adjusting the solution space through zooming in and out, it is simple to reset it with one click. In the end, we can view “detailed information” regarding the length of all paths (<a href="#ACO_burma14">Figure 10h</a>), allowing us to carefully examine each path and conduct additional research.
         </p>
 
         <h3>2.File of Permutation Combinatorial Optimization Interface</h3>
 
+        <div class="table-header">TABLE IV: This table represents the <i>epin</i> file of the permutation combinatorial optimization interface. The file contains the problem type, x-axis range, y-axis range, the positions of all the cities, and each generation's detailed information. The detailed information for each generation includes the generation number, each generation's fitness, and the order of positions.</div>
+
+        <table>
+          <tbody>
+              <tr>
+                  <td colspan="1" class="top-border">TSP :</td>
+              </tr>
+              <tr>
+                  <td>XRange : <span class="grey"><i>MinimumX-axisValue</i> ~ <i>MaximumX-axisValue</i></span></td>
+              </tr>
+              <tr>
+                  <td>YRange : <span class="grey"><i>MinimumY-axisValue</i> ~ <i>MaximumY-axisValue</i></span></td>
+              </tr>
+              <tr>
+                  <td>Position : <span class="grey"><i>Position-1,x-axis,y-axis Position-2,x-axis,y-axis ... Position-n,x-axis,y-axis</i></span></td>
+              </tr>
+              <tr>
+                  <td>*1 <span class="grey"><i>ThisGeneration'sFitness</i></span>: <span class="grey"><i>Position'sOrder</i></span></td>
+              </tr>
+              <tr>
+                  <td class="makecell">.<br>.<br>.</td>
+              </tr>
+              <tr>
+                  <td colspan="1" class="mid-border">*<span class="grey"><i>g</i></span> <span class="grey"><i>ThisGeneration'sFitness</i></span>: <span class="grey"><i>Position'sOrder</i></span></td>
+              </tr>
+              <tr>
+                <td>TSP :</td>
+              </tr>
+              <tr>
+                  <td>XRange : 10 ~ 30</td>
+              </tr>
+              <tr>
+                  <td>YRange : 90 ~ 100</td>
+              </tr>
+              <tr>
+                  <td>Position : position-1,16.47,96.10 position-2,16.47,94.44 position-3,20.09,92.54 position-4,22.39,93.37 position-5,25.23,97.24</td>
+              </tr>
+              <tr>
+                  <td>*1 3141: position-1,position-5,position-4,position-2,position-3</td>
+              </tr>
+              <tr>
+                  <td colspan="1" class="bottom-border"></td>
+              </tr>
+          </tbody>
+        </table>
+
         <p>
-          The permutation combinatorial optimization problem is one kind of combinatorial optimization problem in which the solution is in order. TABLE IV is the format and example \textit{epin} file of the traveling salesman problem. Users have the flexibility to employ various programming languages to execute their algorithms and generate a text file encapsulating both the algorithmic logic and problem-related data.
+          The permutation combinatorial optimization problem is one kind of combinatorial optimization problem in which the solution is in order. TABLE IV is the format and example <i>epin</i> file of the traveling salesman problem. Users have the flexibility to employ various programming languages to execute their algorithms and generate a text file encapsulating both the algorithmic logic and problem-related data.
         </p>
       </section>
 
       <section id="Case Study">
         <h2>IV. Case Study</h2>
+
         <p>
           Evo-Panel 2.0 serves as a valuable visual aid for analyzing a variety of algorithms and optimization problems across different user groups. It aids teachers in presenting algorithms and optimization problems more comprehensively, enables students to gain clarity on their functionality, and empowers researchers to deeply explore the connections between diverse algorithms and optimization problems. Consequently, guided by user feedback, we demonstrate the three practical applications of Evo-Panel 2.0 in real-world optimization scenarios. The first segment utilizes the global-best guided quantum-inspired tabu search with a quantum-not gate (GNQTS) [<a href="#ref_38">38</a>]-[<a href="#ref_39">39</a>] to resolve stock selection challenges. Subsequently, the second part replicates real-world placement dilemmas. Finally, the third part leverages maps of America and Europe to simulate practical travel-related issues. This demonstration highlights the broad versatility of Evo-Panel 2.0, showcasing its applicability across various algorithmic domains and optimization problems.
         </p>
 
         <h3>General Combinatorial Optimization Interface and Convergence Curves</h3>
+
+        <figure id="GNQTS_example" class="text-center" style="text-align: left;">
+          <div style="display: flex; justify-content: center; gap: 10px;">
+            <div style="text-align: center;">
+              <img src="img/01 Binary/Binary_Prob_GNQTS_stock_Early.svg" width="255" height="220">
+              <p>(a)</p>
+            </div>
+            <div style="text-align: center;">
+              <img src="img/01 Binary/Binary_General_GNQTS_stock_Early.svg" width="255" height="220">
+              <p>(b)</p>
+            </div>
+            <div style="text-align: center;">
+              <img src="img/01 Binary/Binary_Gerenal_GNQTS_stock_199th.svg" width="255" height="220">
+              <p>(c)</p>
+            </div>
+            <div style="text-align: center;">
+              <img src="img/01 Binary/Binary_Gerenal_GNQTS_stock_199th_Info.svg" width="255" height="220">
+              <p>(d)</p>
+            </div>
+            <div style="text-align: center;">
+              <img src="img/01 Binary/Binary_Prob_GNQTS_stock_Mid.svg" width="255" height="220">
+              <p>(e)</p>
+            </div>
+          </div>
+          <div style="display: flex; justify-content: center; gap: 10px;">
+            <div style="text-align: center;">
+              <img src="img/01 Binary/Binary_Prob_GNQTS_stock_MidPost_QNot.svg" width="255" height="220">
+              <p>(f)</p>
+            </div>
+            <div style="text-align: center;">
+              <img src="img/01 Binary/Binary_Prob_GNQTS_stock_End.svg" width="255" height="220">
+              <p>(g)</p>
+            </div>
+            <div style="text-align: center;">
+              <img src="img/01 Binary/Binary_General_GNQTS_stock_End.svg" width="255" height="220">
+              <p>(h)</p>
+            </div>
+            <div style="text-align: center;">
+              <img src="img/02 Conveerge/Converge_GNQTS_stock.svg" width="255" height="220">
+              <p>(i)</p>
+            </div>
+          </div>
+          <figcaption>
+            <strong>Figure 11:</strong> Optimization process analysis of GNQTS in the stock selection problem. (a) The initial probability selected for stocks, set at half (0.5), is visually represented by the color green on the screen. (b) In the initial phase, with a probability close to $50\%$, stocks are randomly selected, resulting in a staggered pattern in the interface. (c) As the iteration advances, GNQTS progressively reduces the number of selected stocks to enhance returns and mitigate risks. (d) Users can display the names of stocks in each investment portfolio. (e) In the intermediate stage, GNQTS gravitates toward a superior portfolio while distancing itself from the inferior, resulting in a shift in probability's color towards orange and blue. (f) In the yellow box, GNQTS discovers a better portfolio in the $2945^{th}$ generation and uses the quantum-not gate to jump out of local optima. Therefore, the stock's color (probability) has changed from red to blue. (g) As the algorithm goes to the end, the color (probability) turns dark red and blue, and (h) the GNQTS converge to an optimal portfolio according to the chosen probability. (i) The convergence describes the varying fitness of the algorithm at various stages. The GNQTS continues to rise in the early stages and reaches its global maximum in the middle stage. Additionally, in the $2945^{th}$ generation, after the quantum-not gate operation, the fitness notably increased.
+          </figcaption>
+        </figure>
+
         <p>
           Evo-Panel 2.0 is a powerful analysis tool for benchmark functions as well as real-world applications of various combinatorial optimization problems. This subsection uses GNQTS to solve the stock selection problem as an example. The stock selection problem is a real-world application of a general combinatorial optimization problem. In this stock selection example, one bit corresponds to one stock. The combinatorial is composed of the NASDAQ 100 index of the U.S. stock market. The trend ratio [<a href="#ref_40">40</a>] guides the algorithm in its search for a portfolio with a high-return and low-risk profile.
         </p>
         
         <p>
-          GNQTS is a probability-based metaheuristic for combinatorial optimization problems, which means it chooses stocks based on the probability of each stock. The guiding principle behind GNQTS involves the pursuit of favorable stocks while actively evading unfavorable ones. In the early stage, the chosen probability is set to half (0.5), and the color is around green in Fig. \ref{fig:Binary_Prob_GNQTS_stock_Early}, so the portfolio in Fig. \ref{fig:Binary_General_GNQTS_stock_Early} is staggered (the black and white colors are staggered).  As the iteration goes, Fig. \ref{fig:Binary_Gerenal_GNQTS_stock_199th} selects fewer stocks than Fig. \ref{fig:Binary_General_GNQTS_stock_Early}.  Additionally, the detailed information can assist users in observing and analyzing which stock was selected by metaheuristic. Here, Fig. \ref{fig:Binary_Gerenal_GNQTS_stock_199th} depicts the portfolio from $181^{th}$ to $191^{th}$ generation. Corresponding to Fig. \ref{fig:Binary_Gerenal_GNQTS_stock_199th_Info}, the “detailed information” indicates which NASDAQ 100 stock is selected. As the research progresses to the intermediate stage (Fig. \ref{fig:Binary_Prob_GNQTS_stock_Mid}), the algorithm finds the trend and increases the probability of the best portfolio, so the probability starts moving to orange or light blue colors, even red or blue colors.
+          GNQTS is a probability-based metaheuristic for combinatorial optimization problems, which means it chooses stocks based on the probability of each stock. The guiding principle behind GNQTS involves the pursuit of favorable stocks while actively evading unfavorable ones. In the early stage, the chosen probability is set to half (0.5), and the color is around green in <a href="#GNQTS_example">Figure 11a</a>, so the portfolio in <a href="#GNQTS_example">Figure 11b</a> is staggered (the black and white colors are staggered).  As the iteration goes, <a href="#GNQTS_example">Figure 11c</a> selects fewer stocks than <a href="#GNQTS_example">Figure 11b</a>.  Additionally, the detailed information can assist users in observing and analyzing which stock was selected by metaheuristic. Here, <a href="#GNQTS_example">Figure 11c</a> depicts the portfolio from $181^{th}$ to $191^{th}$ generation. Corresponding to <a href="#GNQTS_example">Figure 11d</a>, the “detailed information” indicates which NASDAQ 100 stock is selected. As the research progresses to the intermediate stage (<a href="#GNQTS_example">Figure 11e</a>), the algorithm finds the trend and increases the probability of the best portfolio, so the probability starts moving to orange or light blue colors, even red or blue colors.
         </p>
 
         <p>
-          In Fig. \ref{fig:Binary_Prob_GNQTS_stock_MidPost_QNot}, a single stock is chosen by the global best portfolio, prompting GNQTS to utilize the quantum-not gate for navigating away from local optima (as depicted by the shift from blue to red within the yellow box). As the algorithm progresses towards completion (Fig. \ref{fig:Binary_Prob_GNQTS_stock_End}), the colors transition to dark blue or dark red. Consequently, as illustrated in the probability plot in Fig. \ref{fig:Binary_Prob_GNQTS_stock_End}, the algorithm discards stocks with a probability of 0 (shown in dark blue) while retaining favorable stocks with a chosen probability of 1 (depicted in dark red) in Fig. \ref{fig:Binary_General_GNQTS_stock_End}. The convergence curves in Fig. \ref{fig:Converge_GNQTS_stock} serve as a concise representation of the algorithm's performance, offering insights into the moments of discovering a promising portfolio and the overall trend during the quest for the optimal solution.
+          In <a href="#GNQTS_example">Figure 11f</a>, a single stock is chosen by the global best portfolio, prompting GNQTS to utilize the quantum-not gate for navigating away from local optima (as depicted by the shift from blue to red within the yellow box). As the algorithm progresses towards completion (<a href="#GNQTS_example">Figure 11g</a>), the colors transition to dark blue or dark red. Consequently, as illustrated in the probability plot in <a href="#GNQTS_example">Figure 11g</a>, the algorithm discards stocks with a probability of 0 (shown in dark blue) while retaining favorable stocks with a chosen probability of 1 (depicted in dark red) in <a href="#GNQTS_example">Figure 11h</a>. The convergence curves in <a href="#GNQTS_example">Figure 11i</a> serve as a concise representation of the algorithm's performance, offering insights into the moments of discovering a promising portfolio and the overall trend during the quest for the optimal solution.
         </p>
         
         <p>
@@ -665,29 +951,88 @@
 
         <h3>Deployment Optimization Interface</h3>
 
+        <figure id="Deploy_fire" class="text-center" style="text-align: left;">
+          <div style="display: flex; justify-content: center; gap: 10px;">
+            <div style="text-align: center;">
+              <img src="img/03 Deploy/Deploy_50x50fire_threshold.svg" width="255" height="220">
+              <p>(a)</p>
+            </div>
+            <div style="text-align: center;">
+              <img src="img/03 Deploy/Deploy_50x50fire_136.svg" width="255" height="220">
+              <p>(b)</p>
+            </div>
+            <div style="text-align: center;">
+              <img src="img/03 Deploy/Deploy_50x50fire_136_connect.svg" width="255" height="220">
+              <p>(c)</p>
+            </div>
+          </div>
+          <div style="display: flex; justify-content: center; gap: 10px;">
+            <div style="text-align: center;">
+              <img src="img/03 Deploy/Deploy_50x50fire_136_box.svg" width="255" height="220">
+              <p>(d)</p>
+            </div>
+            <div style="text-align: center;">
+              <img src="img/03 Deploy/Deploy_50x50fire_134.svg" width="255" height="220">
+              <p>(e)</p>
+            </div>
+            <div style="text-align: center;">
+              <img src="img/03 Deploy/Deploy_50x50fire_133.svg" width="255" height="220">
+              <p>(f)</p>
+            </div>
+          </div>
+          <figcaption>
+            <strong>Figure 12:</strong> The analysis and optimization of real-world fire detection applications. (a) The threshold of the 50x50 fire detection map. (b) The final result has three dense regions similar to <a href="#Deploy_fire">Figure 12a</a>, satisfying the map threshold. (c) By observing the connectivity of \ref{fig:Deploy_50x50fire_136}, the three major hotspots are interconnected. This solution appears to be the best, but further optimization is possible. Evo-Panel 2.0 visualizes the results, enabling users to optimize the outcomes achieved by the metaheuristics, as depicted in Figs. (d) to (f).
+          </figcaption>
+        </figure>
+
         <p>
           As previously stated, the deployment problem can be used for many applications, including fire detection, surveillance camera monitoring, and base station communication. Real business deployment problems involve a variety of situations, which may require a different threshold for each position in order to meet a variety of situations. The threshold could be based on historical data such as the occurrence probability of fires, crimes, automobile accidents, traffic jams, etc. To handle a variety of situations, the map can be created with varying sizes, and each grid point can define the limit-detecting probability (threshold) individually.
         </p>
 
         <p>
-          In the deployment optimization case study, we investigate the deployment optimization problem within the context of three specified hotspots as delineated in Fig. \ref{fig:Deploy_50x50fire_threshold}. Within these three hotspot regions, there is a notable demand for increased sensor, camera, or station density to achieve higher detection probability thresholds. This specific problem exhibits complexity beyond the uniform threshold, more closely resembling real-world scenarios. The outcomes obtained by employing Entanglement-QTS to address this three-hotspot problem are evident in Fig. \ref{fig:Deploy_50x50fire_136}, mirroring the pattern observed in Fig. \ref{fig:Deploy_50x50fire_threshold}. Both Fig. \ref{fig:Deploy_50x50fire_threshold} and Fig. \ref{fig:Deploy_50x50fire_136} manifest areas with dense concentrations of three sensors, signifying the algorithm's success in optimizing the deployment based on threshold considerations.
+          In the deployment optimization case study, we investigate the deployment optimization problem within the context of three specified hotspots as delineated in <a href="#Deploy_fire">Figure 12a</a>. Within these three hotspot regions, there is a notable demand for increased sensor, camera, or station density to achieve higher detection probability thresholds. This specific problem exhibits complexity beyond the uniform threshold, more closely resembling real-world scenarios. The outcomes obtained by employing Entanglement-QTS to address this three-hotspot problem are evident in <a href="#Deploy_fire">Figure 12b</a>, mirroring the pattern observed in <a href="#Deploy_fire">Figure 12a</a>. Both <a href="#Deploy_fire">Figure 12a</a> and <a href="#Deploy_fire">Figure 12b</a> manifest areas with dense concentrations of three sensors, signifying the algorithm's success in optimizing the deployment based on threshold considerations.
         </p>
 
         <p>
-          The subsequent analysis pertains to connectivity, a pivotal aspect aimed at augmenting communication and information interchange among sensors, thereby fostering a more cohesive and efficient system. Fig. \ref{fig:Deploy_50x50fire_136_connect} delineates the interlinkages derived from Fig. \ref{fig:Deploy_50x50fire_136} across five distances. Through Evo-Panel 2.0 analysis, it becomes apparent that the three hotspot areas exhibit high interconnections, whereas the sensors in the lower-left region operate independently, lacking interlinkages. This observation underscores the stable connectivity within the hotspot regions, suggesting room for further optimization of connectivity in the lower-left quadrant by the algorithm.
+          The subsequent analysis pertains to connectivity, a pivotal aspect aimed at augmenting communication and information interchange among sensors, thereby fostering a more cohesive and efficient system. <a href="#Deploy_fire">Figure 12c</a> delineates the interlinkages derived from <a href="#Deploy_fire">Figure 12b</a> across five distances. Through Evo-Panel 2.0 analysis, it becomes apparent that the three hotspot areas exhibit high interconnections, whereas the sensors in the lower-left region operate independently, lacking interlinkages. This observation underscores the stable connectivity within the hotspot regions, suggesting room for further optimization of connectivity in the lower-left quadrant by the algorithm.
         </p>
 
         <p>
-          Furthermore, upon scrutiny, it is discernible that each white box within Fig. \ref{fig:Deploy_50x50fire_136_box} encompasses a pair of closely situated sensors. Employing an interactive feature within the Evo-Panel 2.0 interface, we systematically eliminate one sensor from each white box, as depicted in Fig. \ref{fig:Deploy_50x50fire_136_box}. Subsequent scrutiny, as portrayed in Fig. \ref{fig:Deploy_50x50fire_134}, demonstrates consistent adherence to the prescribed detection threshold across all grid points. Notably, closer examination reveals a marginal elevation in detection probability within the enclosed black area situated in the lower-left corner of Fig. \ref{fig:Deploy_50x50fire_134}. Strategically reconfiguring the setup by replacing three sensors from Fig. \ref{fig:Deploy_50x50fire_134} with two sensors effectively aligns with the specified threshold criteria, as elucidated in Fig. \ref{fig:Deploy_50x50fire_133}. This final configuration reflects a reduction of three sensors while ensuring compliance with the detection probability threshold, validated by the "Complete" status indicated by the map checker tool.
+          Furthermore, upon scrutiny, it is discernible that each white box within <a href="#Deploy_fire">Figure 12d</a> encompasses a pair of closely situated sensors. Employing an interactive feature within the Evo-Panel 2.0 interface, we systematically eliminate one sensor from each white box, as depicted in <a href="#Deploy_fire">Figure 12d</a>. Subsequent scrutiny, as portrayed in <a href="#Deploy_fire">Figure 12e</a>, demonstrates consistent adherence to the prescribed detection threshold across all grid points. Notably, closer examination reveals a marginal elevation in detection probability within the enclosed black area situated in the lower-left corner of <a href="#Deploy_fire">Figure 12e</a>. Strategically reconfiguring the setup by replacing three sensors from <a href="#Deploy_fire">Figure 12e</a> with two sensors effectively aligns with the specified threshold criteria, as elucidated in <a href="#Deploy_fire">Figure 12f</a>. This final configuration reflects a reduction of three sensors while ensuring compliance with the detection probability threshold, validated by the "Complete" status indicated by the map checker tool.
         </p>
      
         <h3>Arrangement Optimization Interface</h3>
+        
         <p>
           In recent years, a well-developed network and the COVID-19 pandemic have contributed to the widespread adoption of online platforms for ordering food or groceries, such as food delivery and online shopping platforms. To deliver goods to consumers as soon as possible while minimizing costs, the delivery company needs to plan the shortest route possible. Therefore, finding the quickest route in real-world TSP applications is greatly regarded by businesses and consumers. However, the complexity of the TSP problem increases factorially with n location. The computer has its limitations and cannot quickly find the optimal solution. Through the visualization tool Evo-Panel 2.0, users can intuitively analyze the results of metaheuristics. With the interactive function, users can further improve the algorithm's output or generate their own path to minimize costs.
         </p>
+
+        <figure id="Arrange_att48" class="text-center" style="text-align: left;">
+          <div style="display: flex; justify-content: center; gap: 10px;">
+            <div style="text-align: center;">
+              <img src="img/04 Arrange/Arrange_att48_dot(noLine).svg" width="255" height="220">
+              <p>(a)</p>
+            </div>
+            <div style="text-align: center;">
+              <img src="img/04 Arrange/Arrange_att48_before.svg" width="255" height="220">
+              <p>(b)</p>
+            </div>
+            <div style="text-align: center;">
+              <img src="img/04 Arrange/Arrange_att48_after.svg" width="255" height="220">
+              <p>(c)</p>
+            </div>
+            <div style="text-align: center;">
+              <img src="img/04 Arrange/Arrange_att48_after_Record.svg" width="255" height="220">
+              <p>(d)</p>
+            </div>
+          </div>
+          <figcaption>
+            <strong>Figure 13:</strong> The TSP applications list the largest cities on a map of the United States. (a) The red-to-blue rainbow hue represents the length of the path. Commencing the journey from any city and concluding it in the same city is permissible. (b) This is an optimal arrangement from a metaheuristic. Through the visualization tool, it is evident that further optimization of this solution is feasible. (c) Utilizing Evo-Panel 2.0, researchers have the capability to remove and subsequently reconnect the routes. (d) Additionally, users have multiple options to save the process and outcome, including video recording, image capture, and result storage.
+          </figcaption>
+        </figure>
         
         <p>
-          Evo-Panel 2.0 is an interactive visualization tool as well. We provide an interactive function that enables users to connect or modify the line to create or enhance a path. The user could start with an empty map (Fig. \ref{fig:Arrange_att48_dot(noLine)}) or the result of metaheuristics (Fig. \ref{fig:Arrange_att48_before}) to solve the TSP problem of att48 [<a href="#ref_37">37</a>], which is 48 capitals of the US. Users can begin "recording" in either Fig. \ref{fig:Arrange_att48_dot(noLine)} or Fig. \ref{fig:Arrange_att48_before} to record the change process. If users begin with an empty map similar to Fig. \ref{fig:Arrange_att48_dot(noLine)}, they could connect each city/capital one by one and return to the starting city. If users begin with the result of the metaheuristic shown in Fig. \ref{fig:Arrange_att48_before}, they can delete the road connection and reconnect new roads whatever they want. The improved final result is depicted in Fig. \ref{fig:Arrange_att48_after}, which represents the shortest path for this problem [<a href="#ref_37">37</a>]. Once the process is completed, we can stop recording, take a picture, and save the improved result (Fig. \ref{fig:Arrange_att48_after_Record}). Furthermore, researchers can use the results to conduct additional research, create reports, and compose papers.
+          Evo-Panel 2.0 is an interactive visualization tool as well. We provide an interactive function that enables users to connect or modify the line to create or enhance a path. The user could start with an empty map (<a href="#Arrange_att48">Figure 13a</a>) or the result of metaheuristics (<a href="#Arrange_att48">Figure 13b</a>) to solve the TSP problem of att48 [<a href="#ref_37">37</a>], which is 48 capitals of the US. Users can begin "recording" in either <a href="#Arrange_att48">Figure 13a</a> or <a href="#Arrange_att48">Figure 13b</a> to record the change process. If users begin with an empty map similar to <a href="#Arrange_att48">Figure 13a</a>, they could connect each city/capital one by one and return to the starting city. If users begin with the result of the metaheuristic shown in <a href="#Arrange_att48">Figure 13b</a>, they can delete the road connection and reconnect new roads whatever they want. The improved final result is depicted in <a href="#Arrange_att48">Figure 13c</a>, which represents the shortest path for this problem [<a href="#ref_37">37</a>]. Once the process is completed, we can stop recording, take a picture, and save the improved result (<a href="#Arrange_att48">Figure 13d</a>). Furthermore, researchers can use the results to conduct additional research, create reports, and compose papers.
         </p>      
       </section>
      
