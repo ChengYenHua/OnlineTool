@@ -526,6 +526,10 @@
         
         <h3>Deployment Optimization Interface</h3>
 
+          <p>
+          The deployment optimization problem, also referred to as the wireless sensor network (WSN) problem, has applications in various fields, such as home automation, traffic monitoring and control, remote robotic surgery in medicine, industrial machine surveillance, and environmental fire detection. It represents a specific and critical challenge within the domain of combinatorial optimization. The deployment optimization problem's solution space is a two-dimensional map in which the problem needs to use the sensor as little as possible while satisfying the limited detection probability at each position (threshold). In this paper, a map is composed of a two-dimensional grid ($g_{ij}$). If the size of the map is $m*n$, then its width is $m$ and its length is $n$. Each grid point can only accommodate one sensor (<i>S</i>) at most. After placing the sensor, the detection probability is calculated based on the related-distance probabilistic detection model  [<a href="#ref_36">36</a>]. The detection probability ($P_{g_{ij}}^{S_{xy}}$) decreases with increasing distance from the sensor ($S_{xy}$). The detecting model has a confident and maximum radius convergence circle ($R_{cof}$ and $R_{max}$) (<a href="#Deploy_example">Figure 8a</a>). $R_{cof}$ is smaller than $R_{max}$. The confident radius convergence circle is the range of the sensor that must be detected, while the maximum radius convergence circle is the range of the sensor that can be detected, with signal strength decreasing with increasing distance. The detection probability calculation is separated into three situations (Equation 1): 
+        </p>
+          
         <!-- Equation 1 -->
         <div class="equation">
           <div class="formula">
@@ -540,17 +544,22 @@
           </div>
           <div class="number">(1)</div>
         </div>
+          
+        <p>
+          If Euclidean distance between the sensors and the grid point ($‖S_{xy} g_{ij}‖$) is in the confident circle, the sensor must be detected; hence, the chance of detection is 1. When the $‖S_{xy} g_{ij}‖$ is beyond the maximum circle, which indicates that it is outside the sensing radius, the chance of detection is 0. If the distance between the sensors and the grid point falls within the maximum circle but not the confident circle, the detection probability is equal to the reciprocal of ($‖S_{xy} g_{ij}‖$). Here, if the grid point is detected by more than two sensors, Equation 2:
+
+        </p>
 
         <!-- Equation 2 -->
         <div class="equation">
-            <div class="formula">
-                $$P^{S_{xy}}_{g_{ij}}=1-\left(\prod_{S \in \eta} \left(1-P_g\right)\right)$$
-            </div>
-            <div class="number">(2)</div>
+          <div class="formula">
+              $$P^{S_{xy}}_{g_{ij}}=1-\left(\prod_{S \in \eta} \left(1-P_g\right)\right)$$
+          </div>
+          <div class="number">(2)</div>
         </div>
 
         <p>
-          The wireless sensor network (WSN) is widely used, including home automation, traffic detection or control, remote control robotic surgery in medicine, machine surveillance in industry, and detection of environmental fires. The deployment optimization problem, which is a specific form of the combinatorial optimization problem, is crucial for solving in wireless sensor networks problem. The deployment optimization problem's solution space is a two-dimensional map in which the problem needs to use the sensor as little as possible while satisfying the limited detection probability at each position (threshold). In this paper, a map is composed of a two-dimensional grid ($g_{ij}$). If the size of the map is $m*n$, then its width is $m$ and its length is $n$. Each grid point can only accommodate one sensor (<i>S</i>) at most. After placing the sensor, the detection probability is calculated based on the related-distance probabilistic detection model  [<a href="#ref_36">36</a>]. The detection probability ($P_{g_{ij}}^{S_{xy}}$) decreases with increasing distance from the sensor ($S_{xy}$). The detecting model has a confident and maximum radius convergence circle ($R_{cof}$ and $R_{max}$) (<a href="#Deploy_example">Figure 8a</a>). $R_{cof}$ is smaller than $R_{max}$. The confident radius convergence circle is the range of the sensor that must be detected, while the maximum radius convergence circle is the range of the sensor that can be detected, with signal strength decreasing with increasing distance. The detection probability calculation is separated into three situations (Equation 1): If Euclidean distance between the sensors and the grid point ($‖S_{xy} g_{ij}‖$) is in the confident circle, the sensor must be detected; hence, the chance of detection is 1. When the $‖S_{xy} g_{ij}‖$ is beyond the maximum circle, which indicates that it is outside the sensing radius, the chance of detection is 0. If the distance between the sensors and the grid point falls within the maximum circle but not the confident circle, the detection probability is equal to the reciprocal of ($‖S_{xy} g_{ij}‖$). Here, if the grid point is detected by more than two sensors, Equation 2 is used to calculate the detection probability, which means that the grid point is in the union of more than two sensors $R_{max}$.
+          is used to calculate the detection probability, which means that the grid point is in the union of more than two sensors' $R_{max}$.
         </p>
         
         <p>
