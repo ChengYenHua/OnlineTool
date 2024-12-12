@@ -1,0 +1,1370 @@
+<!doctype html>
+<html lang="en">
+
+<head>
+  <!-- Required meta tags for IEEE Xplore immersive article -->
+  <meta name="viewport" content="width=device-width, initial-scale=1">
+  <meta name="description"
+    content="An interactive article on using genetic algorithms to solve the 8-Queens problem. Learn how the choice of representation and operators affects your genetic algorithm.">
+  <meta charset="utf8">
+  <title>Evo-Panel2.0
+  </title>
+
+  <!-- Stylesheet for IEEE Xplore immersive article -->
+  <link rel="stylesheet" href="fonts/stylesheet.css">
+  <link rel="stylesheet" href="css/style.css">
+
+  <!-- MathJax javascript library and implementation file/s -->
+  <script type="text/javascript" async
+    src="https://xploreqa.ieee.org/xploreAssets/MathJax-274/MathJax.js?config=default">
+    </script>
+
+  <!-- Example chessboard immersive app -->
+  <script type="text/javascript"
+    src="https://xploreqa.ieee.org/assets/vendor/jquery/jquery-3.5.1.min.js"></script>
+  <script type="text/javascript"
+    src="chessboard/jquery-ui-1.13.2.min.js"></script>
+  <link rel="stylesheet" href="chessboard/jquery-ui.min.css">
+  <link rel="stylesheet" href="chessboard/chessboard.css">
+  <script type="text/javascript" src="chessboard/chessboard.js"></script>
+  
+  <script type="text/javascript" async
+        src="https://cdnjs.cloudflare.com/ajax/libs/mathjax/2.7.7/MathJax.js?config=TeX-MML-AM_CHTML">
+    </script>
+    <script type="text/x-mathjax-config">
+        MathJax.Hub.Config({
+            tex2jax: {
+                inlineMath: [['$','$'], ['\\(','\\)']],
+                displayMath: [['$$','$$'], ['\\[','\\]']]
+            },
+            "HTML-CSS": { linebreaks: { automatic: true } }
+        });
+    </script>
+
+  <style>
+    body {
+        font-family: Arial, sans-serif;
+        padding: 20px;
+    }
+    table {
+        border-collapse: collapse;
+        width: 100%;
+        margin-bottom: 30px;
+        border-top: 2px solid black;
+        border-bottom: 2px solid black;
+    }
+    th, td {
+        padding: 8px;
+        text-align: left;
+    }
+    .table-header {
+        font-weight: bold;
+        margin-bottom: 10px;
+        text-align: center;
+        font-size: 0.9em;
+    }
+    .italic {
+        font-style: italic;
+    }
+    .center {
+        text-align: center;
+    }
+    .grey {
+        color: grey;
+    }
+    sup {
+        font-size: 0.7em;
+        vertical-align: super;
+    }
+    .mid-border {
+        border-bottom: 1px solid black;
+    }
+    .top-border {
+        border-top: 2px solid black;
+    }
+    .makecell {
+        text-align: center;
+        white-space: pre-wrap;
+    }
+    .equation {
+        display: flex;
+        justify-content: space-between;
+        align-items: center;
+        margin: 10px 0;
+    }
+    .equation .formula {
+        flex: 1;
+    }
+    .equation .number {
+        margin-left: 10px;
+    }
+  </style>
+
+</head>
+
+<body>
+  <!-- Article with large top spacing -->
+  <article class="mt-lg">
+    <header>
+      <!-- Page container -->
+      <div class="container">
+        <!-- Page title -->
+        <h1>
+          Evo-Panel2.0
+        </h1>
+        <!-- Subheading -->
+        <p class="subhead">
+          An interactive article on using Evo-Panel2.0 to solve the combinatorial optimization problems. Exploring how visualization tools assist researchers in analyzing optimization problems.
+        </p>
+        <!-- Header info general wrapper -->
+        <div class="header-info">
+          <!-- Header left info box -->
+          <div class="header-left box">
+            <!-- Header authors section -->
+            <div class="header-authors">
+              <h2>Authors</h2>
+              <ul>
+                <li>XXX</li>
+                <li>OOO</li>
+              </ul>
+            </div>
+            <!-- Published info section -->
+            <div class="header-published">
+              <h2>Published</h2>
+              <p>Nov. 26, 2021</p>
+            </div>
+          </div>
+          <!-- Header legend section -->
+          <div class="header-legend">
+            <svg class="click-icon" data-name="Click"
+              xmlns="http://www.w3.org/2000/svg" viewBox="0 0 83.62 122.88">
+              <title>Click</title>
+              <path
+                d="M40.59,14.63a3.36,3.36,0,0,1-1,2.39l0,0a3.39,3.39,0,0,1-4.77,0,3.42,3.42,0,0,1-1-2.4V3.39A3.4,3.4,0,0,1,37.2,0a3.34,3.34,0,0,1,2.39,1,3.39,3.39,0,0,1,1,2.4V14.63Zm25,76.65a1.89,1.89,0,0,1,3.77,0V99.9a1.89,1.89,0,1,1-3.77,0V91.28ZM54.46,87.47a1.89,1.89,0,0,1,3.77,0V99.9a1.89,1.89,0,1,1-3.77,0V87.47Zm-28-7.63a1.92,1.92,0,0,1-.35-.23q-5.24-4.24-10.44-8.53a8.36,8.36,0,0,0-3.57-1.79,3.54,3.54,0,0,0-2,.09A2,2,0,0,0,9,70.49a6.9,6.9,0,0,0-.4,3.24,12.47,12.47,0,0,0,1.11,4,26.49,26.49,0,0,0,2.92,4.94l17.68,26.74a2.37,2.37,0,0,1,.36,1,15.28,15.28,0,0,0,1.87,6.4,2.89,2.89,0,0,0,2.57,1.46c9,0,18.62-.34,27.53,0a8.33,8.33,0,0,0,4.69-1.51,15,15,0,0,0,4.29-5l.34-.57c3.4-5.87,6.71-11.57,7-18.33L78.85,85l0-.33,0-1.84c.06-5.74.16-14.54-4.62-15.4H71.14c.09,2.46,0,5-.18,7.3-.08,1.36-.15,2.63-.15,3.79a2.31,2.31,0,1,1-4.62,0c0-1.1.08-2.52.17-4,.32-5.73.75-13.38-3.24-14.14h-3a2.2,2.2,0,0,1-.58-.07,69.07,69.07,0,0,1-.13,8.29c-.07,1.36-.15,2.63-.15,3.79a2.31,2.31,0,1,1-4.61,0c0-1.1.08-2.52.16-4,.33-5.73.76-13.38-3.24-14.14h-3a2,2,0,0,1-.6-.08V66a2.31,2.31,0,1,1-4.61,0V42c0-4-1.64-6.55-3.73-7.61a5.32,5.32,0,0,0-4.71-.06l-.1.06c-2.07,1-3.69,3.59-3.69,7.7v42a2.31,2.31,0,1,1-4.62,0V79.84Zm44.14-17a2.49,2.49,0,0,1,.61-.08h3.19a2.33,2.33,0,0,1,.53.06c8.73,1.4,8.61,12.65,8.52,20,0,3.4.14,6.78.18,10.17-.39,7.91-4,14.1-7.67,20.47l-.32.55A19.49,19.49,0,0,1,70,120.55a12.88,12.88,0,0,1-7.29,2.32H35.17a7.23,7.23,0,0,1-6.44-3.5,19,19,0,0,1-2.56-7.88L8.94,85.42A31,31,0,0,1,5.5,79.58,16.88,16.88,0,0,1,4,74a11.42,11.42,0,0,1,.8-5.42,6.54,6.54,0,0,1,3.55-3.49A8.05,8.05,0,0,1,13,64.76a13.19,13.19,0,0,1,5.61,2.77L26.45,74V42.09c0-6.1,2.73-10,6.22-11.82l.15-.06a9.81,9.81,0,0,1,4.33-1,10,10,0,0,1,4.49,1.07C45.16,32.06,47.91,36,47.91,42v7.6a2.41,2.41,0,0,1,.6-.08H51.7a2.33,2.33,0,0,1,.53.06c3.82.61,5.73,3.16,6.63,6.47a2.25,2.25,0,0,1,1.23-.36h3.18a2.26,2.26,0,0,1,.53.06c4.07.65,6,3.49,6.79,7.11ZM14.63,37A3.33,3.33,0,0,1,17,38a3.39,3.39,0,0,1-2.39,5.79H3.39a3.36,3.36,0,0,1-2.39-1A3.4,3.4,0,0,1,3.39,37ZM23,20.55a3.39,3.39,0,0,1-2.4,5.79,3.4,3.4,0,0,1-2.4-1l-7.91-7.94a3.42,3.42,0,0,1-1-2.4,3.39,3.39,0,0,1,5.79-2.4L23,20.55ZM59.2,43.81a3.41,3.41,0,0,1-3.4-3.4A3.41,3.41,0,0,1,59.2,37H70.43a3.35,3.35,0,0,1,2.4,1,3.4,3.4,0,0,1-2.4,5.79ZM55.62,24.74a3.39,3.39,0,0,1-4.8-4.8l7.91-8a3.39,3.39,0,0,1,4.8,4.8l-7.91,8Z" />
+            </svg>
+            <p>Indicates interactive elements</p>
+          </div>
+        </div>
+        <!-- Box of anchored links -->
+        <div class="contents box">
+          <h2>Contents:</h2>
+          <ul>
+            <li>
+              <a href="#introduction">Introduction</a>
+              <span class="separator">&nbsp;&nbsp;|&nbsp;&nbsp;</span>
+            </li>
+            <li>
+              <a href="#related work">Related Work</a>
+              <span class="separator">&nbsp;&nbsp;|&nbsp;&nbsp;</span>
+            </li>
+            <li>
+              <a href="#proposed visualization tool">Proposed Visualization Tool</a>
+              <span class="separator">&nbsp;&nbsp;|&nbsp;&nbsp;</span>
+            </li>
+            <li>
+              <a href="#Case Study">Case Study</a>
+              <span class="separator">&nbsp;&nbsp;|&nbsp;&nbsp;</span>
+            </li>
+            <li>
+              <a href="#fttp">From theory to practice</a>
+              <span class="separator">&nbsp;&nbsp;|&nbsp;&nbsp;</span>
+            </li>
+            <li><a href="#conclusion">Conclusion</a></li>
+          </ul>
+        </div>
+      </div>
+    </header>
+
+    <!-- Content container with large top spacing -->
+    <div class="container mt-lg">
+      <!-- Anchor ID -->
+      <section id="introduction">
+        <!-- Section title -->
+        <h2>I. Introduction</h2>
+        <p>
+          The business industry has many kinds of optimization problems that aim to minimize cost and maximize profit, such as the optimization of the manufacturing process, package delivering path, and parameters fine-tuning. Based on value encoding, optimization issues can be generally divided into two categories: numerical and combinatorial optimization. Numerical optimization addresses continuous value-encoded problems, and combinatorial optimization addresses discrete value-encoded problems. Herein, the combinatorial optimization includes the classical 0/1 knapsack problem, and traveling salesman problem (TSP), and the practical applications include circuit synthesis [<a href="#ref_1">1</a>], stock trending [<a href="#ref_2">2</a>], deployment of radar [<a href="#ref_3">3</a>], deployment of wireless sensor networks [<a href="#ref_4">4</a>], and scheduling problems [<a href="#ref_5">5</a>].
+        </p>
+
+        <p>
+          Metaheuristic algorithms are commonly utilized to handle these complex real-world applications. They may solve non-specific issues through some modification of encoding and achieve a near-optimal solution in a finite amount of time. Most metaheuristic algorithms are population- and iterative-based, and the solution gets better with the evolved process in iterations with efficient and effective searchability, such as the genetic algorithm (GA)[<a href="#ref_6">6</a>], particle swarm optimization (PSO)[<a href="#ref_7">7</a>], ant colony optimization (ACO)[<a href="#ref_8">8</a>], estimation of the distribution algorithm (EDA)[<a href="#ref_9">9</a>], quantum-inspired evolutionary algorithm (QEA)[<a href="#ref_10">10</a>], and quantum-inspired tabu search algorithm (QTS)[<a href="#ref_11">11</a>]. Various optimization problem-solving techniques have their own unique characteristics. Typically, the optimization search process of metaheuristic algorithms used to solve these problems is treated as a black box.
+        </p>
+
+        <div style="display: flex; justify-content: center; gap: 20px;">
+          <figure id="Cmd_text_log_file" class="text-center" style="text-align: center;">
+            <img src="img/Cmd_text_log_file.svg" width="255" height="220">
+            <figcaption><strong>Figure 1:</strong> Using text log file analyze the algorithm.</figcaption>
+          </figure>
+          <figure id="Excel_text_log_file" class="text-center" style="text-align: center;">
+            <img src="img/Excel_text_log_file.svg" width="255" height="220">
+            <figcaption><strong>Figure 2:</strong> Using Excel analyze the algorithm.</figcaption>
+          </figure>
+        </div>
+
+        <p>
+          In recent years, the emerging topic of explainable artificial intelligence (XAI) [<a href="#ref_12">12</a>], [<a href="#ref_13">13</a>], [<a href="#ref_14">14</a>] has been highly-valued. Users expect to clearly analyze the solving process to comprehend the efficacy and efficiency of optimization techniques. Therefore, the primary objective of XAI is to understand and interpret how the optimization techniques make decisions and derive the result, and then to increase the transparency of the optimization process. When analyzing the optimization process in solution space and how populations vary, users frequently output text information on the command line, log file, and Excel (<a href="#Cmd_text_log_file">Figure 1</a> and <a href="#Excel_text_log_file">Figure 2</a>) to improve the interpretability of the metaheuristics executing inner process. The expected observed goals are as follows: investigate and discover more details from the text including the algorithms' properties, patterns of movement, relationships between variables, and optimized trends among solutions. However, a large amount of information in a text lowers the perception of analyzing detail and makes it difficult to concentrate, which can lead to the omission of important pieces of information. Furthermore, the unorganized and messy information makes users hardly do the detailed analysis.
+        </p>
+
+        <p>
+          Visualization is an important process to make users gain insight into data from another perspective and comprehend the results more effectively. As the saying goes, “A picture is worth a thousand words.” Graphic representation constitutes one of the basic sign systems conceived by the human mind [<a href="#ref_15">15</a>]. A picture can convey more than multiple ideas or a detailed text explanation. Therefore, this study presents an interface tool for the combinatorial optimization problem and evolutionary algorithm that is simpler to analyze the inner process of the optimization technique in a more visually interesting manner. To assist users in analyzing the process of metaheuristic algorithms and achieving the expected observed goals, this study proposes an innovative visualization tool for combinatorial optimization problems, Evo-Panel 2.0. Aside from visualizing a static picture, a video tells information more strongly than a still picture. Therefore, Evo-Panel 2.0 is designed with a dynamic interface, which can intuitively and vividly present the detailed process of an optimization algorithm through interactive animation. Most importantly, Evo-Panel 2.0 can visualize the optimized process of metaheuristics. The target of Evo-Panel 2.0 is to help users straightforwardly observe the solving process of the combinatorial problem.
+        </p>
+
+        <p>
+          Depending on the various properties of a combinatorial optimization problem, Evo-Panel 2.0 provides three different interfaces to visualize the combinatorial optimization problem, including general, deployment, and permutation-based combination optimization interfaces. The first is the general combinatorial optimization interface, which is used for general combinatorial optimization problems that have no sequential 
+          relation between each item, such as the 0/1 knapsack problem and stock selection problem. The second is for the deployment combinatorial optimization problem, which needs to accommodate the requirement of the map's requirement and minimize the sensor quantity and cost. The final is the permutation-based combinatorial optimization problem, in which each location has a sequential correlation and needs to minimize the path cost. In this problem, the solution is described by a permutation of n integers, such as TSP and minimum spanning tree that both need to minimize the path. Due to the characteristics of combinatorial optimization problems, the stochastic mechanism based on probability is frequently employed. Thus, in addition to the exact solution demonstration, Evo-Panel 2.0 offers the visualization of the probabilistic model's variation status, allowing users to acknowledge more detailed information easily and applicable to various metaheuristics. Evo-Panel 2.0 provides diverse and flexible visualization features and interfaces for different metaheuristics and different combinatorial optimization problems. This study aims to provide researchers with a useful visualization tool for analyzing the optimization technique, enhancing the interpretability of the optimized inner process, and assisting users in validating the design concept and program process consistency. The major contributions of Evo-Panel 2.0 are listed below.
+        </p>
+
+        <ul>
+          <li><strong>Insight:</strong> 
+            With its dynamic visualization capabilities, Evo-Panel 2.0 provides an intuitive and detailed presentation of optimization algorithm processes. For instance, it demonstrates the algorithm's ability to escape local optima.
+          </li>
+          <li><strong>Versatility:</strong>
+            Evo-Panel 2.0 offers flexibility, aiding educators in delivering vivid explanations of algorithms and optimization problems, enhancing students' comprehensive understanding in an engaging manner. Additionally, Evo-Panel 2.0 accommodates various types of metaheuristic algorithms and combinatorial optimization problems.
+          </li>
+          <li><strong>Support:</strong>
+            Evo-Panel 2.0 can accelerate researchers' analysis efficiency and reduce their burden with vivid interfaces rather than watching dense text of algorithms' information. For example, Evo-Panel 2.0 can assist researchers in demonstrating whether the process of an algorithm complies with their ideas.
+          </li>
+          <li><strong>Innovation:</strong> 
+            It is a tool that can exactly and faithfully present the evolution of algorithms. Furthermore, visualization can help users improve and design algorithms.
+          </li>
+          <li><strong>Interactivity:</strong>
+            Evo-Panel is an interactive dynamic visualization tool that incorporates the three essential elements of interactive design, interactive systems, and interactive built-in mechanisms, enhancing the usability and user engagement of the proposed visual aid in this research paper.
+          </li>
+        </ul>
+
+        <p>
+          This paper is organized as follows. In Section II, well-known metaheuristic algorithms and numerous visualization tools are discussed. Section III introduces how to use Evo-Panel 2.0 in three visualization interfaces, including general combinatorial, deployment, and permutation optimization problems. Section IV shows how other researchers or users use Evo-Panel 2.0 in different optimization problems. Finally, Section V is the conclusion.
+        </p>
+      </section>
+
+      <section id="related work">
+        <h2>II. Related Work</h2>
+
+        <p>
+          Metaheuristics plays an important role in solving optimization problems. Researchers use metaheuristics to search for the optimal solution in the huge solution space to minimize cost and maximize profit. To make it easier for researchers to comprehend the efficacy of employed metaheuristics, numerous studies have developed visual tools for analyzing how metaheuristics operate. Some of these visualization tools are designed for specific metaheuristics, while others are used to visualize optimization problems. Each tool makes significant contributions within its respective field. In order to design a more general visualization tool for combinatorial optimization and metaheuristics, this section provides a comprehensive survey of the metaheuristics used to solve combinatorial optimization and introduces the existing combinatorial optimization visualization method.
+        </p>
+
+        <h3>Metaheuristic Algorithm</h3>
+        <p>
+          Metaheuristics can be applied to different kinds of problem from a high-level procedure method. Evolutionary computation (EC) is metaheuristics and a branch of computational intelligence (CI), which can solve both numerical and combinatorial optimization problems, including GA, ACO, binary particle swarm optimization (BPSO) [<a href="#ref_16">16</a>], QEA, and QTS. GA is inspired by Charles Darwin's theory of natural evolution, in which species change over time through the gradual accumulation of advantageous traits. The GA chooses parent chromosomes from the mating pool to produce offspring chromosomes, so the solutions of the next generation are inherited from parent chromosomes. The variation from parent to offspring is the main focus of observation in GA. ACO was inspired by colony ant foraging properties and behavior. ACO is a suitable optimization method for permutation-based combinatorial optimization problems. The ant leaves the pheromone after it passes the road, and then the pheromone fades with time. The ant follows the pheromone density to determine where to go. If the pheromone density is higher, the road has a higher probability of being chosen. By accumulating more pheromones, the optimized path of ACO should become shorter. BPSO is based on PSO, and it is designed for solving combinatorial optimization problems. BPSO and PSO use the same concept to find the optimal solution, in which they use three strengths to search: inertia, the best visited position for the particle, and the best position explored so far. Besides the binary encoding metaheuristics above, some metaheuristics extend to some mechanics, such as the probability mechanic, EDA, QEA, and QTS. The QEA and QTS are inspired by quantum principles. The special feature of quantum computing is that a qubit can be 0, 1, and a superposition of 0 and 1. The QEA and QTS algorithms use the probability of the qubit's state to decide the particle, which is similar to measuring the qubit. When the probability is higher, the state is more likely to be chosen.
+        </p>
+
+        <p>
+          Evo-Panel 2.0 provides three interfaces for different characteristics of combinatorial optimization problems, including general, deployment, and permutation-based combinatorial optimization interfaces. In these three interfaces, Evo-Panel 2.0 provides probability mode to display different characteristics and applies to many metaheuristics. With these modes and interfaces, this visualization tool can be universal to more metaheuristics and combinatorial optimization problems.
+        </p>
+
+        <h3>Visualization Tool</h3>
+        <p>
+          To analyze the optimization problem and solution method, researchers usually need to exert a great deal of effort in gathering and analyzing a sufficient amount of experimental data to verify the properties of these algorithms, which is brain-draining and time-consuming. Besides text information, many image visualization tools have been promoted to assist the analysis process. As a language for the eye, graphics benefit from visual perceptions [<a href="#ref_12">12</a>], which provide many benefits and accelerate the development of many research fields. To assist analysis process efficiency and effectiveness by gaining the technology’s information, many researchers have dedicated themselves to inventing visualization tools to accelerate the process in recent years. Visualization tools have a broad range of applications in many fields. For example, ModelTracker [<a href="#ref_17">17</a>] and the What-if Tool [<a href="#ref_18">18</a>] are applications that assist researchers in analyzing machine learning models. There are also novel visual tools designed to support cluster analysis, e.g., StratomeX [<a href="#ref_19">19</a>]  and Geono-Cluster [<a href="#ref_20">20</a>]. Interactive visual analysis systems for analyzing the formation of dominance hierarchies in groups include PeckVis [<a href="#ref_21">21</a>] and Velhow [<a href="#ref_22">22</a>].
+        </p>
+        
+        <p>
+          For the combinatorial optimization problem, there are three visualization methods to assist in analyzing the problem. The first is designed to visualize combinatorial optimization problems. MATLAB has two family-produced: the optimization toolbox [<a href="#ref_23">23</a>] and the global optimization toolbox [<a href="#ref_24">24</a>] for analyzing algorithms in optimization problems, encompassing linear programming, nonlinear optimization, quadratic programming, and more. The functions in the optimization toolbox can assist in searching parameters that minimize or maximize problems while satisfying constraints, which is helpful for finding global optimal solutions to the optimization problem.
+        </p>
+
+        <p>
+          The second is the visualization of metaheuristics, such as the GA features that are accessible in GAVEL [<a href="#ref_25">25</a>]. These features reveal the origins of individual alleles, the pathways through which the final result was assembled, and the historical progression of user-selected allele sets. Furthermore, [<a href="#ref_26">26</a>] outlines the most significant advancements derived from the visualization of GA concerning its optimization solution search process. The visualization of genetic programming (GP) using complete ancestry trees is presented in [<a href="#ref_27">27</a>].
+        </p>
+
+        <p>
+          The last is to visualize the solving process of metaheuristics. VIZ [<a href="#ref_28">28</a>] is an interactive visualization tool that animates heuristic algorithms for explaining local search behavior. [<a href="#ref_29">29</a>] use visualization to support the design process and optimize data processing pipelines. When solving many-objective optimization problems, [<a href="#ref_30">30</a>] can display the Pareto front of the evolution process, and estimate location, and range. On the other hand, visualization tools can visualize numerical or combinatorial optimization problems. The tool [<a href="#ref_31">31</a>] visualizes the metaheuristic solution to the numerical optimization problem in a dynamic way. In the combinatorial optimization problem, [<a href="#ref_32">32</a>] proposes a tool that visualizes combinatorial search space by transferring high-dimensional objective space into low-dimensional Euclidean space. Visualizing combinatorial structures and animating algorithms, in particular, is provided in [<a href="#ref_33">33</a>].
+        </p>
+
+        <p>
+          The visualization tools mentioned above have been proven to be efficient in improving and accelerating the process of analysis. We integrate a number of the primary benefits of the aforementioned visual interface, such as a controller that enables the user to pause, fast-forward, and slow down the playback to observe each iteration, a general application that facilitates the evaluation and analysis of various algorithms, and the creation of multiple modes for analyzing various types of combinatorial optimization problems. Therefore, we provide EPanel 2.0 [<a href="#ref_34">34</a>] for researchers to observe the analysis process, which can be used for analyzing all kinds of metaheuristics in combinatorial optimization problems. By incorporating user feedback and recommendations, we have enhanced our visual tool, EPanel, culminating in the development of Evo-Panel 2.0, an upgraded version specifically for the purpose of tackling combinatorial optimization problems.
+        </p>
+
+      </section>
+
+      <section id="proposed visualization tool">
+        <h2>III. Proposed Visualization Tool</h2>
+        <p>
+          Within the domain of business, there are a multitude of optimization challenges that require resolution. Prior to resolving optimization challenges specific to the industry, researchers typically evaluate optimization algorithms using benchmark functions. Enhancing the efficacy of an optimization algorithm on benchmark functions increases the probability that it will successfully tackle optimization functions that are specific to a given industry. In this section, we use three benchmark problems to introduce how the system works on the three interfaces, including GA and QTS solving the 0/1 knapsack problem in the general combinatorial optimization interface, Entanglement-QTS [<a href="#ref_35">35</a>] solving the deployment optimization problem in the deployment combinatorial optimization interface, and ACO solving TSP in the permutation/linear combinatorial optimization interface.
+        </p>
+
+        <h3>General Combinatorial Optimization Interface</h3>
+
+        <p>
+          In the general combinatorial optimization interface (general interface), all kinds of chosen or not combinatorial optimization problems can be displayed through this interface. Evo-Panel 2.0 can show the fitness, all item combinations in each generation, and items' detailed information so that users can check if the metaheuristic matches their thoughts or problems' constraints.
+        </p>
+
+        <P>
+          To illustrate, we utilize the 0/1 knapsack problem as a benchmark case study. In this problem, the notation '1' represents selection, and '0' signifies non-selection. To maximize the total value, researchers attempt to find a set of items while adhering to a weight constraint. In essence, the knapsack aims to carry items that possess a favorable cost-to-performance ratio, all the while complying with weight restrictions. In order to facilitate comprehension, we have simplified the 0/1 knapsack problem. The items in this 0/1 knapsack problem are divided into ten types, and each type has ten items. The weights of the item types are 1, 2, 3, 4, 5, 6, 7, 8, 9, and 10; the values of the item types are 6, 7, 8, 9, 10, 11, 12, 13, 14, and 15, which are the weights plus 5. If the problem’s knapsack weight is large or small, it is easy to take all the items or remove all the items. Hence, we limit the weight constraint to half (275) of the total weight (550), so the problem becomes a non-trivial solution. Besides, the optimal solution (value) for this problem is 620, and the cost-performance ratio from high to low is from lowest weight to highest weight. For this kind of general combinatorial optimization problem, Evo-Panel 2.0 provides two models: general and probability models, to visualize the problem-solving process of metaheuristics.
+        </P>
+
+        <h3>1.General Model</h3>
+
+        <figure id="Binary_beginning" class="text-center" style="text-align: left;">
+          <div style="display: flex; justify-content: center; gap: 10px;">
+            <div style="text-align: center;">
+              <img src="img/01 Binary/Binary_beginning_top.svg" width="255" height="220">
+              <p>(a)</p>
+            </div>
+            <div style="text-align: center;">
+              <img src="img/01 Binary/Binary_beginning_middle.svg" width="255" height="220">
+              <p>(b)</p>
+            </div>
+            <div style="text-align: center;">
+              <img src="img/01 Binary/Binary_beginning_bottom.svg" width="255" height="220">
+              <p>(c)</p>
+            </div>
+          </div>
+          <figcaption>
+            <strong>Figure 3:</strong> This Evo-Panel 2.0 interface after loading the analysis file. (a) The information and function buttons are displayed in the green region. (b) The blue area displays the process of the metaheuristic algorithm. (c) The orange area has system control bottoms.
+          </figcaption>
+        </figure>
+
+        <p>
+          The default general model would draw out the combinations of each generation. <a href="#Binary_beginning">Figure 3a</a> is the beginning display after loading a log file. The interface has three parts: the top displays file information, the middle illustrates the change process of metaheuristics as a video, and the bottom is the media player. First, on top of Evo-Panel 2.0 in <a href="#Binary_beginning">Figure 3a</a>, the gray area in the green box displays some function buttons and details information about the fitness on the mouse position, global best fitness, and file name. The function buttons in the top right corner can record videos, take pictures, load a file, save the file, and compare different metaheuristics. Second, in the central section (<a href="#Binary_beginning">Figure 3b</a>), this interface offers a comprehensive depiction of the metaheuristic algorithm's progression, showcasing each population, combination (highlighted within the blue box), and corresponding fitness arranged from left to right. The generation bar situated beneath the central interface facilitates the visualization of the ongoing iteration during the process display. Third, the bottom area in the orange box (<a href="#Binary_beginning">Figure 3c</a>) has control buttons, which can control the system by showing the combination of what users want. The functions from left to right are reset, start/pause, fast forward, slow down, speed, zoom in to see the whole combinations in each iteration, detail information, probability model, convergence curves, and go to a specified generation.
+        </p>
+
+        <figure id="Binary_General_GA01" class="text-center" style="text-align: left;">
+          <div style="display: flex; justify-content: center; gap: 10px;">
+            <div style="text-align: center;">
+              <img src="img/01 Binary/Binary_General_GA01_1st.svg" width="255" height="220">
+              <p>(a)</p>
+            </div>
+            <div style="text-align: center;">
+              <img src="img/01 Binary/Binary_General_GA01_10st.svg" width="255" height="220">
+              <p>(b)</p>
+            </div>
+            <div style="text-align: center;">
+              <img src="img/01 Binary/Binary_General_GA01_20st.svg" width="255" height="220">
+              <p>(c)</p>
+            </div>
+            <div style="text-align: center;">
+              <img src="img/01 Binary/Binary_General_GA01_20th_info.svg" width="255" height="220">
+              <p>(d)</p>
+            </div>
+          </div>
+          <figcaption>
+            <strong>Figure 4:</strong> Evo-Panel 2.0 shows the process of a GA solving the 0/1 knapsack problem. (a) At the start of the metaheuristic process, the system displays the current generation's best combination in a black-and-white row, while the best combinatorial solution found is shown in a red-and-white row adjacent to it. (b) As iterations progress, these rows move downward, ensuring the latest combinations always appear at the bottom. (c) Past generation combinations turn into gray-and-white rows as they move upward and eventually disappear after 19 generations. (d) Throughout, users can access “detailed information” for in-depth analysis, revealing details like bag numbers and weights of the best combinations in each generation.
+          </figcaption>
+        </figure>
+
+        <p>
+          <a href="#Binary_General_GA01">Figure 4a</a> illustrates the GA's solution to the 0/1 knapsack problem using a combination composed of black (representing bit 1) and white (representing bit 0) rectangles, allowing users to easily discern selected items. The black-and-white row in <a href="#Binary_General_GA01">Figure 4a</a> is the first generation's best (population best) combination, and the global best combination found thus far (global best, GB) is represented in the red-and-white row. On the right side of the green frame is the fitness of each row (generation). For the convenience of observing the change between before and current generations' best combinations, the combination is updated generation by generation.  As the iteration increases, the system displays more combinations, and the current generation's best combination (black-and-white row) gradually decreases (from <a href="#Binary_General_GA01">Figure 4a</a> $\sim$ <a href="#Binary_General_GA01">Figure 4c</a>). In the beginning (<a href="#Binary_General_GA01">Figure 4a</a>), the first generation's combination is the same as the global best combination. Next, the past generation's best combination turns into the gray-and-white row and fills up the blue box gradually (<a href="#Binary_General_GA01">Figure 4b</a> to <a href="#Binary_General_GA01">Figure 4c</a>). The newest and best combinations are always at the bottom, and they are adjacent to each other for the convenience of comparison. Meanwhile, in <a href="#Binary_General_GA01">Figure 4c</a>, the past generation's best combination turns gray can make the difference from the current generation's best combination. Moreover, the $10^{th}$ generation's best combination (fitness) in <a href="#Binary_General_GA01">Figure 4b</a> is not better than GB, so GB doesn't change in this generation. In addition, until the combination is full of the interface, the system scrolls up to keep the combination within $19$ generations. <a href="#Binary_General_GA01">Figure 4c</a> shows the generation from $2^{st}$ to $20^{th}$ generation, and the GB is the best combination with the first $20^{th}$ generation.
+        </p>
+        
+        <figure id="Binary_General_GA01_20th_zoomin" class="text-center" style="text-align: left;">
+          <div style="display: flex; justify-content: center; gap: 10px;">
+            <div style="text-align: center;">
+              <img src="img/01 Binary/Binary_General_GA01_20th_zoomin.svg" width="255" height="220">
+              <p>(a)</p>
+            </div>
+            <div style="text-align: center;">
+              <img src="img/01 Binary/Binary_General_GA01_20th_zoomin_PARENT.svg" width="255" height="220">
+              <p>(b)</p>
+            </div>
+          </div>
+          <figcaption>
+            <strong>Figure 5:</strong> After zooming in on each generation, (a) all combinations within the current generation become visible. Notably, the best combination appears in red-and-white rows, while the worst stands out in blue-and-white rows. (b) Additionally, the system allows user-defined color schemes, such as using yellow-and-white to highlight selected parent chromosomes for easier inspection.
+          </figcaption>
+        </figure>
+
+        <p>
+          In order to efficiently utilize Evo-Panel 2.0, well-designed control buttons are indispensable. Users have the option to modify the generation using either the generation bar or the "go to" function. By utilizing the "go to" feature to navigate to a specific generation, users can easily navigate to specific generations to observe the solving process. According to the user's needs, they can press “pause/start” whenever they want, and they can fast forward or slow down the animation to adjust the speed that they need for viewing. Beyond observing the item combinations in each solution, the meanings conveyed by different solutions vary. The button “detailed information” in <a href="#Binary_General_GA01">Figure 4d</a> can show detailed information in which the user can input any desired information to assist metaheuristic analysis, such as the knapsack number and weight. In this scenario, the knapsack number and weight can help users check if there are any illegal combinations. For a specific iteration, Evo-Panel 2.0 can also “zoom in” to see the current combination of a generation, as shown in <a href="#Binary_General_GA01_20th_zoomin">Figure 5a</a>. The red-and-white row is the best combination (population best) in the current generation (the $20^{th}$ generation), and the blue-and-white row is the worst combination (population worst) in this generation. Moreover, users can flexibly set their color for different combinations, such as setting the yellow color for the chosen parent chromosomes (<a href="#Binary_General_GA01_20th_zoomin">Figure 5b</a>) which can see how the parent combination gives birth to the child and check if users' metaheuristic is right.
+        </p>
+
+        <h3>2.Probability Model</h3>
+
+        <figure id="QTS01" class="text-center" style="text-align: left;">
+          <div style="display: flex; justify-content: center; gap: 10px;">
+            <div style="text-align: center;">
+              <img src="img/01 Binary/Binary_Prob_QTS01_Early.svg" width="255" height="220">
+              <p>(a)</p>
+            </div>
+            <div style="text-align: center;">
+              <img src="img/01 Binary/Binary_Prob_QTS01_EarlyMid.svg" width="255" height="220">
+              <p>(b)</p>
+            </div>
+            <div style="text-align: center;">
+              <img src="img/01 Binary/Binary_Prob_QTS01_Mid.svg" width="255" height="220">
+              <p>(c)</p>
+            </div>
+            <div style="text-align: center;">
+              <img src="img/01 Binary/Binary_Prob_QTS01_MidPost.svg" width="255" height="220">
+              <p>(d)</p>
+            </div>
+          </div>
+          <div style="display: flex; justify-content: center; gap: 10px;">
+            <div style="text-align: center;">
+              <img src="img/01 Binary/Binary_Prob_QTS01_MidPost_info.svg" width="255" height="220">
+              <p>(e)</p>
+            </div>
+            <div style="text-align: center;">
+              <img src="img/01 Binary/Binary_Prob_QTS01_End.svg" width="255" height="220">
+              <p>(f)</p>
+            </div>
+            <div style="text-align: center;">
+              <img src="img/01 Binary/Binary_General_QTS01_End.svg" width="255" height="220">
+              <p>(g)</p>
+            </div>
+            <div style="text-align: center;">
+              <img src="img/01 Binary/Binary_General_QTS01_683th.svg" width="255" height="220">
+              <p>(h)</p>
+            </div>
+          </div>
+          <figcaption>
+            <strong>Figure 6:</strong> The probability model visualizes the bit's selection likelihood through a red-to-blue rainbow hue. (a) Initially set at 0.5, representing a green hue, in the first generation, this model evolves as the algorithm progresses. (b) In this 0/1 knapsack scenario, items with higher cost performance shift from green to yellow, (c) followed by orange or red as their likelihood increases across generations. (d) The color spectrum tends to be redder for higher-performing items on the left, more yellow and green in the middle, and bluer on the right during the mid-stage. (e) Evo-Panel 2.0 can click the right mouse button to display exact probabilities and item status upon interaction. (f) As iterations progress, the picture converges to primarily red, indicating fixed selections and a preference for items with lower cost performance to meet weight constraints. (g) Switching to the general model highlights QTS's prioritization of high-performing items while discarding lower-performing ones. Notably, the unselected bits in the best solution aligned with the blue lines in <a href="#QTS01">Figure 6e</a>, indicating QTS algorithm convergence according to the user design. (h) The 683rd generation presents distinct optimal combinations from prior iterations, showcasing diverse solutions with a global best fitness of 620. Using Evo-Panel 2.0, the dependencies within the 0/1 knapsack problem become readily visible and comprehensible.
+          </figcaption>
+        </figure>
+
+        <p>
+          The characteristic of the probability-based metaheuristic is that it uses probability to determine if the bit is chosen or not. Based on the probability characteristic, we proposed the probability model for analyzing the EC that has a probability matrix, such as QEA, EDA, and QTS. In order to make the probability change intuitively observable through color, the probability model uses the heatmap method, which uses a red-to-blue rainbow hue to present the bit's probability from 1 to 0 (<a href="#QTS01">Figure 6a</a>).
+        </p>
+
+        <p>
+          An EC called QTS uses probability to measure whether or not to choose the bit. Here, we use QTS to solve the 0/1 knapsack problem as an example. At the beginning of QTS's evolution process, the probability of every bit is set to half (0.5), so the display screen is almost green. The chance of being chosen and not chosen is the same, so items are randomly chosen. As the number of iterations increases (from <a href="#QTS01">Figure 6a</a> $\sim$ <a href="#QTS01">Figure 6d</a>), the color gradually turns from green to yellow, orange, and red on the left side screen. This means that the chosen probability gradually increases, which is because the knapsack's cost-performance ratio is higher the farther to the left. On the other side, the color changes from green to darker green, light blue, and dark blue. By progressively decreasing the probability of being selected, QTS gradually eliminates the knapsack of the low cost-performance ratio on the right side. Through the change in color, we can clearly and intuitively identify the change in probability. In addition, the system provides “detailed information” for users to see each bit's probability (<a href="#QTS01">Figure 6e</a>) if users want to check the exact number of probabilities. Clicking on the bit can see more information to analyze more precisely, including the bit's number, chosen or not, and probability.
+        </p>
+
+        <p>
+          When QTS ends (<a href="#QTS01">Figure 6f</a>), we can see that the left side screen is full of red color and the blue color is almost on the right side. There are a few blue columns in the red area. From a different perspective, the global best (GB) in <a href="#QTS01">Figure 6f</a> and the combinations in <a href="#QTS01">Figure 6g</a>, three columns (bits) that point by the arrow are not chosen. To find the best solution to this problem, the algorithm discards items with a high cost-performance ratio and picks the items with a lower cost-performance ratio. This is because the 0/1 knapsack problem's knapsack has entanglement (dependency) between each item under some constraints. That is why the 0/1 knapsack problem is an NP-complete problem and why it is interesting. In addition, in this 0/1 knapsack problem, the best combination is more than one. During the analysis in <a href="#QTS01">Figure 6h</a>, we can see that the algorithm finds a different global best solution.
+        </p>
+
+        <h3>3.File of General Combinatorial Optimization Interface</h3>
+
+        <div class="table-header">TABLE I: This table is the <i>epin</i> file of the general combinatorial optimization interface. The file includes generation number, each generation's best fitness, and the details of each generation's all combinations. (a) is the <i>epin</i> file's format. (b) is an example.</div>
+    
+        <table>
+            <tr>
+                <td>Particle :</td>
+            </tr>
+            <tr>
+                <td>*1 <span class="italic grey">1<sup>st</sup> Generation'sFitness</span>: <span class="italic grey">1<sup>st</sup> Combination</span>/<span class="italic grey">2<sup>nd</sup> Combination</span>/<span class="italic grey">...</span><span class="italic grey">m<sup>th</sup> Combination</span>/</td>
+            </tr>
+            <tr>
+                <td class="center">.</td>
+            </tr>
+            <tr>
+                <td class="center">.</td>
+            </tr>
+            <tr>
+                <td class="center">.</td>
+            </tr>
+            <tr>
+                <td  class="mid-border">*g <span class="italic grey">g<sup>th</sup> Generation'sFitness</span>: <span class="italic grey">1<sup>st</sup> Combination</span>/<span class="italic grey">2<sup>nd</sup> Combination</span>/<span class="italic grey">...</span><span class="italic grey">m<sup>th</sup> Combination</span>/</td>
+            </tr>
+            <tr>
+                <td>Particle :</td>
+            </tr>
+            <tr>
+                <td>*1 2: 2 Bag1 0,0.2,bit1 1,0.7,bit2 0,0.6,bit3/0 Bag2 0,0.2,bit1 0,0.7,bit2 0,0.6,bit3/...1 Bagm 0,0.2,bit1 0,0.7,bit2 1,0.6,bit3/</td>
+            </tr>
+            <tr>
+                <td>*2 4: 2 Bag1 0,0.2,bit1 1,0.8,bit2 0,0.7,bit3/4 Bag2 1,0.2,bit1 0,0.8,bit2 0,0.7,bit3/...3 Bagm 0,0.2,bit1 1,0.8,bit2 1,0.7,bit3/</td>
+            </tr>
+            <tr>
+                <td class="center">.</td>
+            </tr>
+            <tr>
+                <td class="center">.</td>
+            </tr>
+            <tr>
+                <td class="center">.</td>
+            </tr>
+            <tr>
+                <td>*100 7: 7 Bag1 1,0.3,bit1 1,0.9,bit2 1,0.9,bit3/4 Bag2 1,0.3,bit1 0,0.9,bit2 0,0.9,bit3/...3 Bagm 0,0.3,bit1 1,0.9,bit2 1,0.9,bit3/</td>
+            </tr>
+        </table>
+
+        <div class="table-header">TABLE II: This table is the combination's detail format in one generation from TABLE I. (a) is the <i>epin</i> file's format. (b) is an example.</div>
+        
+        <table>
+            <tr>
+                <td><span class="italic grey">m<sup>th</sup>Fitness</span> <span class="italic grey">m<sup>th</sup>Info</span> <span class="italic grey">1<sup>st</sup>Bit</span>,<span class="italic grey">1<sup>st</sup>BitProbability</span>,<span class="italic grey">1<sup>st</sup>BitName</span> <span class="italic grey">2<sup>nd</sup>Bit</span>,<span class="italic grey">2<sup>nd</sup>BitProbability</span>,<span class="italic grey">2<sup>nd</sup>BitName</span>... <span class="italic grey">n<sup>th</sup>Bit</span>,<span class="italic grey">n<sup>th</sup>BitProbability</span>,<span class="italic grey">n<sup>th</sup>BitName</span>/</td>
+            </tr>
+            <tr>
+                <td class="center">25 Bagm 1,0.2,bit1 0,0.7,bit2... 1,0.4,bitn/</td>
+            </tr>
+        </table>
+
+        <p>
+          For analyzing metaheuristics, users need to produce an <em>epin</em> file and load it into Evo-Panel 2.0. An <em>epin</em> file is a text file with a specific format that can be produced from any computer language that users use for metaheuristics. Using the <em>epin</em> file, users are not required to learn a new programming language. They can effortlessly generate the analysis file, allowing them to dedicate more time to studying and analyzing the metaheuristic.
+        </p>
+
+        <p>
+          TABLE I is the description format of the general combinatorial optimization interface's <em>epin</em> file, in which TABLE I (a) is the format of the <em>epin</em> file and TABLE I (b) is an example. In each combination, it is combined by n bits, and the format is shown in TABLE II. The display information is organized in accordance with this combination's fitness and information, then shows bits of this combination one by one. Detailed information about each bit includes whether the bit was chosen or not (0 or 1), its probability, and its name.
+        </p>
+      
+        <h3>Convergence Curves</h3>
+
+        <figure id="Converge" class="text-center" style="text-align: left;">
+          <div style="display: flex; justify-content: center; gap: 10px;">
+            <div style="text-align: center;">
+              <img src="img/02 Conveerge/Converge_GA_PrematureConvergence.svg" width="255" height="220">
+              <p>(a)</p>
+            </div>
+            <div style="text-align: center;">
+              <img src="img/02 Conveerge/Converge_GA_divergence.svg" width="255" height="220">
+              <p>(b)</p>
+            </div>
+            <div style="text-align: center;">
+              <img src="img/02 Conveerge/Converge_QTS_01_GB_Found620.svg" width="255" height="220">
+              <p>(c)</p>
+            </div>
+            <div style="text-align: center;">
+              <img src="img/02 Conveerge/Converge_GQTS&GA_01_LB.svg" width="255" height="220">
+              <p>(d)</p>
+            </div>
+            <div style="text-align: center;">
+              <img src="img/02 Conveerge/Converge_GQTS&GA_01_GB.svg" width="255" height="220">
+              <p>(e)</p>
+            </div>
+          </div>
+          <figcaption>
+            <strong>Figure 7:</strong> Convergence curves for GA and QTS. In the LB model, the user can analyze the convergence curves in each generation to evaluate the searching ability of metaheuristics, such as (a) prioritizing exploration before exploitation in the algorithm and (b) only exploration. (c) Meanwhile, the GB model in Evo-Panel 2.0 allows observation of the optimization process with the globally best fitness. (d) The line graph provides a visual representation of fitness trends and facilitates comparison between different algorithms. Within the LB model, the blue line algorithm shows erratic fluctuations and slow ascent. (e) Switching to the GB model, a clear divergence between the blue line algorithm's escape from local optima compared to the LB model becomes apparent. In this graph, the red line algorithm exhibits a quicker ascent, achieving the global optimum faster than the blue line algorithm.
+          </figcaption>
+        </figure>
+
+        <p>
+          Convergence curves, graphically represented within Evo-Panel 2.0 as line graphs, offer valuable insights into the assessment and comparison of metaheuristics. These graphical depictions reveal the dynamic alterations in fitness levels among metaheuristics, providing illumination on their effectiveness in achieving optimal solutions. Evo-Panel 2.0 offers two distinct approaches to evaluating the convergence of metaheuristics. The first approach is the local best found in each generation (LB model), depicted in <a href="#Converge">Figure 7a</a> and <a href="#Converge">Figure 7b</a>. <a href="#Converge">Figure 7a</a> indicates that after approximately the 360th generation, the algorithm consistently found solutions at 615, suggesting GA's exploration phase in the early stages and exploitation in the later stages. Meanwhile, <a href="#Converge">Figure 7b</a> demonstrates that GA's optimization process remains in the exploration phase, lacking convergence towards a specific solution group in the later stages. The LB model facilitates the assessment of a metaheuristic's convergence or divergence. The second approach is the global best found so far (GB model), depicted in <a href="#Converge">Figure 7c</a>. In the GB model, fitness progresses only when superior fitness is discovered, aligning with conventional convergence curve analysis.
+        </p>
+
+        <p>
+          Convergence curves establish a robust framework for evaluating diverse evolutionary computations (ECs) or their variations within the same EC methodology. Evo-Panel can analyze the convergence curves of two metaheuristics, GA and QTS, showcased in <a href="#Converge">Figure 7d</a> and <a href="#Converge">Figure 7e</a>, that QTS outpaces GA in that QTS achieves rapid fitness increases, whereas GA's progress is comparatively slower. The system offers both the LB model and the GB model for comparative analysis, enabling the discernment of breakthroughs from local or global optima and facilitating comparisons and analyses between algorithms.
+        </p>
+        
+        <h3>Deployment Optimization Interface</h3>
+
+        <!-- Equation 1 -->
+        <div class="equation">
+          <div class="formula">
+              $$P^{S_{xy}}_{g_{ij}}=
+              \left\{
+                  \begin{array}{ll}
+                      1, & \text{if } \|S_{xy}g_{ij}\| < R_{cof} \\\\
+                      \frac{1}{\|S_{xy}g_{ij}\|}, & \text{if } R_{cof} < \|S_{xy}g_{ij}\| \le R_{max} \\\\
+                      0, & \text{if } \|S_{xy}g_{ij}\| > R_{max}
+                  \end{array}
+              \right.$$
+          </div>
+          <div class="number">(1)</div>
+        </div>
+
+        <!-- Equation 2 -->
+        <div class="equation">
+            <div class="formula">
+                $$P^{S_{xy}}_{g_{ij}}=1-\left(\prod_{S \in \eta} \left(1-P_g\right)\right)$$
+            </div>
+            <div class="number">(2)</div>
+        </div>
+
+        <p>
+          The wireless sensor network (WSN) is widely used, including home automation, traffic detection or control, remote control robotic surgery in medicine, machine surveillance in industry, and detection of environmental fires. The deployment optimization problem, which is a specific form of the combinatorial optimization problem, is crucial for solving in wireless sensor networks problem. The deployment optimization problem's solution space is a two-dimensional map in which the problem needs to use the sensor as little as possible while satisfying the limited detection probability at each position (threshold). In this paper, a map is composed of a two-dimensional grid ($g_{ij}$). If the size of the map is $m*n$, then its width is $m$ and its length is $n$. Each grid point can only accommodate one sensor (<i>S</i>) at most. After placing the sensor, the detection probability is calculated based on the related-distance probabilistic detection model  [<a href="#ref_36">36</a>]. The detection probability ($P_{g_{ij}}^{S_{xy}}$) decreases with increasing distance from the sensor ($S_{xy}$). The detecting model has a confident and maximum radius convergence circle ($R_{cof}$ and $R_{max}$) (<a href="#Deploy_example">Figure 8a</a>). $R_{cof}$ is smaller than $R_{max}$. The confident radius convergence circle is the range of the sensor that must be detected, while the maximum radius convergence circle is the range of the sensor that can be detected, with signal strength decreasing with increasing distance. The detection probability calculation is separated into three situations (Equation 1): If Euclidean distance between the sensors and the grid point ($‖S_{xy} g_{ij}‖$) is in the confident circle, the sensor must be detected; hence, the chance of detection is 1. When the $‖S_{xy} g_{ij}‖$ is beyond the maximum circle, which indicates that it is outside the sensing radius, the chance of detection is 0. If the distance between the sensors and the grid point falls within the maximum circle but not the confident circle, the detection probability is equal to the reciprocal of ($‖S_{xy} g_{ij}‖$). Here, if the grid point is detected by more than two sensors, Equation 2 is used to calculate the detection probability, which means that the grid point is in the union of more than two sensors $R_{max}$.
+        </p>
+        
+        <p>
+          Deployment problems need a comprehensive view of the solution space because each position affects its neighborhood. The whole map of the solution space in Evo-Panel 2.0's deployment interface can help users observe the effect of the sensor on the surrounding position through the color change.
+        </p>
+
+        <h3>1.Function Introduction</h3>
+
+        <figure id="Deploy_example" class="text-center" style="text-align: left;">
+          <div style="display: flex; justify-content: center; gap: 10px;">
+            <div style="text-align: center;">
+              <img src="img/03 Deploy/Deploy_DetectionRange.svg" width="255" height="220">
+              <p>(a)</p>
+            </div>
+            <div style="text-align: center;">
+              <img src="img/03 Deploy/Deploy_9x9_1S.svg" width="255" height="220">
+              <p>(b)</p>
+            </div>
+            <div style="text-align: center;">
+              <img src="img/03 Deploy/Deploy_9x9_2S.svg" width="255" height="220">
+              <p>(c)</p>
+            </div>
+            <div style="text-align: center;">
+              <img src="img/03 Deploy/Deploy_5x5_0.3threshold.svg" width="255" height="220">
+              <p>(d)</p>
+            </div>
+          </div>
+          <div style="display: flex; justify-content: center; gap: 10px;">
+            <div style="text-align: center;">
+              <img src="img/03 Deploy/Deploy_5x5_1S.svg" width="255" height="220">
+              <p>(e)</p>
+            </div>
+            <div style="text-align: center;">
+              <img src="img/03 Deploy/Deploy_10x10_4S.svg" width="255" height="220">
+              <p>(f)</p>
+            </div>
+            <div style="text-align: center;">
+              <img src="img/03 Deploy/Deploy_20x20_16S.svg" width="255" height="220">
+              <p>(g)</p>
+            </div>
+            <div style="text-align: center;">
+              <img src="img/03 Deploy/Deploy_20x20_12S.svg" width="255" height="220">
+              <p>(h)</p>
+            </div>
+          </div>
+          <figcaption>
+            <strong>Figure 8:</strong> Example of deployment optimization interface. (a) The schematic illustration of a sensor's detection range. The black dot is the sensor. The orange and green regions are the confident and maximum radius convergence circles, respectively. (b) In a 9$\times$9 map, with $R_{cof}$ set at 1 and $R_{max}$ at 5, it showcases the detection probability and corresponding color for a single sensor. (c) In the case of a two-sensor map, the position in the central white box exhibits a higher detection probability since it benefits from the overlapping coverage of two sensors. (d) In the beginning, the uniform threshold is set to 0.3, which is shown in light blue. The satisfying proportion of the threshold (map check) is 0$\%$ before putting the sensor in the map. (e) In a 5$\times$5 map, it needs one sensor to satisfy the threshold. (f) When it goes to 10$\times$10 map, it needs 4 sensors. (g) With an increase in map size to 20$\times$20, a total of 16 sensors can be utilized to satisfy the threshold. (h) Based on Equation \ref{equ:Deployment_DetectionProbability_betweenSensors}, the 20$\times$20 map can decrease 4 sensors while still meeting the threshold.
+          </figcaption>
+        </figure>
+
+        <p>
+          In the deployment combinatorial optimization interface, the map size is dependent on the user's setting or the problem's constraint. One grid point denotes one place. The black color represents the sensor, while the red-to-blue rainbow hue indicates the system-calculated sensor detection probability from 1 to 0. For ease of presentation, we set $R_{cof}=1$, $R_{max}=5$, where The detectable range is a circular area. In <a href="#Deploy_example">Figure 8b</a>, the map size is 9*9, and the position's detection probability in $R_{cof}$ is 1, which is shown in red. The detectable range is a circular area. If the grid point is closer to the sensor (black grid point), the probability of detection ($P_{g_{ij}}^{S_{xy}}$) is higher. In contrast, the further the grid point is from the sensor (black grid point), the lower the probability of detection. If the grid point is within $R_{max}$ of more than two sensors (detected by more than two sensors), Equation \ref{equ:Deployment_DetectionProbability_betweenSensors} is used to calculate the probability of detection. Using <a href="#Deploy_example">Figure 8c</a> as an example, the position in the middle white box is detected by two sensors, therefore the detection probability is $1-(2/3\times2/3)\approx0.556$ and the color is yellow-green.
+        </p>
+
+        <p>
+          The Evo-Panel 2.0 draws the probability color at that position according to the color bar; if the position dissatisfies the threshold, the system slashes the position with a red line to distinguish and shows the threshold’s color in the grid point. <a href="#Deploy_example">Figure 8d</a> is an example of no sensor in the map. Each point has a uniform threshold of 0.3, denoting positions falling below this threshold with a slashed red line while displaying the corresponding light blue color representing the threshold value on the grid. Meanwhile, the “map check” shows the satisfying proportion of the threshold, that is, the number of grid points satisfying the threshold divided by the total number of grid points. This checker assists researchers in verifying if the map satisfies the deployment optimization problem’s restriction. As there is no sensor on the map, the "map check" in <a href="#Deploy_example">Figure 8d</a> shows a satisfactory proportion of $0\%$. We place one sensor in a 5$\times$5 map, since the map (<a href="#Deploy_example">Figure 8e</a>) needs one sensor to satisfy all positions' threshold. Then we doubled the map's size to 10x10. The 10x10 map necessitates at least 4 sensors to satisfy the threshold for each position (<a href="#Deploy_example">Figure 8f</a>). We keep twice the map size to 20x20, the map can use 16 sensors to satisfy the threshold (<a href="#Deploy_example">Figure 8g</a>). However, putting 16 sensors in <a href="#Deploy_example">Figure 8g</a> results in overlapping many detection areas. According to Equation 2, the sensor could be reduced while still satisfying all the position’s thresholds. Consequently, the 20x20 map only needs 12 sensors (<a href="#Deploy_example">Figure 8h</a>).
+        </p>
+
+        <figure id="Deploy_example_50x50" class="text-center" style="text-align: left;">
+          <div style="display: flex; justify-content: center; gap: 10px;">
+            <div style="text-align: center;">
+              <img src="img/03 Deploy/Deploy_50x50_0.3threshold.svg" width="255" height="220">
+              <p>(a)</p>
+            </div>
+            <div style="text-align: center;">
+              <img src="img/03 Deploy/Deploy50x50_QTS_300Beginning.svg" width="255" height="220">
+              <p>(b)</p>
+            </div>
+            <div style="text-align: center;">
+              <img src="img/03 Deploy/Deploy50x50_QTS_108Middle.svg" width="255" height="220">
+              <p>(c)</p>
+            </div>
+            <div style="text-align: center;">
+              <img src="img/03 Deploy/Deploy50x50_QTS_62End.svg" width="255" height="220">
+              <p>(d)</p>
+            </div>
+          </div>
+          <div style="display: flex; justify-content: center; gap: 10px;">
+            <div style="text-align: center;">
+              <img src="img/03 Deploy/Deploy_50x50_62_connect.svg" width="255" height="220">
+              <p>(e)</p>
+            </div>
+            <div style="text-align: center;">
+              <img src="img/03 Deploy/Deploy_50x50_62_box.svg" width="255" height="220">
+              <p>(f)</p>
+            </div>
+            <div style="text-align: center;">
+              <img src="img/03 Deploy/Deploy_50x50_58_not_fill.svg" width="255" height="220">
+              <p>(g)</p>
+            </div>
+            <div style="text-align: center;">
+              <img src="img/03 Deploy/Deploy_50x50_60.svg" width="255" height="220">
+              <p>(h)</p>
+            </div>
+          </div>
+          <figcaption>
+            <strong>Figure 9:</strong> An illustration of a deployment problem in Evo-Panel 2.0. (a) The threshold of 50x50 map size is uniformly set to 0.3. (b) In the early stage of the Entanglement-QTS search, this map is almost red due to the sensor's high density and extensive overlap. (c) In the middle stage, the number of sensors decreases, and some positions display a green color detection probability. (d) At the end of Entanglement-QTS, Evo-Panel 2.0 shows that the entire color of all positions is mostly green, indicating that Entanglement-QTS reduces the cost of the sensor and finds an optimal solution for 62 sensors. (e) Evo-Panel 2.0 shows a demonstration of the connectivity of sensors within a distance of five. (f) Utilizing Evo-Panel 2.0, users have the capacity to manually refine the algorithm's optimal solution. By removing a sensor within the white box, a successful reduction in sensor count is achieved while maintaining adherence to the constraints. (g) Observing <a href="#Deploy_example_50x50">Figure 9f</a>, we identified overcrowding in the black box, prompting the removal of three sensors, resulting in an incomplete map check. (h) Afterward, two sensors were placed within the black box to fulfill the threshold requirement across the entire map, marking the map check status as "complete" once more. Evo-Panel 2.0 enabled users to save data with the final optimized result.
+          </figcaption>
+        </figure>
+
+        <p>
+          Subsequently, we extend the map size from <a href="#Deploy_example">Figure 8h</a> to <a href="#Deploy_example_50x50">Figure 9a</a>, encompassing dimensions of 50x50 units. For the convenience of observation and analysis, the thresholds continue to be uniformly set at 0.3. The complexity increases exponentially with the size of the map since each grid position has two options to either place a sensor or not. Therefore, the deployment problem needs metaheuristics to search for an optimal solution. In the early stage of Entanglement-QTS’s [<a href="#ref_35">35</a>] search (<a href="#Deploy_example_50x50">Figure 9b</a>), the algorithm stochastically deploys the sensor such that there are several overlapping areas. As the iteration progresses to the middle stage, the metaheuristic finds that some sensors can be removed, resulting in some red areas decreasing gradually to yellow and green color (<a href="#Deploy_example_50x50">Figure 9c</a>). When Entanglement-QTS ended searching, it found a good solution that required just 62 sensors to satisfy the contraction (<a href="#Deploy_example_50x50">Figure 9d</a>). The majority of areas in <a href="#Deploy_example_50x50">Figure 9d</a> are green and light blue, indicating that the metaheuristic lets most positions' detection probability be near the threshold (light blue color). With the help of Evo-Panel 2.0, it’s easy to see the sensors evenly distributed in the 50x50 map. Besides, based on the distributed result of the deployment problem, some studies have expanded the problem to analyze the connection, as the base stations or sensors need to connect to each other. For example, if the distance between two sensors is too far, the quality of sending packages would decline or be lost. Consequently, Evo-Panel 2.0 additionally provides a function that can detect sensor connections (<a href="#Deploy_example_50x50">Figure 9e</a>). The connection distance is set by the user or protocol. The Evo-Panel 2.0 allows for the determination of the optimal configuration and optimal connections among individual sensors, thereby optimizing communication and information exchange to enhance overall system efficiency. Furthermore, it aids in identifying potential areas for improvement to create a more coordinated and efficient sensor deployment scheme.
+        </p>
+
+        <p>
+          With the help of Evo-Panel 2.0, researchers can observe the sensor distribution, whether any regions are too dense, and how the detection probability superposition occurs. Moreover, we could see if this problem has a better solution and then use the interactive system to quickly find a solution that is better than the metaheuristic. Through the interactive system, researchers could add or remove the sensor to adjust the result, therefore obtaining a better solution. In <a href="#Deploy_example_50x50">Figure 9f</a>, we discovered that the bottom left corner is somewhat dense. Therefore, we removed one sensor from the bottom left corner (white box), reducing the total number of sensors from 62 to 61. Next, we discovered that the middle black box’s sensor could also decrease. Therefore, we remove three sensors (<a href="#Deploy_example_50x50">Figure 9g</a>) and add two sensors in the black box (<a href="#Deploy_example_50x50">Figure 9h</a>). It still satisfies the threshold. In addition, we can save, photograph, or record a video of the improved result to do additional research, such as writing a paper.
+        </p>
+
+        <h3>2.File of Deployment Combinatorial Optimization Interface</h3>
+
+        <div class="table-header">TABLE III: The format and example <i>epin</i> file of the deployment combinatorial optimization interface. The file contains the map's size, sensing range, connection distance, threshold limit, and placement of each generation.</div>
+
+        <table>
+          <thead>
+              <tr>
+                  <th colspan="3" class="top-border"></th>
+              </tr>
+          </thead>
+          <tbody>
+              <tr>
+                  <td>1</td>
+                  <td>Map :</td>
+                  <td>Map :</td>
+              </tr>
+              <tr>
+                  <td>2</td>
+                  <td><span class="grey"><i>m</i> x <i>n</i></span></td>
+                  <td>3x3</td>
+              </tr>
+              <tr>
+                  <td>3</td>
+                  <td>Sensing_range : <span class="grey"><i>SensingRange</i></span></td>
+                  <td>Sensing_range : 3</td>
+              </tr>
+              <tr>
+                  <td>4</td>
+                  <td>Connect : <span class="grey"><i>ConnectionDistance</i></span></td>
+                  <td>Connect : 3</td>
+              </tr>
+              <tr>
+                  <td>5</td>
+                  <td>Limit :</td>
+                  <td>Limit :</td>
+              </tr>
+              <tr>
+                  <td>6</td>
+                  <td></td>
+                  <td>0.3 0.3 0.3</td>
+              </tr>
+              <tr>
+                  <td>7</td>
+                  <td><span class="grey"><i>EachPosition'sThreshold</i></span></td>
+                  <td>0.3 0.3 0.3</td>
+              </tr>
+              <tr>
+                  <td>8</td>
+                  <td></td>
+                  <td>0.3 0.3 0.3</td>
+              </tr>
+              <tr>
+                  <td>9</td>
+                  <td>Particle :</td>
+                  <td>Particle :</td>
+              </tr>
+              <tr>
+                  <td>10</td>
+                  <td>*1 <span class="grey"><i>ThisGeneration'sFitness</i></span> :</td>
+                  <td>*1 4 :</td>
+              </tr>
+              <tr>
+                  <td>11</td>
+                  <td></td>
+                  <td>1 0 0</td>
+              </tr>
+              <tr>
+                  <td>12</td>
+                  <td><span class="grey"><i>Sensor'sPosition</i></span></td>
+                  <td>0 1 1</td>
+              </tr>
+              <tr>
+                  <td>13</td>
+                  <td class="makecell">...</td>
+                  <td class="makecell">...</td>
+              </tr>
+              <tr>
+                  <td>14</td>
+                  <td>*<span class="grey"><i>g ThisGeneration'sFitness</i></span> :</td>
+                  <td>*100 2 :</td>
+              </tr>
+              <tr>
+                  <td>15</td>
+                  <td></td>
+                  <td>0 0 1</td>
+              </tr>
+              <tr>
+                  <td>16</td>
+                  <td><span class="grey"><i>Sensor'sPosition</i></span></td>
+                  <td>0 0 0</td>
+              </tr>
+              <tr>
+                  <td>17</td>
+                  <td></td>
+                  <td>1 0 0</td>
+              </tr>
+          </tbody>
+          <tfoot>
+              <tr>
+                  <th colspan="3" class="bottom-border"></th>
+              </tr>
+          </tfoot>
+        </table>
+
+        <p>
+          The deployment problem is one kind of discrete value-encoded problem that needs to consider the whole map since each sensor can affect the detection probability of nearby positions. TABLE III is the <i>epin</i> file of the deployment combinatorial optimization interface. The left section of TABLE III delineates the required format necessary for user-generated outputs to ensure compatibility with Evo-Panel 2.0. Meanwhile, the right side of TABLE III presents an illustrative <i>epin</i> file, serving as an example of a deployment combinatorial optimization interface.
+        </p>
+
+        <h3>Permutation Combinatorial Optimization Interface</h3>
+
+        <p>
+          In combinatorial optimization problems, solutions are often represented as permutations, as exemplified by the classic Traveling Salesman Problem (TSP). In the TSP, a fixed number of cities are involved, each with its own distinct spatial coordinates. Consider a TSP instance with $n$ cities, wherein the objective is for the salesman to visit each city precisely once before returning to the starting point. The computational complexity of this problem increases factorially with the number of locations, posing a challenge in devising strategies to minimize time and cost. Evo-Panel 2.0 features a dedicated interface tailored for permutation optimization problems, specifically designed for addressing challenges like those posed by TSP. Our interface offers a comprehensive view of the entire route and evolutionary progression, alongside numerous functionalities such as zooming and pausing, facilitating in-depth analysis.
+        </p>
+
+        <h3>1.Function Introduction</h3>
+
+        <figure id="ACO_burma14" class="text-center" style="text-align: left;">
+          <div style="display: flex; justify-content: center; gap: 10px;">
+            <div style="text-align: center;">
+              <img src="img/04 Arrange/Arrange_ACO_burma14_1st.svg" width="255" height="220">
+              <p>(a)</p>
+            </div>
+            <div style="text-align: center;">
+              <img src="img/04 Arrange/Arrange_ACO_burma14_Mid.svg" width="255" height="220">
+              <p>(b)</p>
+            </div>
+            <div style="text-align: center;">
+              <img src="img/04 Arrange/Arrange_ACO_burma14_Post.svg" width="255" height="220">
+              <p>(c)</p>
+            </div>
+            <div style="text-align: center;">
+              <img src="img/04 Arrange/Arrange_ACO_burma14_End.svg" width="255" height="220">
+              <p>(d)</p>
+            </div>
+          </div>
+          <div style="display: flex; justify-content: center; gap: 10px;">
+            <div style="text-align: center;">
+              <img src="img/04 Arrange/Arrange_ACO_burma14_End_PathUsage.svg" width="255" height="220">
+              <p>(e)</p>
+            </div>
+            <div style="text-align: center;">
+              <img src="img/04 Arrange/Arrange_ACO_burma14_End_Zoomin_Info.svg" width="255" height="220">
+              <p>(f)</p>
+            </div>
+            <div style="text-align: center;">
+              <img src="img/04 Arrange/Arrange_ACO_burma14_End_Reset_noGrid.svg" width="255" height="220">
+              <p>(g)</p>
+            </div>
+            <div style="text-align: center;">
+              <img src="img/04 Arrange/Arrange_ACO_burma14_End_Info.svg" width="255" height="220">
+              <p>(h)</p>
+            </div>
+          </div>
+          <figcaption>
+            <strong>Figure 10:</strong> The demonstration of a permutation problem in Evo-Panel 2.0. (a) The system displays the location; the x1- and x2-axis represent the coordinates according to the log file. One black point represents one location. The system draws the road color according to the distance. This picture shows the beginning of ACO solving Burma 14. (b) As the iteration increases, ACO finds a better solution, which path length is 7353. (c) In the later stages of ACO's evolutionary process, it discovers a route connecting all cities through a shorter path, resulting in cooler color representations (ranging from green to dark blue) for all paths. (d) At the end of ACO, it finds an optimal solution that all the path colors are close to blue. The path is the shortest solution in Burma 14, in which the fitness is 3505. (e) By disabling the “align grid line” and enabling the “path usage,” the system displays the path traversed by the metaheuristic. These functions can assist users in analyzing the metaheuristic's properties and trends. All gray roads are those that are being abandoned by ACO. (f) Increasing the magnification (zooming in) and moving closer to an unclear location in order to observe it more clearly. Here we can see both of these cities are located along the same x2-axis. In addition, clicking the location (city) can reveal additional information, such as the location's name and coordinates. (g) Users can return to the initial solution space at any preferred generation after the adjustment, which displays the overview paths. (h) The "detailed information" can display the exact path length for each path.
+          </figcaption>
+        </figure>
+
+        <p>
+          Evo-Panel 2.0 can display the algorithmic process in permutation and linear problems. Taking TSP solving Burma 14 (one of TSP problems in the TSP library [<a href="#ref_37">37</a>]) as an example, the system draws the user-specified map, x1- and x2-axis coordinated positions, and every location on the map (<a href="#ACO_burma14">Figure 10a</a>). The system displays both the solution space and the algorithm's process in the middle. The black dot represents all the locations (cities) in Burma 14, which has 14 cities that the salesman must visit. When the algorithm begins, the system draws the road in a red-to-blue hue based on distance. The distance corresponds with the color bar on the right-hand side of the screen. The color is closer to red if the distance is longer and closer to blue if the distance is shorter. Evo-Panel 2.0 displays the changes in roads as the number of iterations increases (from <a href="#ACO_burma14">Figure 10a</a> to <a href="#ACO_burma14">Figure 10d</a>). Researchers can easily determine whether the metaheuristic changed the path or which shortest road was found by the metaheuristic. At the beginning of ant colony optimization (ACO), some roads are red or orange because the metaheuristic has not yet discovered shorter paths. As the metaheuristic continues, the red line decreases (<a href="#ACO_burma14">Figure 10b</a>). When the evolutionary process goes to the post-period, as depicted in <a href="#ACO_burma14">Figure 10c</a>, most roads are green, which means the metaheuristic found an optimal path. At the end of the evolutionary process (<a href="#ACO_burma14">Figure 10d</a>), metaheuristics find the shortest path in Burma 14.
+        </p>
+
+        <p>
+          After outlining the ACO process, we proceed to introduce several functionalities within the permutation interface. In <a href="#ACO_burma14">Figure 10e</a>, we deactivate the “aligned grid line” while activating the "path usage" feature to enhance graph visibility. The "aligned grid line" serves as an auxiliary guide for city alignment, while the “path usage” function provides insights into road alterations. By comparing current and prior paths, it enables an analysis of metaheuristic trends. The varying shades of gray denote the recency of road usage, allowing users to discern the most recently traversed routes. Lighter shades indicate older generations, whereas darker shades signify more recent generations. In <a href="#ACO_burma14">Figure 10e</a>, the track fades and becomes whiter with the time of metaheuristic not go, indicating that the ant's pheromone volatilizes over time. Researchers can analyze if the metaheuristic expends computational time redundantly, thereby enabling the identification of areas with potential for enhancement. Besides, the interface in Evo-Panel 2.0 can be "zoomed in" and "moved" to the area of interest (<a href="#ACO_burma14">Figure 10f</a>) to analyze two nearby locations. “Zoom-in” and “zoom-out” allow users to analyze the solution space with greater detail and a broader perspective. If you move the mouse over a city, our visualization tool can display information about the city, including the city's name and the location of the x1 and x2 axes. When we move the mouse over these two nearby cities in <a href="#ACO_burma14">Figure 10f</a>, the system shows that their x2-axis coordinates are identical. After observing particular regions, we can “reset solution space” to quickly return to the initial solution space (<a href="#ACO_burma14">Figure 10g</a>). After adjusting the solution space through zooming in and out, it is simple to reset it with one click. In the end, we can view “detailed information” regarding the length of all paths (<a href="#ACO_burma14">Figure 10h</a>), allowing us to carefully examine each path and conduct additional research.
+        </p>
+
+        <h3>2.File of Permutation Combinatorial Optimization Interface</h3>
+
+        <div class="table-header">TABLE IV: This table represents the <i>epin</i> file of the permutation combinatorial optimization interface. The file contains the problem type, x-axis range, y-axis range, the positions of all the cities, and each generation's detailed information. The detailed information for each generation includes the generation number, each generation's fitness, and the order of positions.</div>
+
+        <table>
+          <tbody>
+              <tr>
+                  <td colspan="1" class="top-border">TSP :</td>
+              </tr>
+              <tr>
+                  <td>XRange : <span class="grey"><i>MinimumX-axisValue</i> ~ <i>MaximumX-axisValue</i></span></td>
+              </tr>
+              <tr>
+                  <td>YRange : <span class="grey"><i>MinimumY-axisValue</i> ~ <i>MaximumY-axisValue</i></span></td>
+              </tr>
+              <tr>
+                  <td>Position : <span class="grey"><i>Position-1,x-axis,y-axis Position-2,x-axis,y-axis ... Position-n,x-axis,y-axis</i></span></td>
+              </tr>
+              <tr>
+                  <td>*1 <span class="grey"><i>ThisGeneration'sFitness</i></span>: <span class="grey"><i>Position'sOrder</i></span></td>
+              </tr>
+              <tr>
+                  <td class="makecell">.<br>.<br>.</td>
+              </tr>
+              <tr>
+                  <td colspan="1" class="mid-border">*<span class="grey"><i>g</i></span> <span class="grey"><i>ThisGeneration'sFitness</i></span>: <span class="grey"><i>Position'sOrder</i></span></td>
+              </tr>
+              <tr>
+                <td>TSP :</td>
+              </tr>
+              <tr>
+                  <td>XRange : 10 ~ 30</td>
+              </tr>
+              <tr>
+                  <td>YRange : 90 ~ 100</td>
+              </tr>
+              <tr>
+                  <td>Position : position-1,16.47,96.10 position-2,16.47,94.44 position-3,20.09,92.54 position-4,22.39,93.37 position-5,25.23,97.24</td>
+              </tr>
+              <tr>
+                  <td>*1 3141: position-1,position-5,position-4,position-2,position-3</td>
+              </tr>
+              <tr>
+                  <td colspan="1" class="bottom-border"></td>
+              </tr>
+          </tbody>
+        </table>
+
+        <p>
+          The permutation combinatorial optimization problem is one kind of combinatorial optimization problem in which the solution is in order. TABLE IV is the format and example <i>epin</i> file of the traveling salesman problem. Users have the flexibility to employ various programming languages to execute their algorithms and generate a text file encapsulating both the algorithmic logic and problem-related data.
+        </p>
+      </section>
+
+      <section id="Case Study">
+        <h2>IV. Case Study</h2>
+
+        <p>
+          Evo-Panel 2.0 serves as a valuable visual aid for analyzing a variety of algorithms and optimization problems across different user groups. It aids teachers in presenting algorithms and optimization problems more comprehensively, enables students to gain clarity on their functionality, and empowers researchers to deeply explore the connections between diverse algorithms and optimization problems. Consequently, guided by user feedback, we demonstrate the three practical applications of Evo-Panel 2.0 in real-world optimization scenarios. The first segment utilizes the global-best guided quantum-inspired tabu search with a quantum-not gate (GNQTS) [<a href="#ref_38">38</a>]-[<a href="#ref_39">39</a>] to resolve stock selection challenges. Subsequently, the second part replicates real-world placement dilemmas. Finally, the third part leverages maps of America and Europe to simulate practical travel-related issues. This demonstration highlights the broad versatility of Evo-Panel 2.0, showcasing its applicability across various algorithmic domains and optimization problems.
+        </p>
+
+        <h3>General Combinatorial Optimization Interface and Convergence Curves</h3>
+
+        <figure id="GNQTS_example" class="text-center" style="text-align: left;">
+          <div style="display: flex; justify-content: center; gap: 10px;">
+            <div style="text-align: center;">
+              <img src="img/01 Binary/Binary_Prob_GNQTS_stock_Early.svg" width="255" height="220">
+              <p>(a)</p>
+            </div>
+            <div style="text-align: center;">
+              <img src="img/01 Binary/Binary_General_GNQTS_stock_Early.svg" width="255" height="220">
+              <p>(b)</p>
+            </div>
+            <div style="text-align: center;">
+              <img src="img/01 Binary/Binary_Gerenal_GNQTS_stock_199th.svg" width="255" height="220">
+              <p>(c)</p>
+            </div>
+            <div style="text-align: center;">
+              <img src="img/01 Binary/Binary_Gerenal_GNQTS_stock_199th_Info.svg" width="255" height="220">
+              <p>(d)</p>
+            </div>
+            <div style="text-align: center;">
+              <img src="img/01 Binary/Binary_Prob_GNQTS_stock_Mid.svg" width="255" height="220">
+              <p>(e)</p>
+            </div>
+          </div>
+          <div style="display: flex; justify-content: center; gap: 10px;">
+            <div style="text-align: center;">
+              <img src="img/01 Binary/Binary_Prob_GNQTS_stock_MidPost_QNot.svg" width="255" height="220">
+              <p>(f)</p>
+            </div>
+            <div style="text-align: center;">
+              <img src="img/01 Binary/Binary_Prob_GNQTS_stock_End.svg" width="255" height="220">
+              <p>(g)</p>
+            </div>
+            <div style="text-align: center;">
+              <img src="img/01 Binary/Binary_General_GNQTS_stock_End.svg" width="255" height="220">
+              <p>(h)</p>
+            </div>
+            <div style="text-align: center;">
+              <img src="img/02 Conveerge/Converge_GNQTS_stock.svg" width="255" height="220">
+              <p>(i)</p>
+            </div>
+          </div>
+          <figcaption>
+            <strong>Figure 11:</strong> Optimization process analysis of GNQTS in the stock selection problem. (a) The initial probability selected for stocks, set at half (0.5), is visually represented by the color green on the screen. (b) In the initial phase, with a probability close to $50\%$, stocks are randomly selected, resulting in a staggered pattern in the interface. (c) As the iteration advances, GNQTS progressively reduces the number of selected stocks to enhance returns and mitigate risks. (d) Users can display the names of stocks in each investment portfolio. (e) In the intermediate stage, GNQTS gravitates toward a superior portfolio while distancing itself from the inferior, resulting in a shift in probability's color towards orange and blue. (f) In the yellow box, GNQTS discovers a better portfolio in the $2945^{th}$ generation and uses the quantum-not gate to jump out of local optima. Therefore, the stock's color (probability) has changed from red to blue. (g) As the algorithm goes to the end, the color (probability) turns dark red and blue, and (h) the GNQTS converge to an optimal portfolio according to the chosen probability. (i) The convergence describes the varying fitness of the algorithm at various stages. The GNQTS continues to rise in the early stages and reaches its global maximum in the middle stage. Additionally, in the $2945^{th}$ generation, after the quantum-not gate operation, the fitness notably increased.
+          </figcaption>
+        </figure>
+
+        <p>
+          Evo-Panel 2.0 is a powerful analysis tool for benchmark functions as well as real-world applications of various combinatorial optimization problems. This subsection uses GNQTS to solve the stock selection problem as an example. The stock selection problem is a real-world application of a general combinatorial optimization problem. In this stock selection example, one bit corresponds to one stock. The combinatorial is composed of the NASDAQ 100 index of the U.S. stock market. The trend ratio [<a href="#ref_40">40</a>] guides the algorithm in its search for a portfolio with a high-return and low-risk profile.
+        </p>
+        
+        <p>
+          GNQTS is a probability-based metaheuristic for combinatorial optimization problems, which means it chooses stocks based on the probability of each stock. The guiding principle behind GNQTS involves the pursuit of favorable stocks while actively evading unfavorable ones. In the early stage, the chosen probability is set to half (0.5), and the color is around green in <a href="#GNQTS_example">Figure 11a</a>, so the portfolio in <a href="#GNQTS_example">Figure 11b</a> is staggered (the black and white colors are staggered).  As the iteration goes, <a href="#GNQTS_example">Figure 11c</a> selects fewer stocks than <a href="#GNQTS_example">Figure 11b</a>.  Additionally, the detailed information can assist users in observing and analyzing which stock was selected by metaheuristic. Here, <a href="#GNQTS_example">Figure 11c</a> depicts the portfolio from $181^{th}$ to $191^{th}$ generation. Corresponding to <a href="#GNQTS_example">Figure 11d</a>, the “detailed information” indicates which NASDAQ 100 stock is selected. As the research progresses to the intermediate stage (<a href="#GNQTS_example">Figure 11e</a>), the algorithm finds the trend and increases the probability of the best portfolio, so the probability starts moving to orange or light blue colors, even red or blue colors.
+        </p>
+
+        <p>
+          In <a href="#GNQTS_example">Figure 11f</a>, a single stock is chosen by the global best portfolio, prompting GNQTS to utilize the quantum-not gate for navigating away from local optima (as depicted by the shift from blue to red within the yellow box). As the algorithm progresses towards completion (<a href="#GNQTS_example">Figure 11g</a>), the colors transition to dark blue or dark red. Consequently, as illustrated in the probability plot in <a href="#GNQTS_example">Figure 11g</a>, the algorithm discards stocks with a probability of 0 (shown in dark blue) while retaining favorable stocks with a chosen probability of 1 (depicted in dark red) in <a href="#GNQTS_example">Figure 11h</a>. The convergence curves in <a href="#GNQTS_example">Figure 11i</a> serve as a concise representation of the algorithm's performance, offering insights into the moments of discovering a promising portfolio and the overall trend during the quest for the optimal solution.
+        </p>
+        
+        <p>
+          Through the use of the Evo-Panel to analyze algorithms for solving stock selection problems, researchers can acquire additional algorithmic insights from the visual interface. This includes evaluating whether the problem-solving process aligns with the designated methodology, tracking the evolution of the global best portfolio, and determining the convergence status of the algorithm, among other aspects. All this information contributes significantly to the effective refinement and enhancement of metaheuristics.
+        </p>
+
+        <h3>Deployment Optimization Interface</h3>
+
+        <figure id="Deploy_fire" class="text-center" style="text-align: left;">
+          <div style="display: flex; justify-content: center; gap: 10px;">
+            <div style="text-align: center;">
+              <img src="img/03 Deploy/Deploy_50x50fire_threshold.svg" width="255" height="220">
+              <p>(a)</p>
+            </div>
+            <div style="text-align: center;">
+              <img src="img/03 Deploy/Deploy_50x50fire_136.svg" width="255" height="220">
+              <p>(b)</p>
+            </div>
+            <div style="text-align: center;">
+              <img src="img/03 Deploy/Deploy_50x50fire_136_connect.svg" width="255" height="220">
+              <p>(c)</p>
+            </div>
+          </div>
+          <div style="display: flex; justify-content: center; gap: 10px;">
+            <div style="text-align: center;">
+              <img src="img/03 Deploy/Deploy_50x50fire_136_box.svg" width="255" height="220">
+              <p>(d)</p>
+            </div>
+            <div style="text-align: center;">
+              <img src="img/03 Deploy/Deploy_50x50fire_134.svg" width="255" height="220">
+              <p>(e)</p>
+            </div>
+            <div style="text-align: center;">
+              <img src="img/03 Deploy/Deploy_50x50fire_133.svg" width="255" height="220">
+              <p>(f)</p>
+            </div>
+          </div>
+          <figcaption>
+            <strong>Figure 12:</strong> The analysis and optimization of real-world fire detection applications. (a) The threshold of the 50x50 fire detection map. (b) The final result has three dense regions similar to <a href="#Deploy_fire">Figure 12a</a>, satisfying the map threshold. (c) By observing the connectivity of \ref{fig:Deploy_50x50fire_136}, the three major hotspots are interconnected. This solution appears to be the best, but further optimization is possible. Evo-Panel 2.0 visualizes the results, enabling users to optimize the outcomes achieved by the metaheuristics, as depicted in Figs. (d) to (f).
+          </figcaption>
+        </figure>
+
+        <p>
+          As previously stated, the deployment problem can be used for many applications, including fire detection, surveillance camera monitoring, and base station communication. Real business deployment problems involve a variety of situations, which may require a different threshold for each position in order to meet a variety of situations. The threshold could be based on historical data such as the occurrence probability of fires, crimes, automobile accidents, traffic jams, etc. To handle a variety of situations, the map can be created with varying sizes, and each grid point can define the limit-detecting probability (threshold) individually.
+        </p>
+
+        <p>
+          In the deployment optimization case study, we investigate the deployment optimization problem within the context of three specified hotspots as delineated in <a href="#Deploy_fire">Figure 12a</a>. Within these three hotspot regions, there is a notable demand for increased sensor, camera, or station density to achieve higher detection probability thresholds. This specific problem exhibits complexity beyond the uniform threshold, more closely resembling real-world scenarios. The outcomes obtained by employing Entanglement-QTS to address this three-hotspot problem are evident in <a href="#Deploy_fire">Figure 12b</a>, mirroring the pattern observed in <a href="#Deploy_fire">Figure 12a</a>. Both <a href="#Deploy_fire">Figure 12a</a> and <a href="#Deploy_fire">Figure 12b</a> manifest areas with dense concentrations of three sensors, signifying the algorithm's success in optimizing the deployment based on threshold considerations.
+        </p>
+
+        <p>
+          The subsequent analysis pertains to connectivity, a pivotal aspect aimed at augmenting communication and information interchange among sensors, thereby fostering a more cohesive and efficient system. <a href="#Deploy_fire">Figure 12c</a> delineates the interlinkages derived from <a href="#Deploy_fire">Figure 12b</a> across five distances. Through Evo-Panel 2.0 analysis, it becomes apparent that the three hotspot areas exhibit high interconnections, whereas the sensors in the lower-left region operate independently, lacking interlinkages. This observation underscores the stable connectivity within the hotspot regions, suggesting room for further optimization of connectivity in the lower-left quadrant by the algorithm.
+        </p>
+
+        <p>
+          Furthermore, upon scrutiny, it is discernible that each white box within <a href="#Deploy_fire">Figure 12d</a> encompasses a pair of closely situated sensors. Employing an interactive feature within the Evo-Panel 2.0 interface, we systematically eliminate one sensor from each white box, as depicted in <a href="#Deploy_fire">Figure 12d</a>. Subsequent scrutiny, as portrayed in <a href="#Deploy_fire">Figure 12e</a>, demonstrates consistent adherence to the prescribed detection threshold across all grid points. Notably, closer examination reveals a marginal elevation in detection probability within the enclosed black area situated in the lower-left corner of <a href="#Deploy_fire">Figure 12e</a>. Strategically reconfiguring the setup by replacing three sensors from <a href="#Deploy_fire">Figure 12e</a> with two sensors effectively aligns with the specified threshold criteria, as elucidated in <a href="#Deploy_fire">Figure 12f</a>. This final configuration reflects a reduction of three sensors while ensuring compliance with the detection probability threshold, validated by the "Complete" status indicated by the map checker tool.
+        </p>
+     
+        <h3>Arrangement Optimization Interface</h3>
+        
+        <p>
+          In recent years, a well-developed network and the COVID-19 pandemic have contributed to the widespread adoption of online platforms for ordering food or groceries, such as food delivery and online shopping platforms. To deliver goods to consumers as soon as possible while minimizing costs, the delivery company needs to plan the shortest route possible. Therefore, finding the quickest route in real-world TSP applications is greatly regarded by businesses and consumers. However, the complexity of the TSP problem increases factorially with n location. The computer has its limitations and cannot quickly find the optimal solution. Through the visualization tool Evo-Panel 2.0, users can intuitively analyze the results of metaheuristics. With the interactive function, users can further improve the algorithm's output or generate their own path to minimize costs.
+        </p>
+
+        <figure id="Arrange_att48" class="text-center" style="text-align: left;">
+          <div style="display: flex; justify-content: center; gap: 10px;">
+            <div style="text-align: center;">
+              <img src="img/04 Arrange/Arrange_att48_dot(noLine).svg" width="255" height="220">
+              <p>(a)</p>
+            </div>
+            <div style="text-align: center;">
+              <img src="img/04 Arrange/Arrange_att48_before.svg" width="255" height="220">
+              <p>(b)</p>
+            </div>
+            <div style="text-align: center;">
+              <img src="img/04 Arrange/Arrange_att48_after.svg" width="255" height="220">
+              <p>(c)</p>
+            </div>
+            <div style="text-align: center;">
+              <img src="img/04 Arrange/Arrange_att48_after_Record.svg" width="255" height="220">
+              <p>(d)</p>
+            </div>
+          </div>
+          <figcaption>
+            <strong>Figure 13:</strong> The TSP applications list the largest cities on a map of the United States. (a) The red-to-blue rainbow hue represents the length of the path. Commencing the journey from any city and concluding it in the same city is permissible. (b) This is an optimal arrangement from a metaheuristic. Through the visualization tool, it is evident that further optimization of this solution is feasible. (c) Utilizing Evo-Panel 2.0, researchers have the capability to remove and subsequently reconnect the routes. (d) Additionally, users have multiple options to save the process and outcome, including video recording, image capture, and result storage.
+          </figcaption>
+        </figure>
+        
+        <p>
+          Evo-Panel 2.0 is an interactive visualization tool as well. We provide an interactive function that enables users to connect or modify the line to create or enhance a path. The user could start with an empty map (<a href="#Arrange_att48">Figure 13a</a>) or the result of metaheuristics (<a href="#Arrange_att48">Figure 13b</a>) to solve the TSP problem of att48 [<a href="#ref_37">37</a>], which is 48 capitals of the US. Users can begin "recording" in either <a href="#Arrange_att48">Figure 13a</a> or <a href="#Arrange_att48">Figure 13b</a> to record the change process. If users begin with an empty map similar to <a href="#Arrange_att48">Figure 13a</a>, they could connect each city/capital one by one and return to the starting city. If users begin with the result of the metaheuristic shown in <a href="#Arrange_att48">Figure 13b</a>, they can delete the road connection and reconnect new roads whatever they want. The improved final result is depicted in <a href="#Arrange_att48">Figure 13c</a>, which represents the shortest path for this problem [<a href="#ref_37">37</a>]. Once the process is completed, we can stop recording, take a picture, and save the improved result (<a href="#Arrange_att48">Figure 13d</a>). Furthermore, researchers can use the results to conduct additional research, create reports, and compose papers.
+        </p>      
+      </section>
+     
+      <section id="conclusion">
+        <h2>V. Conclusion</h2>
+        <p>
+          Evo-Panel 2.0 stands as an invaluable and precise tool, providing dynamic visual representations of metaheuristic algorithms solving combinatorial optimization problems. Firstly, it replaces extensive textual data with a visualization interface, streamlining algorithms and optimization problem analyses through vivid graphical depictions. Visualization expedites analytical processes, renders tedious tasks more engaging, deepens user comprehension of metaheuristic concepts and optimization problems, and liberates mental resources for future algorithmic enhancements. Secondly, Evo-Panel 2.0 offers versatile interfaces catering to distinct characteristics of combinatorial optimization problems, including general 'choose or not' interfaces, deployment interfaces for solutions with strong dependencies, and permutation interfaces for sequential solutions. Additionally, it incorporates a probability model tailored for probabilistic metaheuristics. Thirdly, our visualization tool offers interactive features, such as media player control bars for meticulous algorithmic observation and sensor manipulation within the deployment interface to refine metaheuristic solutions. Fourthly, Evo-Panel 2.0's compatibility with all metaheuristics and optimization technologies, sans the need for specific programming knowledge for analysis file generation, underscores its flexibility. Lastly, the visualization tool helps eXplainable Artificial Intelligence (XAI) by making it easier to understand how computational intelligence works and revealing hidden insights that can help developers make better, easier to understand metaheuristics that can be used to solve a wide range of business optimization problems.
+        </p>
+      </section>
+      <!-- References section -->
+      <section class="references">
+        <h2>References</h2>
+        <ol>
+          <li id="ref_1">
+            A Meet-in-the-Middle Algorithm for Fast Synthesis of Depth-Optimal Quantum Circuits
+            <br>
+            <span>
+              Amy, M.; Maslov, D.; Mosca, M.; Roetteler, M., 2013. 
+              IEEE Transactions on Computer-Aided Design of Integrated Circuits and Systems, 32(6), pp. 818--830. 
+              DOI: 10.1109/TCAD.2013.2244643
+            </span>
+          </li>
+          <li id="ref_2">
+            A Rule-Based Dynamic Decision-Making Stock Trading System Based on Quantum-Inspired Tabu Search Algorithm
+            <br>
+            <span>
+              Chou, Y.-H.; Kuo, S.-Y.; Chen, C.-Y.; Chao, H.-C., 2014. 
+              IEEE Access, 2, pp. 883--896. 
+              DOI: 10.1109/ACCESS.2014.2352261
+            </span>
+          </li>
+          <li id="ref_3">
+            Optimization method of linear barrier coverage deployment for multistatic radar
+            <br>
+            <span>
+              Li, H.; Feng, D.; Wang, X., 2022. 
+              Journal of Systems Engineering and Electronics, pp. 1--13. 
+              DOI: 10.23919/JSEE.2022.000124
+            </span>
+          </li>
+          <li id="ref_4">
+            Particle Swarm Optimization in Wireless-Sensor Networks: A Brief Survey
+            <span>
+              Kulkarni, R. V.; Venayagamoorthy, G. K., 2011. 
+              IEEE Transactions on Systems, Man, and Cybernetics, Part C (Applications and Reviews), 41(2), pp. 262--267. 
+              DOI: 10.1109/TSMCC.2010.2054080
+            </span>
+          </li>
+          <li id="ref_5">
+            Deep Reinforcement Learning Based Optimization Algorithm for Permutation Flow-Shop Scheduling
+            <span>
+              Pan, Z.; Wang, L.; Wang, J.; Lu, J., 2021. 
+              IEEE Transactions on Emerging Topics in Computational Intelligence, pp. 1--12. 
+              DOI: 10.1109/TETCI.2021.3098354
+            </span>
+          </li>
+          <li id="ref_6">
+            Adaptation in Natural and Artificial Systems
+            <span>
+              Holland, J.H., 1975. 
+              The University of Michigan Press.
+            </span>
+          </li>
+          <li id="ref_7">
+            Particle Swarm Optimization
+            <span>
+              Kennedy, J.; Eberhart, R., 1995. 
+              In IEEE International Conference on Neural Networks, pp. 1942--1948.
+            </span>
+          </li>
+          <li id="ref_8">
+            Ant System: Optimization by a Colony of Cooperating Agents
+            <span>
+              Dorigo, M.; Maniezzo, V.; Colorni, A., 1996. 
+              IEEE Transactions on Systems, Man, and Cybernetics, Part B: Cybernetics, 26(1), pp. 29--41.
+            </span>
+          </li>
+          <li id="ref_9">
+            An Introduction and Survey of Estimation of Distribution Algorithms
+            <span>
+              Hauschild, M.; Pelikan, M., 2011. 
+              Swarm and Evolutionary Computation, 1(3), pp. 111--128. Elsevier.
+            </span>
+          </li>
+          <li id="ref_10">
+            Quantum-inspired Evolutionary Algorithm for a Class of Combinatorial Optimization
+            <span>
+              Han, K.-H.; Kim, J.-H., 2002. 
+              IEEE Transactions on Evolutionary Computation, 6(6), pp. 580--593.
+            </span>
+          </li>
+          <li id="ref_11">
+            A Quantum-inspired Tabu Search Algorithm for Solving Combinatorial Optimization Problems
+            <span>
+              Chiang, H.-P.; Chou, Y.-H.; Chiu, C.-H.; Kuo, S.-Y.; Huang, Y.-M., 2014. 
+              Soft Computing, 18(9), pp. 1771--1781.
+            </span>
+          </li>
+          <li id="ref_12">
+            Explainable Artificial Intelligence (XAI): Concepts, Taxonomies, Opportunities and Challenges Toward Responsible AI
+            <span>
+              Barredo Arrieta, A.; Díaz-Rodríguez, N.; Del Ser, J.; Bennetot, A.; Tabik, S.; Barbado, A.; Garcia, S.; Gil-Lopez, S.; Molina, D.; Benjamins, R.; Chatila, R.; Herrera, F., 2020. 
+              Information Fusion, 58, pp. 82--115.
+            </span>
+          </li>
+          <li id="ref_13">
+            Explainable AI for the Choquet Integral
+            <span>
+              Murray, B. J.; Islam, M. A.; Pinar, A. J.; Anderson, D. T.; Scott, G. J.; Havens, T. C.; Keller, J. M., 2021. 
+              IEEE Transactions on Emerging Topics in Computational Intelligence, 5(4), pp. 520--529. DOI: 10.1109/TETCI.2020.3005682.
+            </span>
+          </li>
+          <li id="ref_14">
+            A Novel Explainable Nature-Inspired Metaheuristic: Jaguar Algorithm with Precision Hunting Behavior
+            <span>
+              Wu, C.-H.; Shen, J.-Y.; Huang, P.-S.; Hua, C.-Y.; Jiang, Y.-C.; Kuo, S.-Y.; Chou, Y.-H., 2022. 
+              In 2022 IEEE International Conference on Systems, Man, and Cybernetics, pp. 1494--1499. DOI: 10.1109/SMC53654.2022.9945207.
+            </span>
+          </li>
+          <li id="ref_15">
+            Semiology of Graphics
+            <span>
+              Bertin, J., 1983. 
+              University of Wisconsin Press. ISBN: 0299090604.
+            </span>
+          </li>
+          <li id="ref_16">
+            A Discrete Binary Version of the Particle Swarm Algorithm
+            <span>
+              Kennedy, J.; Eberhart, R. C., 1997. 
+              In 1997 IEEE International Conference on Systems, Man, and Cybernetics. Computational Cybernetics and Simulation, 5, pp. 4104--4108. DOI: 10.1109/ICSMC.1997.637339.
+            </span>
+          </li>
+          <li id="ref_17">
+            Modeltracker: Redesigning Performance Analysis Tools for Machine Learning
+            <span>
+              Amershi, S.; Chickering, M.; Drucker, S. M.; Lee, B.; Simard, P.; Suh, J., 2015. 
+              In 33rd Annual ACM Conference on Human Factors in Computing Systems, pp. 337--346.
+            </span>
+          </li>
+          <li id="ref_18">
+            The What-If Tool: Interactive Probing of Machine Learning Models
+            <span>
+              Wexler, J.; Pushkarna, M.; Bolukbasi, T.; Wattenberg, M.; Viégas, F.; Wilson, J., 2019. 
+              IEEE Transactions on Visualization and Computer Graphics, 26(1), pp. 56--65. IEEE.
+            </span>
+          </li>
+          <li id="ref_19">
+            StratomeX: Visual Analysis of Large-Scale Heterogeneous Genomics Data for Cancer Subtype Characterization
+            <span>
+              Lex, A.; Streit, M.; Schulz, H.-J.; Partl, C.; Schmalstieg, D.; Park, P. J.; Gehlenborg, N., 2012. 
+              In Computer Graphics Forum, 31(3pt3), pp. 1175--1184. Wiley Online Library.
+            </span>
+          </li>
+          <li id="ref_20">
+            Geono-cluster: Interactive Visual Cluster Analysis for Biologists
+            <span>
+              Das, S.; Saket, B.; Kwon, B. C.; Endert, A., 2020. 
+              IEEE Transactions on Visualization and Computer Graphics, 27(12), pp. 4401--4412. IEEE.
+            </span>
+          </li>
+          <li id="ref_21">
+            PeckVis: A Visual Analytics Tool to Analyze Dominance Hierarchies in Small Groups
+            <span>
+              Coelho, D.; Chase, I.; Mueller, K., 2020. 
+              IEEE Transactions on Visualization and Computer Graphics, 26(4), pp. 1650--1660. IEEE.
+            </span>
+          </li>
+          <li id="ref_22">
+            Visualizing Dynamic Hierarchies in Graph Sequences
+            <span>
+              Vehlow, C.; Beck, F.; Weiskopf, D., 2015. 
+              IEEE Transactions on Visualization and Computer Graphics, 22(10), pp. 2343--2357. IEEE.
+            </span>
+          </li>
+          <li id="ref_23">
+            Optimization Toolbox
+            <span>
+              Matlab, Available at <a href="https://ww2.mathworks.cn/products/optimization.html">https://ww2.mathworks.cn/products/optimization.html</a>.
+            </span>
+          </li>
+          <li id="ref_24">
+            Global Optimization Toolbox
+            <span>
+              Matlab, Available at <a href="https://www.mathworks.com/products/global-optimization.html">https://www.mathworks.com/products/global-optimization.html</a>.
+            </span>
+          </li>
+          <li id="ref_25">
+            Gavel - A New Tool for Genetic Algorithm Visualization
+            <span>
+              Hart, E.; Ross, P., 2001. 
+              IEEE Transactions on Evolutionary Computation, 5(4), pp. 335--348. IEEE.
+            </span>
+          </li>
+          <li id="ref_26">
+            Visualization for Genetic Algorithms
+            <span>
+              Cruz, A. M. L. da, 2014. 
+              PhD thesis, Universidade de Coimbra.
+            </span>
+          </li>
+          <li id="ref_27">
+            Visualizing Genetic Programming Ancestries
+            <span>
+              McPhee, N. F.; Casale, M. M.; Finzel, M.; Helmuth, T.; Spector, L., 2016. 
+              In 2016 on Genetic and Evolutionary Computation Conference Companion, pp. 1419--1426.
+            </span>
+          </li>
+          <li id="ref_28">
+            Viz: A Visual Analysis Suite for Explaining Local Search Behavior
+            <span>
+              Halim, S.; Yap, R. H. C.; Lau, H. C., 2006. 
+              In 19th Annual ACM Symposium on User Interface Software and Technology, pp. 57--66.
+            </span>
+          </li>
+          <li id="ref_29">
+            Visualization System Requirements for Data Processing Pipeline Design and Optimization
+            <span>
+              Von Landesberger, T.; Fellner, D. W.; Ruddle, R. A., 2016. 
+              IEEE Transactions on Visualization and Computer Graphics, 23(8), pp. 2028--2041. IEEE.
+            </span>
+          </li>
+          <li id="ref_30">
+            Visualization and Performance Metric in Many-Objective Optimization
+            <span>
+              He, Z.; Yen, G. G., 2015. 
+              IEEE Transactions on Evolutionary Computation, 20(3), pp. 386--402. IEEE.
+            </span>
+          </li>
+          <li id="ref_31">
+            A Visualization Tool for Observing Metaheuristic Algorithm: Epanel
+            <span>
+              Chou, Y. H.; Kuo, S. Y.; Lai, W. J.; Lai, W. B., 2017. 
+              In 2017 IEEE International Conference on Systems, Man, and Cybernetics, pp. 2826--2831. IEEE.
+            </span>
+          </li>
+          <li id="ref_32">
+            Low-Dimensional Euclidean Embedding for Visualization of Search Spaces in Combinatorial Optimization
+            <span>
+              Michalak, K., 2019. 
+              In Genetic and Evolutionary Computation Conference Companion, pp. 27--28.
+            </span>
+          </li>
+          <li id="ref_33">
+            A Library for Visualizing Combinatorial Structures
+            <span>
+              Najork, M. A.; Brown, M. H., 1994. 
+              In Proceedings Visualization'94, pp. 164--171. IEEE.
+            </span>
+          </li>
+          <li id="ref_34">
+            EPanel 2.0: The Visualization Tool for Combinatorial Optimization and Deployment Problem
+            <span>
+              Yang, C. Y.; Yang, L. S.; Kuo, S. Y.; Chou, Y. H., 2018. 
+              In 2018 IEEE International Conference on Systems, Man, and Cybernetics, pp. 1558--1563. IEEE.
+            </span>
+          </li>
+          <li id="ref_35">
+            Entanglement-Enhanced Quantum-Inspired Tabu Search Algorithm for Function Optimization
+            <span>
+              Kuo, S. Y.; Chou, Y. H., 2017. 
+              IEEE Access, 5, pp. 13236--13252. 
+              DOI: 10.1109/ACCESS.2017.2723538.
+            </span>
+          </li>
+          <li id="ref_36">
+            Quantum-Inspired Algorithm for Cyber-Physical Visual Surveillance Deployment Systems
+            <span>
+              Kuo, S. Y.; Chou, Y. H.; Chen, C. Y., 2017. 
+              Computer Networks, 117, pp. 5--18. ISSN: 1389-1286.
+            </span>
+          </li>
+          <li id="ref_37">
+            TSP LIB: A Library of Benchmark Instances for the Traveling Salesman Problem
+            <span>
+              Office Research Group Discrete Optimization, Heidelberg University, 1995. 
+              Available at <a href="http://comopt.ifi.uni-heidelberg.de/software/TSPLIB95/">http://comopt.ifi.uni-heidelberg.de/software/TSPLIB95/</a>.
+            </span>
+          </li>
+          <li id="ref_38">
+            A Novel Portfolio Optimization with Short Selling Using GNQTS and Trend Ratio
+            <span>
+              Jiang, Y.; Cheam, X.J.; Chen, C.Y.; Kuo, S.Y.; Chou, Y.H., 2018. 
+              In 2018 IEEE International Conference on Systems, Man, and Cybernetics, pp. 1564--1569. IEEE.
+            </span>
+          </li>
+          <li id="ref_39">
+            Portfolio Optimization Considering Diversified Investment Methods Using GNQTS and Trend Ratio
+            <span>
+              Kuo, S.Y.; Jiang, Y.C.; Yeoh, W.L.; Chou, Y.H., 2018. 
+              In 2018 IEEE International Conference on Systems, Man, and Cybernetics, pp. 3938--3943. IEEE.
+            </span>
+          </li>
+          <li id="ref_40">
+            A Novel Portfolio Optimization Model Based on Trend Ratio and Evolutionary Computation
+            <span>
+              Chou, Y.H.; Kuo, S.Y.; Jiang, Y.C., 2019. 
+              IEEE Transactions on Emerging Topics in Computational Intelligence, 3(4), pp. 337--350. 
+              DOI: 10.1109/TETCI.2018.2868939.
+            </span>
+          </li>
+          
+          
+
+        </ol>
+      </section>
+    </div>
+
+  </article><!-- End of aticle -->
+
+  <!-- Scroll to top button -->
+  <a class="scroll-top" href="#">
+    <svg xmlns="http://www.w3.org/2000/svg" viewBox="0 0 512 312.36">
+      <path fill="white"
+        d="M0 276.77 253.12 0 512 282.48l-32.65 29.88-226.2-246.83L32.66 306.64z" />
+    </svg>
+  </a>
+
+  <script>
+    document.addEventListener("DOMContentLoaded", function () {
+      var scrollTopBtn = document.querySelector(".scroll-top");
+      window.onscroll = function () { scrollFunction(scrollTopBtn) };
+
+      function scrollFunction(el) {
+        if (document.body.scrollTop > 200 || document.documentElement.scrollTop > 200) {
+          el.style.display = "flex";
+        } else {
+          el.style.display = "none";
+        }
+      }
+    });
+  </script>
+</body>
+
+</html>
