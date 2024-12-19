@@ -610,6 +610,57 @@
           </figcaption>
         </figure>
 
+        <div class="framed">
+          <div class="inside">
+            <!-- 上方標題 -->
+            <div class="eyebrow">
+              sometext to explain how to use the panel.
+            </div>
+            <!-- 主內容區塊 -->
+            <div class="interactive-panel">
+              <!-- Left Clickable Box -->
+              <div id="clickable-box" class="clickable-box"></div>
+      
+              <!-- Status Bar -->
+              <div class="status-bar" id="status-bar"></div>
+      
+              <!-- Right Section -->
+              <div class="dropdown-section">
+                <div>
+                  <label for="solution">Map Size: </label>
+                  <select id="solution">
+                    <option value="1">5 × 5 map</option>
+                    <option value="2">10 × 10 map</option>
+                    <option value="3">20 × 20 map</option>
+                    <option value="4">20 × 20 map optimal solution</option>
+                  </select>
+                </div>
+      
+                <!-- 記錄數字 -->
+                <div>Sensor Count: <span id="gbest" class="bold-text"></span></div>
+                <div>Map Check: <span id="map-check" class="bold-text"></span></div>
+                <!-- 標籤 (Legend) -->
+                <div class="label-box">
+                  <div class="sensor-box"></div> : Sensor
+                </div>
+                <div class="label-box">
+                  <div class="dissatisfy-box">
+                    <div class="diagonal-line"></div>
+                  </div>
+                  : Dissatisfy
+                </div>
+                <button id="toggle-btn">Threshold</button>
+              </div>
+            </div>
+
+            <div class="caption"><b>Figure 8:</b> 
+              sometext to explain what this picture want to display.
+            </div>
+          </div>
+
+          <script src="./panel/map_model.js"></script>
+        </div>
+
         <p>
           In the deployment combinatorial optimization interface, the map size is dependent on the user's setting or the problem's constraint. One grid point denotes one place. The black color represents the sensor, while the red-to-blue rainbow hue indicates the system-calculated sensor detection probability from 1 to 0. For ease of presentation, we set $R_{cof}=1$, $R_{max}=5$, where The detectable range is a circular area. In <a href="#Deploy_example">Figure 8b</a>, the map size is 9*9, and the position's detection probability in $R_{cof}$ is 1, which is shown in red. The detectable range is a circular area. If the grid point is closer to the sensor (black grid point), the probability of detection ($P_{g_{ij}}^{S_{xy}}$) is higher. In contrast, the further the grid point is from the sensor (black grid point), the lower the probability of detection. If the grid point is within $R_{max}$ of more than two sensors (detected by more than two sensors), Equation \ref{equ:Deployment_DetectionProbability_betweenSensors} is used to calculate the probability of detection. Using <a href="#Deploy_example">Figure 8c</a> as an example, the position in the middle white box is detected by two sensors, therefore the detection probability is $1-(2/3\times2/3)\approx0.556$ and the color is yellow-green.
         </p>
