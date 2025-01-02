@@ -2,16 +2,15 @@ document.addEventListener('DOMContentLoaded', function () {
   // 動態引入 CSS
   const cssLink = document.createElement('link');
   cssLink.rel = 'stylesheet';
-  cssLink.href = './panel/map_model_style.css';
+  cssLink.href = './panel/map_model_5050_style.css';
   document.head.appendChild(cssLink);
 
   // 其他邏輯
-  const clickableBox = document.getElementById('clickable-box');
-  const solutionDropdown = document.getElementById('solution');
-  const statusBar = document.getElementById('status-bar');
-  const gbestDisplay = document.getElementById('gbest');
-  const mapCheck = document.getElementById('map-check');
-  const toggleBtn = document.getElementById('toggle-btn'); // 按鈕
+  const clickableBox = document.getElementById('clickable-box-5050');
+  const statusBar = document.getElementById('status-bar-5050');
+  const gbestDisplay = document.getElementById('gbest-5050');
+  const mapCheck = document.getElementById('map-check-5050');
+  const toggleBtn = document.getElementById('toggle-btn-5050'); // 按鈕
   
   let sensorCount = 0; // 追蹤 sensor 的總數量
   let gridSize = 5; // 初始 Grid 大小
@@ -20,14 +19,7 @@ document.addEventListener('DOMContentLoaded', function () {
 
   //初始sensor擺放位置
   const sensorLayouts = {
-    1: [], // 5 × 5 初始位置
-    2: [{ x: 2, y: 2 }], // 最佳化的 5 × 5 解
-
-    3: [{ x: 2, y: 2 }, { x: 7, y: 2 }, { x: 2, y: 7 }, { x: 7, y: 7 }], // 10 × 10 初始位置
-
-    4: [{ x: 2, y: 2 }, { x: 7, y: 2 }, { x: 12, y: 2 }, { x: 17, y: 2 }, { x: 2, y: 7 }, { x: 7, y: 7 }, { x: 12, y: 7 }, { x: 17, y: 7 }, { x: 2, y: 12 }, { x: 7, y: 12 }, { x: 12, y: 12 }, { x: 17, y: 12 }, { x: 2, y: 17 }, { x: 7, y: 17 }, { x: 12, y: 17 }, { x: 17, y: 17 }], // 20 × 20 初始位置
-
-    5: [{ x: 3, y: 1 }, { x: 10, y: 2 }, { x: 16, y: 1 }, { x: 3, y: 7 }, { x: 9, y: 7 }, { x: 16, y: 7 }, { x: 3, y: 12 }, { x: 10, y: 12 }, { x: 16, y: 12 }, { x: 3, y: 18 }, { x: 9, y: 17 }, { x: 16, y: 18 }] // 最佳化的 20 × 20 解
+    1: [{ x: 10, y: 0 }, { x: 18, y: 0 }, { x: 36, y: 1 }, { x: 2, y: 2 }, { x: 22, y: 2 }, { x: 29, y: 2 }, { x: 42, y: 2 }, { x: 48, y: 3 }, { x: 15, y: 6 }, { x: 9, y: 7 }, { x: 2, y: 9 }, { x: 22, y: 9 }, { x: 34, y: 9 }, { x: 27, y: 10 }, { x: 40, y: 10 }, { x: 47, y: 10 }, { x: 16, y: 13 }, { x: 9, y: 14 }, { x: 25, y: 15 }, { x: 2, y: 16 }, { x: 33, y: 16 }, { x: 24, y: 17 }, { x: 32, y: 17 }, { x: 40, y: 17 }, { x: 47, y: 17 }, { x: 17, y: 19 }, { x: 9, y: 21 }, { x: 38, y: 22 }, { x: 1, y: 23 }, { x: 46, y: 23 }, { x: 24, y: 24 }, { x: 30, y: 24 }, { x: 16, y: 26 }, { x: 8, y: 28 }, { x: 38, y: 28 }, { x: 46, y: 29 }, { x: 0, y: 30 }, { x: 30, y: 30 }, { x: 23, y: 31 }, { x: 15, y: 33 }, { x: 39, y: 33 }, { x: 7, y: 34 }, { x: 32, y: 35 }, { x: 46, y: 35 }, { x: 2, y: 38 }, { x: 17, y: 38 }, { x: 24, y: 38 }, { x: 10, y: 39 }, { x: 31, y: 39 }, { x: 39, y: 40 }, { x: 46, y: 41 }, { x: 4, y: 42 }, { x: 24, y: 45 }, { x: 6, y: 46 }, { x: 15, y: 46 }, { x: 19, y: 46 }, { x: 28, y: 46 }, { x: 34, y: 46 }, { x: 2, y: 47 }, { x: 9, y: 47 }, { x: 40, y: 47 }, { x: 47, y: 47 }], // 50 × 50 初始位置
   };
 
   // 根據 Threshold 統一顯示顏色，這裡設置 threshold = 0.3
@@ -65,7 +57,7 @@ document.addEventListener('DOMContentLoaded', function () {
 
   // 创建 X 和 Y 轴容器
   const xAxis = document.createElement('div');
-  xAxis.id = 'x-axis';
+  xAxis.id = 'x-axis-5050';
   xAxis.style.position = 'absolute';
   xAxis.style.top = '-20px'; // X 軸應該在 clickableBox 下方對齊
   xAxis.style.left = '-5px'; // 對齊 clickableBox 左側
@@ -74,7 +66,7 @@ document.addEventListener('DOMContentLoaded', function () {
   xAxis.style.gridTemplateColumns = `repeat(${gridSize}, 1fr)`; // 每個格子一個區間
 
   const yAxis = document.createElement('div');
-  yAxis.id = 'y-axis';
+  yAxis.id = 'y-axis-5050';
   yAxis.style.position = 'absolute';
   yAxis.style.top = '0'; // 與 clickableBox 頂部對齊
   yAxis.style.left = '-20'; // 在 clickableBox 左側
@@ -88,7 +80,7 @@ document.addEventListener('DOMContentLoaded', function () {
   container.appendChild(yAxis);
 
   // 将容器插入页面
-  document.querySelector('.interactive-panel').prepend(container);
+  document.querySelector('.interactive-panel-5050').prepend(container);
 
   // 滑鼠事件
   const tooltip = document.createElement('div');
@@ -193,13 +185,12 @@ document.addEventListener('DOMContentLoaded', function () {
     let boxHeight = clickableBox.offsetHeight;
 
     // 計算每個格子的大小
-    if(boxWidth === 0 ) boxWidth = 300 - 8;
-    if(boxHeight === 0) boxHeight = 300 - 8;
+    if(boxWidth === 0 ) boxWidth = 600 - 8;
+    if(boxHeight === 0) boxHeight = 600 - 8;
     const cellWidth = boxWidth / gridSize;
     const cellHeight = boxHeight / gridSize;
 
     let fontSize = Math.min(cellWidth, cellHeight) * 0.7; // 字體大小為格子大小的 70%
-    if(fontSize === 0 || fontSize > 14) fontSize = 14;
 
     // 清空 X 和 Y 軸內容
     xAxis.innerHTML = '';
@@ -209,7 +200,7 @@ document.addEventListener('DOMContentLoaded', function () {
     for (let i = 0; i < gridSize; i++) {
       const label = document.createElement('div');
       label.style.position = 'absolute';
-      label.style.top = `-1px`; // 固定在網格正下方
+      label.style.top = `5px`; // 固定在網格正下方
       label.style.left = `${8 + i * cellWidth}px`; // 動態計算每個標籤的位置
       label.style.width = `${cellWidth}px`;
       label.style.textAlign = 'center';
@@ -230,7 +221,7 @@ document.addEventListener('DOMContentLoaded', function () {
       const label = document.createElement('div');
       label.style.position = 'absolute';
       label.style.top = `${4 + i * cellHeight}px`; // 動態計算每個標籤的位置
-      label.style.left = `10px`; // 固定在 clickableBox 左側
+      label.style.left = `20px`; // 固定在 clickableBox 左側
       label.style.height = `${cellHeight}px`;
       label.style.textAlign = 'right';
       label.style.fontSize = `${fontSize}px`; // 動態設置字體大小
@@ -370,7 +361,8 @@ document.addEventListener('DOMContentLoaded', function () {
     });
   
     // 計算完成率並返回百分比
-    return ((nonDissatisfyCount / totalCells) * 100).toFixed(2); // 保留兩位小數
+    const completionRate = ((nonDissatisfyCount / totalCells) * 100).toFixed(2); // 保留兩位小數
+    return completionRate; // 保證寬度一致
   }
   // 切換threshold / detection probability 模式
   toggleBtn.addEventListener('click', function () {
@@ -379,20 +371,6 @@ document.addEventListener('DOMContentLoaded', function () {
 
     applyProbabilitiesToGrid(probabilitiesCache, clickableBox);
   });
-  // 根據選項更新格子
-  solutionDropdown.addEventListener('change', function () {
-    const selectedValue = parseInt(this.value);
-    let gridSize = 5; // 預設值
 
-    if (selectedValue === 1) gridSize = 5;
-    else if (selectedValue === 2) gridSize = 5;
-    else if (selectedValue === 3) gridSize = 10;
-    else if (selectedValue === 4) gridSize = 20;
-    else if (selectedValue === 5) gridSize = 20; // 最佳化的解 20×20
-
-    // 傳入對應的初始 sensor 位置
-    renderGrid(gridSize, sensorLayouts[selectedValue] || []);
-  });
-
-  renderGrid(5, sensorLayouts[1] || []);
+  renderGrid(50, sensorLayouts[1] || []);
 });
