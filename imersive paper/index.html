@@ -526,8 +526,21 @@
         
         <h3>Deployment Optimization Interface</h3>
 
-          <p>
-          The deployment optimization problem, also referred to as the wireless sensor network (WSN) problem, has applications in various fields, such as home automation, traffic monitoring and control, remote robotic surgery in medicine, industrial machine surveillance, and environmental fire detection. It represents a specific and critical challenge within the domain of combinatorial optimization. The deployment optimization problem's solution space is a two-dimensional map in which the problem needs to use the sensor as little as possible while satisfying the limited detection probability at each position (threshold). In this paper, a map is composed of a two-dimensional grid ($g_{ij}$). If the size of the map is $m*n$, then its width is $m$ and its length is $n$. Each grid point can only accommodate one sensor (<i>S</i>) at most. After placing the sensor, the detection probability is calculated based on the related-distance probabilistic detection model  [<a href="#ref_36">36</a>]. The detection probability ($P_{g_{ij}}^{S_{xy}}$) decreases with increasing distance from the sensor ($S_{xy}$). The detecting model has a confident and maximum radius convergence circle ($R_{cof}$ and $R_{max}$) (<a href="#Deploy_example">Figure 8a</a>). $R_{cof}$ is smaller than $R_{max}$. The confident radius convergence circle is the range of the sensor that must be detected, while the maximum radius convergence circle is the range of the sensor that can be detected, with signal strength decreasing with increasing distance. The detection probability calculation is separated into three situations (Equation 1): 
+        <p>
+          The deployment optimization problem, also referred to as the wireless sensor network (WSN) problem, has applications in various fields, such as home automation, traffic monitoring and control, remote robotic surgery in medicine, industrial machine surveillance, and environmental fire detection. It represents a specific and critical challenge within the domain of combinatorial optimization. The deployment optimization problem's solution space is a two-dimensional map in which the problem needs to use the sensor as little as possible while satisfying the limited detection probability at each position (threshold). In this paper, a map is composed of a two-dimensional grid ($g_{ij}$). If the size of the map is $m*n$, then its width is $m$ and its length is $n$. Each grid point can only accommodate one sensor (<i>S</i>) at most. After placing the sensor, the detection probability is calculated based on the related-distance probabilistic detection model  [<a href="#ref_36">36</a>]. The detection probability ($P_{g_{ij}}^{S_{xy}}$) decreases with increasing distance from the sensor ($S_{xy}$). The detecting model has a confident and maximum radius convergence circle ($R_{cof}$ and $R_{max}$) as shown in <a href="#Deploy_schematic_diagram">Figure 8a</a>.   
+        </p>
+
+        <figure id="Deploy_schematic_diagram" class="text-center" style="text-align: left;">
+          <div style="text-align: center;">
+            <img src="img/03 Deploy/Deploy_DetectionRange.svg" width="255" height="220">
+          </div>
+          <figcaption>
+            <strong>Figure 8:</strong> The schematic illustration of a sensor's detection range. The black dot is the sensor. The orange and green regions are the confident and maximum radius convergence circles, respectively.
+          </figcaption>
+        </figure>
+
+        <p>
+          $R_{cof}$ is smaller than $R_{max}$. The confident radius convergence circle is the range of the sensor that must be detected, while the maximum radius convergence circle is the range of the sensor that can be detected, with signal strength decreasing with increasing distance. The detection probability calculation is separated into three situations (Equation 1): 
         </p>
           
         <!-- Equation 1 -->
@@ -568,12 +581,12 @@
 
         <h3>1.Function Introduction</h3>
 
+        <p>
+          In the deployment combinatorial optimization interface as shown in <a href="#Deploy_example">Figure 8b</a>, the map size is dependent on the user's setting or the problem's constraint. One grid point denotes one place. The black color represents the sensor, while the red-to-blue rainbow hue indicates the system-calculated sensor detection probability from 1 to 0. For ease of presentation, we set $R_{cof}=1$, $R_{max}=5$, where The detectable range is a circular area. In <a href="#Deploy_example">Figure 8b</a>, the map size is 9$\times$9, and a sensor is placed at the center of the map. The probability of detection ($P_{g_{ij}}^{S_{xy}}$) increases as the grid point is closer to the sensor. Conversely, it decreases as the distance from the sensor increases. When a grid point falls within the detection range of multiple sensors, as demonstrated by the center grid in <a href="#Deploy_example">Figure 8c</a>, its probability of detection increases according to Equation 2 (the probability increase from 0.333 to 0.556). The intriguing aispect of the deployment optimzation problem lies in strategically positioning the minimum number of sensors to ensure mutual reinforcement, thereby enabling all grid points on the map to achieve a probability higher than the specified threshold.
+        </p>
+
         <figure id="Deploy_example" class="text-center" style="text-align: left;">
           <div style="display: flex; justify-content: center; gap: 10px;">
-            <div style="text-align: center;">
-              <img src="img/03 Deploy/Deploy_DetectionRange.svg" width="255" height="220">
-              <p>(a)</p>
-            </div>
             <div style="text-align: center;">
               <img src="img/03 Deploy/Deploy_9x9_1S.svg" width="255" height="220">
               <p>(b)</p>
@@ -582,39 +595,21 @@
               <img src="img/03 Deploy/Deploy_9x9_2S.svg" width="255" height="220">
               <p>(c)</p>
             </div>
-            <div style="text-align: center;">
-              <img src="img/03 Deploy/Deploy_5x5_0.3threshold.svg" width="255" height="220">
-              <p>(d)</p>
-            </div>
-          </div>
-          <div style="display: flex; justify-content: center; gap: 10px;">
-            <div style="text-align: center;">
-              <img src="img/03 Deploy/Deploy_5x5_1S.svg" width="255" height="220">
-              <p>(e)</p>
-            </div>
-            <div style="text-align: center;">
-              <img src="img/03 Deploy/Deploy_10x10_4S.svg" width="255" height="220">
-              <p>(f)</p>
-            </div>
-            <div style="text-align: center;">
-              <img src="img/03 Deploy/Deploy_20x20_16S.svg" width="255" height="220">
-              <p>(g)</p>
-            </div>
-            <div style="text-align: center;">
-              <img src="img/03 Deploy/Deploy_20x20_12S.svg" width="255" height="220">
-              <p>(h)</p>
-            </div>
           </div>
           <figcaption>
-            <strong>Figure 8:</strong> Example of deployment optimization interface. (a) The schematic illustration of a sensor's detection range. The black dot is the sensor. The orange and green regions are the confident and maximum radius convergence circles, respectively. (b) In a 9$\times$9 map, with $R_{cof}$ set at 1 and $R_{max}$ at 5, it showcases the detection probability and corresponding color for a single sensor. (c) In the case of a two-sensor map, the position in the central white box exhibits a higher detection probability since it benefits from the overlapping coverage of two sensors. (d) In the beginning, the uniform threshold is set to 0.3, which is shown in light blue. The satisfying proportion of the threshold (map check) is 0$\%$ before putting the sensor in the map. (e) In a 5$\times$5 map, it needs one sensor to satisfy the threshold. (f) When it goes to 10$\times$10 map, it needs 4 sensors. (g) With an increase in map size to 20$\times$20, a total of 16 sensors can be utilized to satisfy the threshold. (h) Based on Equation \ref{equ:Deployment_DetectionProbability_betweenSensors}, the 20$\times$20 map can decrease 4 sensors while still meeting the threshold.
+            <strong>Figure 8:</strong> Example of deployment optimization interface. (b) In a 9$\times$9 map, with $R_{cof}$ set at 1 and $R_{max}$ at 5, it showcases the detection probability and corresponding color for a single sensor. (c) In the case of a two-sensor map, the position in the central white box exhibits a higher detection probability since it benefits from the overlapping coverage of two sensors.
           </figcaption>
         </figure>
+
+        <p>
+          As the map size increases in the deployment optimization problem, achieving the threshold for each grid point relies more heavily on the mutual support between sensors. For example, <a href="#Deploy_example">Figure 8d</a> demonstrates maps of varying sizes, including 5$\times$5, 10$\times$10, and 20$\times$20 grids. Each grid point is assigned a uniform threshold of 0.3. If a grid point fails to meet this threshold, it is marked with a red slash. Additionally, the “Map Check” feature displays the proportion of grid points that satisfy the threshold, calculated as the number of grid points meeting the threshold divided by the total number of grid points.
+        </p>
 
         <div class="framed">
           <div class="inside">
             <!-- 上方標題 -->
             <div class="eyebrow">
-              sometext to explain how to use the panel.
+              You can interact with the map by clicking on grid points to add or remove sensors and toggle between the "Detection Probability" and "Threshold" views using the corresponding button. The goal is to place the minimum number of sensors required to ensure all grid points meet the minimum threshold 0.3.
             </div>
             <!-- 主內容區塊 -->
             <div class="interactive-panel">
@@ -629,10 +624,11 @@
                 <div>
                   <label for="solution">Map Size: </label>
                   <select id="solution">
-                    <option value="1">5 × 5 map</option>
-                    <option value="2">10 × 10 map</option>
-                    <option value="3">20 × 20 map</option>
-                    <option value="4">20 × 20 map optimal solution</option>
+                    <option value="1">5 × 5 map 0 sensor</option>
+                    <option value="2">5 × 5 map 1 sensor</option>
+                    <option value="3">10 × 10 map 4 sensor</option>
+                    <option value="4">20 × 20 map 16 sensor</option>
+                    <option value="5">20 × 20 map 12 sensor</option>
                   </select>
                 </div>
       
@@ -653,8 +649,8 @@
               </div>
             </div>
 
-            <div class="caption"><b>Figure 8:</b> 
-              sometext to explain what this picture want to display.
+            <div class="caption"><b>Figure 8d:</b> 
+              Evo-Panel 2.0: Example of Deployment Optimization for Sensor Placement.
             </div>
           </div>
 
@@ -662,58 +658,81 @@
         </div>
 
         <p>
-          In the deployment combinatorial optimization interface, the map size is dependent on the user's setting or the problem's constraint. One grid point denotes one place. The black color represents the sensor, while the red-to-blue rainbow hue indicates the system-calculated sensor detection probability from 1 to 0. For ease of presentation, we set $R_{cof}=1$, $R_{max}=5$, where The detectable range is a circular area. In <a href="#Deploy_example">Figure 8b</a>, the map size is 9*9, and the position's detection probability in $R_{cof}$ is 1, which is shown in red. The detectable range is a circular area. If the grid point is closer to the sensor (black grid point), the probability of detection ($P_{g_{ij}}^{S_{xy}}$) is higher. In contrast, the further the grid point is from the sensor (black grid point), the lower the probability of detection. If the grid point is within $R_{max}$ of more than two sensors (detected by more than two sensors), Equation \ref{equ:Deployment_DetectionProbability_betweenSensors} is used to calculate the probability of detection. Using <a href="#Deploy_example">Figure 8c</a> as an example, the position in the middle white box is detected by two sensors, therefore the detection probability is $1-(2/3\times2/3)\approx0.556$ and the color is yellow-green.
+          Building on the insights from <a href="#Deploy_example">Figure 8d</a>, we analyze the sensor requirements for maps of different sizes to ensure all grid points meet the threshold. In a 5$\times$5 map, a single sensor is sufficient to satisfy the threshold for all positions. When the map size is doubled to 10$\times$10, at least four sensors are required to achieve the same threshold satisfaction. For a 20$\times$20 map, achieving the threshold for each grid point increasingly depends on the mutual support between sensors, as overlapping detection areas allow for redundancy reduction. While 16 sensors are initially required to satisfy the threshold for all positions, the optimization process leverages sensor overlap to reduce this number. Consequently, only 12 sensors are needed to ensure all grid points meet the threshold, demonstrating the efficiency of the deployment optimization strategy.
         </p>
 
         <p>
-          The Evo-Panel 2.0 draws the probability color at that position according to the color bar; if the position dissatisfies the threshold, the system slashes the position with a red line to distinguish and shows the threshold’s color in the grid point. <a href="#Deploy_example">Figure 8d</a> is an example of no sensor in the map. Each point has a uniform threshold of 0.3, denoting positions falling below this threshold with a slashed red line while displaying the corresponding light blue color representing the threshold value on the grid. Meanwhile, the “map check” shows the satisfying proportion of the threshold, that is, the number of grid points satisfying the threshold divided by the total number of grid points. This checker assists researchers in verifying if the map satisfies the deployment optimization problem’s restriction. As there is no sensor on the map, the "map check" in <a href="#Deploy_example">Figure 8d</a> shows a satisfactory proportion of $0\%$. We place one sensor in a 5$\times$5 map, since the map (<a href="#Deploy_example">Figure 8e</a>) needs one sensor to satisfy all positions' threshold. Then we doubled the map's size to 10x10. The 10x10 map necessitates at least 4 sensors to satisfy the threshold for each position (<a href="#Deploy_example">Figure 8f</a>). We keep twice the map size to 20x20, the map can use 16 sensors to satisfy the threshold (<a href="#Deploy_example">Figure 8g</a>). However, putting 16 sensors in <a href="#Deploy_example">Figure 8g</a> results in overlapping many detection areas. According to Equation 2, the sensor could be reduced while still satisfying all the position’s thresholds. Consequently, the 20x20 map only needs 12 sensors (<a href="#Deploy_example">Figure 8h</a>).
+          Expanding the scope of the analysis, we explore the deployment optimization problem on a larger 50$\times$50 map, where the complexity increases exponentially with the map size. Unlike smaller maps, where sensor placement can be relatively straightforward, larger maps require metaheuristic algorithms to efficiently navigate the vast solution space. Evo-Panel 2.0 serves as a critical tool in addressing this challenge, providing both algorithmic support and user-driven customization for optimized sensor deployment.
+        </p>
+
+        <p>
+          As illustrated in <a href="#Deploy_example_50x50">Figure 9</a>, the Entanglement-QTS [<a href="#ref_35">35</a>] algorithm demonstrates its iterative optimization process over three stages. Initially (<a href="#Deploy_example_50x50">Figure 9a</a>), sensors are placed randomly, leading to significant overlap in detection areas. In the middle stages (<a href="#Deploy_example_50x50">Figure 9b</a>), the algorithm refines the placement by reducing redundancies, transforming excessive detection regions from red to yellow and green. By the final stage (<a href="#Deploy_example_50x50">Figure 9c</a>), an optimized solution emerges, requiring only 62 sensors to meet the detection threshold for all grid points.
         </p>
 
         <figure id="Deploy_example_50x50" class="text-center" style="text-align: left;">
           <div style="display: flex; justify-content: center; gap: 10px;">
             <div style="text-align: center;">
-              <img src="img/03 Deploy/Deploy_50x50_0.3threshold.svg" width="255" height="220">
+              <img src="img/03 Deploy/Deploy50x50_QTS_300Beginning.svg" width="255" height="220">
               <p>(a)</p>
             </div>
             <div style="text-align: center;">
-              <img src="img/03 Deploy/Deploy50x50_QTS_300Beginning.svg" width="255" height="220">
+              <img src="img/03 Deploy/Deploy50x50_QTS_108Middle.svg" width="255" height="220">
               <p>(b)</p>
             </div>
             <div style="text-align: center;">
-              <img src="img/03 Deploy/Deploy50x50_QTS_108Middle.svg" width="255" height="220">
-              <p>(c)</p>
-            </div>
-            <div style="text-align: center;">
               <img src="img/03 Deploy/Deploy50x50_QTS_62End.svg" width="255" height="220">
-              <p>(d)</p>
-            </div>
-          </div>
-          <div style="display: flex; justify-content: center; gap: 10px;">
-            <div style="text-align: center;">
-              <img src="img/03 Deploy/Deploy_50x50_62_connect.svg" width="255" height="220">
-              <p>(e)</p>
-            </div>
-            <div style="text-align: center;">
-              <img src="img/03 Deploy/Deploy_50x50_62_box.svg" width="255" height="220">
-              <p>(f)</p>
-            </div>
-            <div style="text-align: center;">
-              <img src="img/03 Deploy/Deploy_50x50_58_not_fill.svg" width="255" height="220">
-              <p>(g)</p>
-            </div>
-            <div style="text-align: center;">
-              <img src="img/03 Deploy/Deploy_50x50_60.svg" width="255" height="220">
-              <p>(h)</p>
+              <p>(c)</p>
             </div>
           </div>
           <figcaption>
-            <strong>Figure 9:</strong> An illustration of a deployment problem in Evo-Panel 2.0. (a) The threshold of 50x50 map size is uniformly set to 0.3. (b) In the early stage of the Entanglement-QTS search, this map is almost red due to the sensor's high density and extensive overlap. (c) In the middle stage, the number of sensors decreases, and some positions display a green color detection probability. (d) At the end of Entanglement-QTS, Evo-Panel 2.0 shows that the entire color of all positions is mostly green, indicating that Entanglement-QTS reduces the cost of the sensor and finds an optimal solution for 62 sensors. (e) Evo-Panel 2.0 shows a demonstration of the connectivity of sensors within a distance of five. (f) Utilizing Evo-Panel 2.0, users have the capacity to manually refine the algorithm's optimal solution. By removing a sensor within the white box, a successful reduction in sensor count is achieved while maintaining adherence to the constraints. (g) Observing <a href="#Deploy_example_50x50">Figure 9f</a>, we identified overcrowding in the black box, prompting the removal of three sensors, resulting in an incomplete map check. (h) Afterward, two sensors were placed within the black box to fulfill the threshold requirement across the entire map, marking the map check status as "complete" once more. Evo-Panel 2.0 enabled users to save data with the final optimized result.
+            <strong>Figure 9:</strong> An illustration of a deployment problem in Evo-Panel 2.0. (a) In the early stage of the Entanglement-QTS search, this map is almost red due to the sensor's high density and extensive overlap. (b) In the middle stage, the number of sensors decreases, and some positions display a green color detection probability. (c) At the end of Entanglement-QTS, Evo-Panel 2.0 shows that the entire color of all positions is mostly green, indicating that Entanglement-QTS reduces the cost of the sensor and finds an optimal solution for 62 sensors. (d) Evo-Panel 2.0 shows a demonstration of the connectivity of sensors within a distance of five. (e) Utilizing Evo-Panel 2.0, users have the capacity to manually refine the algorithm's optimal solution. By removing a sensor within the white box, a successful reduction in sensor count is achieved while maintaining adherence to the constraints. (f) Observing <a href="#Deploy_example_50x50">Figure 9f</a>, we identified overcrowding in the black box, prompting the removal of three sensors, resulting in an incomplete map check. (g) Afterward, two sensors were placed within the black box to fulfill the threshold requirement across the entire map, marking the map check status as "complete" once more. Evo-Panel 2.0 enabled users to save data with the final optimized result.
           </figcaption>
         </figure>
 
         <p>
-          Subsequently, we extend the map size from <a href="#Deploy_example">Figure 8h</a> to <a href="#Deploy_example_50x50">Figure 9a</a>, encompassing dimensions of 50x50 units. For the convenience of observation and analysis, the thresholds continue to be uniformly set at 0.3. The complexity increases exponentially with the size of the map since each grid position has two options to either place a sensor or not. Therefore, the deployment problem needs metaheuristics to search for an optimal solution. In the early stage of Entanglement-QTS’s [<a href="#ref_35">35</a>] search (<a href="#Deploy_example_50x50">Figure 9b</a>), the algorithm stochastically deploys the sensor such that there are several overlapping areas. As the iteration progresses to the middle stage, the metaheuristic finds that some sensors can be removed, resulting in some red areas decreasing gradually to yellow and green color (<a href="#Deploy_example_50x50">Figure 9c</a>). When Entanglement-QTS ended searching, it found a good solution that required just 62 sensors to satisfy the contraction (<a href="#Deploy_example_50x50">Figure 9d</a>). The majority of areas in <a href="#Deploy_example_50x50">Figure 9d</a> are green and light blue, indicating that the metaheuristic lets most positions' detection probability be near the threshold (light blue color). With the help of Evo-Panel 2.0, it’s easy to see the sensors evenly distributed in the 50x50 map. Besides, based on the distributed result of the deployment problem, some studies have expanded the problem to analyze the connection, as the base stations or sensors need to connect to each other. For example, if the distance between two sensors is too far, the quality of sending packages would decline or be lost. Consequently, Evo-Panel 2.0 additionally provides a function that can detect sensor connections (<a href="#Deploy_example_50x50">Figure 9e</a>). The connection distance is set by the user or protocol. The Evo-Panel 2.0 allows for the determination of the optimal configuration and optimal connections among individual sensors, thereby optimizing communication and information exchange to enhance overall system efficiency. Furthermore, it aids in identifying potential areas for improvement to create a more coordinated and efficient sensor deployment scheme.
+          Beyond visualizing the algorithm's optimization process, Evo-Panel 2.0 empowers users to directly interact with the solution space. Users can manually adjust sensor placements, refining the algorithm's results and exploring alternative configurations to further improve efficiency. This interactive feature bridges the gap between automated computation and human intuition, enabling more flexible and practical deployment strategies. By integrating algorithm-driven insights with user-defined adjustments, Evo-Panel 2.0 delivers a powerful tool for solving large-scale deployment problems with precision and adaptability.
         </p>
+
+        <div class="framed">
+          <div class="inside">
+            <!-- 上方標題 -->
+            <div class="eyebrow">
+              You can interact with the map by clicking...
+            </div>
+            <!-- 主內容區塊 -->
+            <div class="interactive-panel-5050">
+              <!-- Left Clickable Box -->
+              <div id="clickable-box-5050" class="clickable-box-5050"></div>
+      
+              <!-- Status Bar -->
+              <div id="status-bar-5050" class="status-bar-5050"></div>
+      
+              <!-- Right Section -->
+              <div class="dropdown-section">
+                <!-- 記錄數字 -->
+                <div>Sensor Count: <span id="gbest-5050" class="bold-text"></span></div>
+                <div>Map Check: <span id="map-check-5050" class="bold-text"></span></div>
+                <!-- 標籤 (Legend) -->
+                <div class="label-box">
+                  <div class="sensor-box"></div> : Sensor
+                </div>
+                <div class="label-box">
+                  <div class="dissatisfy-box">
+                    <div class="diagonal-line"></div>
+                  </div>
+                  : Dissatisfy
+                </div>
+                <button id="toggle-btn-5050">Threshold</button>
+              </div>
+            </div>
+
+            <div class="caption"><b>Figure 9d:</b> 
+              someword to explain.
+            </div>
+          </div>
+
+          <script src="./panel/map_model_5050.js"></script>
+        </div>
 
         <p>
           With the help of Evo-Panel 2.0, researchers can observe the sensor distribution, whether any regions are too dense, and how the detection probability superposition occurs. Moreover, we could see if this problem has a better solution and then use the interactive system to quickly find a solution that is better than the metaheuristic. Through the interactive system, researchers could add or remove the sensor to adjust the result, therefore obtaining a better solution. In <a href="#Deploy_example_50x50">Figure 9f</a>, we discovered that the bottom left corner is somewhat dense. Therefore, we removed one sensor from the bottom left corner (white box), reducing the total number of sensors from 62 to 61. Next, we discovered that the middle black box’s sensor could also decrease. Therefore, we remove three sensors (<a href="#Deploy_example_50x50">Figure 9g</a>) and add two sensors in the black box (<a href="#Deploy_example_50x50">Figure 9h</a>). It still satisfies the threshold. In addition, we can save, photograph, or record a video of the improved result to do additional research, such as writing a paper.
