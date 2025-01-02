@@ -11,7 +11,7 @@ body {
   justify-content: center; /* 水平置中 */
   align-items: center;     /* 垂直置中 */
   gap: 40px;               /* 元素之間的間距 */
-  min-height: 200px;       /* 設定最小高度確保置中效果 */
+  min-height: 100px;       /* 設定最小高度確保置中效果 */
 }
 /* 左邊的點擊框 */
 .clickable-box-5050 {

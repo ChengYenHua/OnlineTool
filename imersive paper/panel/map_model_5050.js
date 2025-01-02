@@ -27,6 +27,7 @@ document.addEventListener('DOMContentLoaded', function () {
 
   //功能按鈕
   let isThresholdMode = false; // 判斷是否為 Threshold 模式
+  toggleBtn.style.width = '245px';
 
   // 清空狀態條內部
   statusBar.innerHTML = '';
