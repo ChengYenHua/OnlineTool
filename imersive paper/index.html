@@ -665,34 +665,6 @@
           Expanding the scope of the analysis, we explore the deployment optimization problem on a larger 50$\times$50 map, where the complexity increases exponentially with the map size. Unlike smaller maps, where sensor placement can be relatively straightforward, larger maps require metaheuristic algorithms to efficiently navigate the vast solution space. Evo-Panel 2.0 serves as a critical tool in addressing this challenge, providing both algorithmic support and user-driven customization for optimized sensor deployment.
         </p>
 
-        <p>
-          As illustrated in <a href="#Deploy_example_50x50">Figure 9</a>, the Entanglement-QTS [<a href="#ref_35">35</a>] algorithm demonstrates its iterative optimization process over three stages. Initially (<a href="#Deploy_example_50x50">Figure 9a</a>), sensors are placed randomly, leading to significant overlap in detection areas. In the middle stages (<a href="#Deploy_example_50x50">Figure 9b</a>), the algorithm refines the placement by reducing redundancies, transforming excessive detection regions from red to yellow and green. By the final stage (<a href="#Deploy_example_50x50">Figure 9c</a>), an optimized solution emerges, requiring only 62 sensors to meet the detection threshold for all grid points.
-        </p>
-
-        <figure id="Deploy_example_50x50" class="text-center" style="text-align: left;">
-          <div style="display: flex; justify-content: center; gap: 10px;">
-            <div style="text-align: center;">
-              <img src="img/03 Deploy/Deploy50x50_QTS_300Beginning.svg" width="255" height="220">
-              <p>(a)</p>
-            </div>
-            <div style="text-align: center;">
-              <img src="img/03 Deploy/Deploy50x50_QTS_108Middle.svg" width="255" height="220">
-              <p>(b)</p>
-            </div>
-            <div style="text-align: center;">
-              <img src="img/03 Deploy/Deploy50x50_QTS_62End.svg" width="255" height="220">
-              <p>(c)</p>
-            </div>
-          </div>
-          <figcaption>
-            <strong>Figure 9:</strong> An illustration of a deployment problem in Evo-Panel 2.0. (a) In the early stage of the Entanglement-QTS search, this map is almost red due to the sensor's high density and extensive overlap. (b) In the middle stage, the number of sensors decreases, and some positions display a green color detection probability. (c) At the end of Entanglement-QTS, Evo-Panel 2.0 shows that the entire color of all positions is mostly green, indicating that Entanglement-QTS reduces the cost of the sensor and finds an optimal solution for 62 sensors. (d) Evo-Panel 2.0 shows a demonstration of the connectivity of sensors within a distance of five. (e) Utilizing Evo-Panel 2.0, users have the capacity to manually refine the algorithm's optimal solution. By removing a sensor within the white box, a successful reduction in sensor count is achieved while maintaining adherence to the constraints. (f) Observing <a href="#Deploy_example_50x50">Figure 9f</a>, we identified overcrowding in the black box, prompting the removal of three sensors, resulting in an incomplete map check. (g) Afterward, two sensors were placed within the black box to fulfill the threshold requirement across the entire map, marking the map check status as "complete" once more. Evo-Panel 2.0 enabled users to save data with the final optimized result.
-          </figcaption>
-        </figure>
-
-        <p>
-          Beyond visualizing the algorithm's optimization process, Evo-Panel 2.0 empowers users to directly interact with the solution space. Users can manually adjust sensor placements, refining the algorithm's results and exploring alternative configurations to further improve efficiency. This interactive feature bridges the gap between automated computation and human intuition, enabling more flexible and practical deployment strategies. By integrating algorithm-driven insights with user-defined adjustments, Evo-Panel 2.0 delivers a powerful tool for solving large-scale deployment problems with precision and adaptability.
-        </p>
-
         <div class="framed">
           <div class="inside">
             <!-- 上方標題 -->
@@ -709,6 +681,14 @@
       
               <!-- Right Section -->
               <div class="dropdown-section">
+                <input type="file" id="file-input" accept=".epin" />
+                <div>
+                  <label for="solution"></label>
+                  <select id="solution-5050">
+                    <option value="1">Entanglement-QTS Optimal Process</option>
+                    <option value="2">Self-Optimize</option>
+                  </select>
+                </div>
                 <!-- 記錄數字 -->
                 <div>Sensor Count: <span id="gbest-5050" class="bold-text"></span></div>
                 <div>Map Check: <span id="map-check-5050" class="bold-text"></span></div>
@@ -722,7 +702,25 @@
                   </div>
                   : Dissatisfy
                 </div>
-                <button id="toggle-btn-5050">Threshold</button>
+                <div class="progress-container">
+                  <label for="generation-slider-5050">Gen.(s): </label>
+                  <span id="current-generation-5050">1</span>
+                  <input
+                    type="range"
+                    id="generation-slider-5050"
+                    min="1"
+                    max="100"
+                    value="1"
+                  />
+                </div>
+                <button id="play-pause-btn-5050">Play</button>
+                <div class="speed-control-container">
+                  <button id="speed-up-btn">+</button>
+                  <span id="speed-display">Speed: 1x</span>
+                  <button id="speed-down-btn">-</button>
+                </div>
+                <button id="threshold-btn-5050">Threshold</button>
+                <button id="connect-btn-5050">Connect</button>
               </div>
             </div>
 
@@ -733,6 +731,34 @@
 
           <script src="./panel/map_model_5050.js"></script>
         </div>
+
+        <p>
+          As illustrated in <a href="#Deploy_example_50x50">Figure 9</a>, the Entanglement-QTS [<a href="#ref_35">35</a>] algorithm demonstrates its iterative optimization process over three stages. Initially (<a href="#Deploy_example_50x50">Figure 9a</a>), sensors are placed randomly, leading to significant overlap in detection areas. In the middle stages (<a href="#Deploy_example_50x50">Figure 9b</a>), the algorithm refines the placement by reducing redundancies, transforming excessive detection regions from red to yellow and green. By the final stage (<a href="#Deploy_example_50x50">Figure 9c</a>), an optimized solution emerges, requiring only 62 sensors to meet the detection threshold for all grid points.
+        </p>
+
+        <p>
+          Beyond visualizing the algorithm's optimization process, Evo-Panel 2.0 empowers users to directly interact with the solution space. Users can manually adjust sensor placements, refining the algorithm's results and exploring alternative configurations to further improve efficiency. This interactive feature bridges the gap between automated computation and human intuition, enabling more flexible and practical deployment strategies. By integrating algorithm-driven insights with user-defined adjustments, Evo-Panel 2.0 delivers a powerful tool for solving large-scale deployment problems with precision and adaptability.
+        </p>
+
+        <figure id="Deploy_example_50x50" class="text-center" style="text-align: left;">
+          <div style="display: flex; justify-content: center; gap: 10px;">
+            <div style="text-align: center;">
+              <img src="img/03 Deploy/Deploy_50x50_62_box.svg" width="255" height="220">
+              <p>(f)</p>
+            </div>
+            <div style="text-align: center;">
+              <img src="img/03 Deploy/Deploy_50x50_58_not_fill.svg" width="255" height="220">
+              <p>(g)</p>
+            </div>
+            <div style="text-align: center;">
+              <img src="img/03 Deploy/Deploy_50x50_60.svg" width="255" height="220">
+              <p>(h)</p>
+            </div>
+          </div>
+          <figcaption>
+            <strong>Figure 9:</strong> An illustration of a deployment problem in Evo-Panel 2.0. (a) In the early stage of the Entanglement-QTS search, this map is almost red due to the sensor's high density and extensive overlap. (b) In the middle stage, the number of sensors decreases, and some positions display a green color detection probability. (c) At the end of Entanglement-QTS, Evo-Panel 2.0 shows that the entire color of all positions is mostly green, indicating that Entanglement-QTS reduces the cost of the sensor and finds an optimal solution for 62 sensors. (d) Evo-Panel 2.0 shows a demonstration of the connectivity of sensors within a distance of five. (e) Utilizing Evo-Panel 2.0, users have the capacity to manually refine the algorithm's optimal solution. By removing a sensor within the white box, a successful reduction in sensor count is achieved while maintaining adherence to the constraints. (f) Observing <a href="#Deploy_example_50x50">Figure 9f</a>, we identified overcrowding in the black box, prompting the removal of three sensors, resulting in an incomplete map check. (g) Afterward, two sensors were placed within the black box to fulfill the threshold requirement across the entire map, marking the map check status as "complete" once more. Evo-Panel 2.0 enabled users to save data with the final optimized result.
+          </figcaption>
+        </figure>
 
         <p>
           With the help of Evo-Panel 2.0, researchers can observe the sensor distribution, whether any regions are too dense, and how the detection probability superposition occurs. Moreover, we could see if this problem has a better solution and then use the interactive system to quickly find a solution that is better than the metaheuristic. Through the interactive system, researchers could add or remove the sensor to adjust the result, therefore obtaining a better solution. In <a href="#Deploy_example_50x50">Figure 9f</a>, we discovered that the bottom left corner is somewhat dense. Therefore, we removed one sensor from the bottom left corner (white box), reducing the total number of sensors from 62 to 61. Next, we discovered that the middle black box’s sensor could also decrease. Therefore, we remove three sensors (<a href="#Deploy_example_50x50">Figure 9g</a>) and add two sensors in the black box (<a href="#Deploy_example_50x50">Figure 9h</a>). It still satisfies the threshold. In addition, we can save, photograph, or record a video of the improved result to do additional research, such as writing a paper.
