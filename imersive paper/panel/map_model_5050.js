@@ -7,27 +7,62 @@ document.addEventListener('DOMContentLoaded', function () {
 
   // 其他邏輯
   const clickableBox = document.getElementById('clickable-box-5050');
+  const solutionDropdown = document.getElementById('solution-5050');
   const statusBar = document.getElementById('status-bar-5050');
   const gbestDisplay = document.getElementById('gbest-5050');
   const mapCheck = document.getElementById('map-check-5050');
-  const toggleBtn = document.getElementById('toggle-btn-5050'); // 按鈕
-  
+  // 讀檔功能
+  const fileInput = document.getElementById('file-input');
+  // 看threshold功能
+  const thresholdBtn = document.getElementById('threshold-btn-5050');
+  // 連線功能
+  const connectBtn = document.getElementById('connect-btn-5050');
+  //播放暫停
+  const playPauseBtn = document.getElementById('play-pause-btn-5050');
+  // 獲取進度條和顯示的元素
+  const generationSlider = document.getElementById('generation-slider-5050');
+  const currentGenerationDisplay = document.getElementById('current-generation-5050');
+  // 加減速功能
+  const speedUpBtn = document.getElementById('speed-up-btn');
+  const speedDownBtn = document.getElementById('speed-down-btn');
+  const speedDisplay = document.getElementById('speed-display');
+
+
   let sensorCount = 0; // 追蹤 sensor 的總數量
-  let gridSize = 5; // 初始 Grid 大小
+  let gridSize = 50; // 初始 Grid 大小
+  let mapSize = 50;
+  let sensingRange = 5; // 預設感測範圍
+  let connectDistance = 5; // 預設連線距離
+  let limitThreshold = []; // 儲存 threshold 資訊
+  let generations = {}; // 儲存每一代的感測器位置
   const sensors = []; // 儲存所有 sensor 位置
   let probabilitiesCache = null; // 儲存機率狀態
 
   //初始sensor擺放位置
   const sensorLayouts = {
-    1: [{ x: 10, y: 0 }, { x: 18, y: 0 }, { x: 36, y: 1 }, { x: 2, y: 2 }, { x: 22, y: 2 }, { x: 29, y: 2 }, { x: 42, y: 2 }, { x: 48, y: 3 }, { x: 15, y: 6 }, { x: 9, y: 7 }, { x: 2, y: 9 }, { x: 22, y: 9 }, { x: 34, y: 9 }, { x: 27, y: 10 }, { x: 40, y: 10 }, { x: 47, y: 10 }, { x: 16, y: 13 }, { x: 9, y: 14 }, { x: 25, y: 15 }, { x: 2, y: 16 }, { x: 33, y: 16 }, { x: 24, y: 17 }, { x: 32, y: 17 }, { x: 40, y: 17 }, { x: 47, y: 17 }, { x: 17, y: 19 }, { x: 9, y: 21 }, { x: 38, y: 22 }, { x: 1, y: 23 }, { x: 46, y: 23 }, { x: 24, y: 24 }, { x: 30, y: 24 }, { x: 16, y: 26 }, { x: 8, y: 28 }, { x: 38, y: 28 }, { x: 46, y: 29 }, { x: 0, y: 30 }, { x: 30, y: 30 }, { x: 23, y: 31 }, { x: 15, y: 33 }, { x: 39, y: 33 }, { x: 7, y: 34 }, { x: 32, y: 35 }, { x: 46, y: 35 }, { x: 2, y: 38 }, { x: 17, y: 38 }, { x: 24, y: 38 }, { x: 10, y: 39 }, { x: 31, y: 39 }, { x: 39, y: 40 }, { x: 46, y: 41 }, { x: 4, y: 42 }, { x: 24, y: 45 }, { x: 6, y: 46 }, { x: 15, y: 46 }, { x: 19, y: 46 }, { x: 28, y: 46 }, { x: 34, y: 46 }, { x: 2, y: 47 }, { x: 9, y: 47 }, { x: 40, y: 47 }, { x: 47, y: 47 }], // 50 × 50 初始位置
+    1: [{ x: 2, y: 2 }], // 50 × 50 測試用初始解
+    2: [{ x: 10, y: 0 }, { x: 18, y: 0 }, { x: 36, y: 1 }, { x: 2, y: 2 }, { x: 22, y: 2 }, { x: 29, y: 2 }, { x: 42, y: 2 }, { x: 48, y: 3 }, { x: 15, y: 6 }, { x: 9, y: 7 }, { x: 2, y: 9 }, { x: 22, y: 9 }, { x: 34, y: 9 }, { x: 27, y: 10 }, { x: 40, y: 10 }, { x: 47, y: 10 }, { x: 16, y: 13 }, { x: 9, y: 14 }, { x: 25, y: 15 }, { x: 2, y: 16 }, { x: 33, y: 16 }, { x: 24, y: 17 }, { x: 32, y: 17 }, { x: 40, y: 17 }, { x: 47, y: 17 }, { x: 17, y: 19 }, { x: 9, y: 21 }, { x: 38, y: 22 }, { x: 1, y: 23 }, { x: 46, y: 23 }, { x: 24, y: 24 }, { x: 30, y: 24 }, { x: 16, y: 26 }, { x: 8, y: 28 }, { x: 38, y: 28 }, { x: 46, y: 29 }, { x: 0, y: 30 }, { x: 30, y: 30 }, { x: 23, y: 31 }, { x: 15, y: 33 }, { x: 39, y: 33 }, { x: 7, y: 34 }, { x: 32, y: 35 }, { x: 46, y: 35 }, { x: 2, y: 38 }, { x: 17, y: 38 }, { x: 24, y: 38 }, { x: 10, y: 39 }, { x: 31, y: 39 }, { x: 39, y: 40 }, { x: 46, y: 41 }, { x: 4, y: 42 }, { x: 24, y: 45 }, { x: 6, y: 46 }, { x: 15, y: 46 }, { x: 19, y: 46 }, { x: 28, y: 46 }, { x: 34, y: 46 }, { x: 2, y: 47 }, { x: 9, y: 47 }, { x: 40, y: 47 }, { x: 47, y: 47 }] // 50 × 50 找到的最佳解
   };
 
   // 根據 Threshold 統一顯示顏色，這裡設置 threshold = 0.3
   const threshold = 0.3;
 
   //功能按鈕
-  let isThresholdMode = false; // 判斷是否為 Threshold 模式
-  toggleBtn.style.width = '245px';
+  // 判斷是否為 Threshold 模式
+  let isThresholdMode = false; 
+  // 判斷是否處於 Connect 模式
+  let isConnectMode = false; 
+  let connectionLines = []; // 儲存所有連線元素
+  // 判斷是否處於播放狀態
+  let isPlaying = false; 
+  let currentGeneration = 0; // 當前播放的代數
+  let playInterval; // 播放的計時器
+  // 初始化進度條的最大值
+  generationSlider.max = Object.keys(generations).length;
+  // 加減速功能變數
+  let playbackSpeed = 1; // 默認速度倍率
+  const maxSpeed = 4; // 最大速度倍率
+  const minSpeed = 1; // 最小速度倍率
 
   // 清空狀態條內部
   statusBar.innerHTML = '';
@@ -96,6 +131,73 @@ document.addEventListener('DOMContentLoaded', function () {
   tooltip.style.pointerEvents = 'none'; // 防止 tooltip 擋到滑鼠事件
   document.body.appendChild(tooltip);
 
+  // QTS優化後的epin檔
+  const fileContent = `
+  Map :
+  50x50
+  Sensing_range : 5
+  Connect : 8
+  Limit :
+  0.3 0.3 0.3 0.3 0.3 0.3 0.3 0.3 0.3 0.3 0.3 0.3 0.3 0.3 0.3 0.3 0.3 0.3 0.3 0.3 0.3 0.3 0.3 0.3 0.3 0.3 0.3 0.3 0.3 0.3 0.3 0.3 0.3 0.3 0.3 0.3 0.3 0.3 0.3 0.3 0.3 0.3 0.3 0.3 0.3 0.3 0.3 0.3 0.3 0.3
+  0.3 0.3 0.3 0.3 0.3 0.3 0.3 0.3 0.3 0.3 0.3 0.3 0.3 0.3 0.3 0.3 0.3 0.3 0.3 0.3 0.3 0.3 0.3 0.3 0.3 0.3 0.3 0.3 0.3 0.3 0.3 0.3 0.3 0.3 0.3 0.3 0.3 0.3 0.3 0.3 0.3 0.3 0.3 0.3 0.3 0.3 0.3 0.3 0.3 0.3
+  0.3 0.3 0.3 0.3 0.3 0.3 0.3 0.3 0.3 0.3 0.3 0.3 0.3 0.3 0.3 0.3 0.3 0.3 0.3 0.3 0.3 0.3 0.3 0.3 0.3 0.3 0.3 0.3 0.3 0.3 0.3 0.3 0.3 0.3 0.3 0.3 0.3 0.3 0.3 0.3 0.3 0.3 0.3 0.3 0.3 0.3 0.3 0.3 0.3 0.3
+  0.3 0.3 0.3 0.3 0.3 0.3 0.3 0.3 0.3 0.3 0.3 0.3 0.3 0.3 0.3 0.3 0.3 0.3 0.3 0.3 0.3 0.3 0.3 0.3 0.3 0.3 0.3 0.3 0.3 0.3 0.3 0.3 0.3 0.3 0.3 0.3 0.3 0.3 0.3 0.3 0.3 0.3 0.3 0.3 0.3 0.3 0.3 0.3 0.3 0.3
+  0.3 0.3 0.3 0.3 0.3 0.3 0.3 0.3 0.3 0.3 0.3 0.3 0.3 0.3 0.3 0.3 0.3 0.3 0.3 0.3 0.3 0.3 0.3 0.3 0.3 0.3 0.3 0.3 0.3 0.3 0.3 0.3 0.3 0.3 0.3 0.3 0.3 0.3 0.3 0.3 0.3 0.3 0.3 0.3 0.3 0.3 0.3 0.3 0.3 0.3
+  0.3 0.3 0.3 0.3 0.3 0.3 0.3 0.3 0.3 0.3 0.3 0.3 0.3 0.3 0.3 0.3 0.3 0.3 0.3 0.3 0.3 0.3 0.3 0.3 0.3 0.3 0.3 0.3 0.3 0.3 0.3 0.3 0.3 0.3 0.3 0.3 0.3 0.3 0.3 0.3 0.3 0.3 0.3 0.3 0.3 0.3 0.3 0.3 0.3 0.3
+  0.3 0.3 0.3 0.3 0.3 0.3 0.3 0.3 0.3 0.3 0.3 0.3 0.3 0.3 0.3 0.3 0.3 0.3 0.3 0.3 0.3 0.3 0.3 0.3 0.3 0.3 0.3 0.3 0.3 0.3 0.3 0.3 0.3 0.3 0.3 0.3 0.3 0.3 0.3 0.3 0.3 0.3 0.3 0.3 0.3 0.3 0.3 0.3 0.3 0.3
+  0.3 0.3 0.3 0.3 0.3 0.3 0.3 0.3 0.3 0.3 0.3 0.3 0.3 0.3 0.3 0.3 0.3 0.3 0.3 0.3 0.3 0.3 0.3 0.3 0.3 0.3 0.3 0.3 0.3 0.3 0.3 0.3 0.3 0.3 0.3 0.3 0.3 0.3 0.3 0.3 0.3 0.3 0.3 0.3 0.3 0.3 0.3 0.3 0.3 0.3
+  0.3 0.3 0.3 0.3 0.3 0.3 0.3 0.3 0.3 0.3 0.3 0.3 0.3 0.3 0.3 0.3 0.3 0.3 0.3 0.3 0.3 0.3 0.3 0.3 0.3 0.3 0.3 0.3 0.3 0.3 0.3 0.3 0.3 0.3 0.3 0.3 0.3 0.3 0.3 0.3 0.3 0.3 0.3 0.3 0.3 0.3 0.3 0.3 0.3 0.3
+  0.3 0.3 0.3 0.3 0.3 0.3 0.3 0.3 0.3 0.3 0.3 0.3 0.3 0.3 0.3 0.3 0.3 0.3 0.3 0.3 0.3 0.3 0.3 0.3 0.3 0.3 0.3 0.3 0.3 0.3 0.3 0.3 0.3 0.3 0.3 0.3 0.3 0.3 0.3 0.3 0.3 0.3 0.3 0.3 0.3 0.3 0.3 0.3 0.3 0.3
+  0.3 0.3 0.3 0.3 0.3 0.3 0.3 0.3 0.3 0.3 0.3 0.3 0.3 0.3 0.3 0.3 0.3 0.3 0.3 0.3 0.3 0.3 0.3 0.3 0.3 0.3 0.3 0.3 0.3 0.3 0.3 0.3 0.3 0.3 0.3 0.3 0.3 0.3 0.3 0.3 0.3 0.3 0.3 0.3 0.3 0.3 0.3 0.3 0.3 0.3
+  0.3 0.3 0.3 0.3 0.3 0.3 0.3 0.3 0.3 0.3 0.3 0.3 0.3 0.3 0.3 0.3 0.3 0.3 0.3 0.3 0.3 0.3 0.3 0.3 0.3 0.3 0.3 0.3 0.3 0.3 0.3 0.3 0.3 0.3 0.3 0.3 0.3 0.3 0.3 0.3 0.3 0.3 0.3 0.3 0.3 0.3 0.3 0.3 0.3 0.3
+  0.3 0.3 0.3 0.3 0.3 0.3 0.3 0.3 0.3 0.3 0.3 0.3 0.3 0.3 0.3 0.3 0.3 0.3 0.3 0.3 0.3 0.3 0.3 0.3 0.3 0.3 0.3 0.3 0.3 0.3 0.3 0.3 0.3 0.3 0.3 0.3 0.3 0.3 0.3 0.3 0.3 0.3 0.3 0.3 0.3 0.3 0.3 0.3 0.3 0.3
+  0.3 0.3 0.3 0.3 0.3 0.3 0.3 0.3 0.3 0.3 0.3 0.3 0.3 0.3 0.3 0.3 0.3 0.3 0.3 0.3 0.3 0.3 0.3 0.3 0.3 0.3 0.3 0.3 0.3 0.3 0.3 0.3 0.3 0.3 0.3 0.3 0.3 0.3 0.3 0.3 0.3 0.3 0.3 0.3 0.3 0.3 0.3 0.3 0.3 0.3
+  0.3 0.3 0.3 0.3 0.3 0.3 0.3 0.3 0.3 0.3 0.3 0.3 0.3 0.3 0.3 0.3 0.3 0.3 0.3 0.3 0.3 0.3 0.3 0.3 0.3 0.3 0.3 0.3 0.3 0.3 0.3 0.3 0.3 0.3 0.3 0.3 0.3 0.3 0.3 0.3 0.3 0.3 0.3 0.3 0.3 0.3 0.3 0.3 0.3 0.3
+  0.3 0.3 0.3 0.3 0.3 0.3 0.3 0.3 0.3 0.3 0.3 0.3 0.3 0.3 0.3 0.3 0.3 0.3 0.3 0.3 0.3 0.3 0.3 0.3 0.3 0.3 0.3 0.3 0.3 0.3 0.3 0.3 0.3 0.3 0.3 0.3 0.3 0.3 0.3 0.3 0.3 0.3 0.3 0.3 0.3 0.3 0.3 0.3 0.3 0.3
+  0.3 0.3 0.3 0.3 0.3 0.3 0.3 0.3 0.3 0.3 0.3 0.3 0.3 0.3 0.3 0.3 0.3 0.3 0.3 0.3 0.3 0.3 0.3 0.3 0.3 0.3 0.3 0.3 0.3 0.3 0.3 0.3 0.3 0.3 0.3 0.3 0.3 0.3 0.3 0.3 0.3 0.3 0.3 0.3 0.3 0.3 0.3 0.3 0.3 0.3
+  0.3 0.3 0.3 0.3 0.3 0.3 0.3 0.3 0.3 0.3 0.3 0.3 0.3 0.3 0.3 0.3 0.3 0.3 0.3 0.3 0.3 0.3 0.3 0.3 0.3 0.3 0.3 0.3 0.3 0.3 0.3 0.3 0.3 0.3 0.3 0.3 0.3 0.3 0.3 0.3 0.3 0.3 0.3 0.3 0.3 0.3 0.3 0.3 0.3 0.3
+  0.3 0.3 0.3 0.3 0.3 0.3 0.3 0.3 0.3 0.3 0.3 0.3 0.3 0.3 0.3 0.3 0.3 0.3 0.3 0.3 0.3 0.3 0.3 0.3 0.3 0.3 0.3 0.3 0.3 0.3 0.3 0.3 0.3 0.3 0.3 0.3 0.3 0.3 0.3 0.3 0.3 0.3 0.3 0.3 0.3 0.3 0.3 0.3 0.3 0.3
+  0.3 0.3 0.3 0.3 0.3 0.3 0.3 0.3 0.3 0.3 0.3 0.3 0.3 0.3 0.3 0.3 0.3 0.3 0.3 0.3 0.3 0.3 0.3 0.3 0.3 0.3 0.3 0.3 0.3 0.3 0.3 0.3 0.3 0.3 0.3 0.3 0.3 0.3 0.3 0.3 0.3 0.3 0.3 0.3 0.3 0.3 0.3 0.3 0.3 0.3
+  0.3 0.3 0.3 0.3 0.3 0.3 0.3 0.3 0.3 0.3 0.3 0.3 0.3 0.3 0.3 0.3 0.3 0.3 0.3 0.3 0.3 0.3 0.3 0.3 0.3 0.3 0.3 0.3 0.3 0.3 0.3 0.3 0.3 0.3 0.3 0.3 0.3 0.3 0.3 0.3 0.3 0.3 0.3 0.3 0.3 0.3 0.3 0.3 0.3 0.3
+  0.3 0.3 0.3 0.3 0.3 0.3 0.3 0.3 0.3 0.3 0.3 0.3 0.3 0.3 0.3 0.3 0.3 0.3 0.3 0.3 0.3 0.3 0.3 0.3 0.3 0.3 0.3 0.3 0.3 0.3 0.3 0.3 0.3 0.3 0.3 0.3 0.3 0.3 0.3 0.3 0.3 0.3 0.3 0.3 0.3 0.3 0.3 0.3 0.3 0.3
+  0.3 0.3 0.3 0.3 0.3 0.3 0.3 0.3 0.3 0.3 0.3 0.3 0.3 0.3 0.3 0.3 0.3 0.3 0.3 0.3 0.3 0.3 0.3 0.3 0.3 0.3 0.3 0.3 0.3 0.3 0.3 0.3 0.3 0.3 0.3 0.3 0.3 0.3 0.3 0.3 0.3 0.3 0.3 0.3 0.3 0.3 0.3 0.3 0.3 0.3
+  0.3 0.3 0.3 0.3 0.3 0.3 0.3 0.3 0.3 0.3 0.3 0.3 0.3 0.3 0.3 0.3 0.3 0.3 0.3 0.3 0.3 0.3 0.3 0.3 0.3 0.3 0.3 0.3 0.3 0.3 0.3 0.3 0.3 0.3 0.3 0.3 0.3 0.3 0.3 0.3 0.3 0.3 0.3 0.3 0.3 0.3 0.3 0.3 0.3 0.3
+  0.3 0.3 0.3 0.3 0.3 0.3 0.3 0.3 0.3 0.3 0.3 0.3 0.3 0.3 0.3 0.3 0.3 0.3 0.3 0.3 0.3 0.3 0.3 0.3 0.3 0.3 0.3 0.3 0.3 0.3 0.3 0.3 0.3 0.3 0.3 0.3 0.3 0.3 0.3 0.3 0.3 0.3 0.3 0.3 0.3 0.3 0.3 0.3 0.3 0.3
+  0.3 0.3 0.3 0.3 0.3 0.3 0.3 0.3 0.3 0.3 0.3 0.3 0.3 0.3 0.3 0.3 0.3 0.3 0.3 0.3 0.3 0.3 0.3 0.3 0.3 0.3 0.3 0.3 0.3 0.3 0.3 0.3 0.3 0.3 0.3 0.3 0.3 0.3 0.3 0.3 0.3 0.3 0.3 0.3 0.3 0.3 0.3 0.3 0.3 0.3
+  0.3 0.3 0.3 0.3 0.3 0.3 0.3 0.3 0.3 0.3 0.3 0.3 0.3 0.3 0.3 0.3 0.3 0.3 0.3 0.3 0.3 0.3 0.3 0.3 0.3 0.3 0.3 0.3 0.3 0.3 0.3 0.3 0.3 0.3 0.3 0.3 0.3 0.3 0.3 0.3 0.3 0.3 0.3 0.3 0.3 0.3 0.3 0.3 0.3 0.3
+  0.3 0.3 0.3 0.3 0.3 0.3 0.3 0.3 0.3 0.3 0.3 0.3 0.3 0.3 0.3 0.3 0.3 0.3 0.3 0.3 0.3 0.3 0.3 0.3 0.3 0.3 0.3 0.3 0.3 0.3 0.3 0.3 0.3 0.3 0.3 0.3 0.3 0.3 0.3 0.3 0.3 0.3 0.3 0.3 0.3 0.3 0.3 0.3 0.3 0.3
+  0.3 0.3 0.3 0.3 0.3 0.3 0.3 0.3 0.3 0.3 0.3 0.3 0.3 0.3 0.3 0.3 0.3 0.3 0.3 0.3 0.3 0.3 0.3 0.3 0.3 0.3 0.3 0.3 0.3 0.3 0.3 0.3 0.3 0.3 0.3 0.3 0.3 0.3 0.3 0.3 0.3 0.3 0.3 0.3 0.3 0.3 0.3 0.3 0.3 0.3
+  0.3 0.3 0.3 0.3 0.3 0.3 0.3 0.3 0.3 0.3 0.3 0.3 0.3 0.3 0.3 0.3 0.3 0.3 0.3 0.3 0.3 0.3 0.3 0.3 0.3 0.3 0.3 0.3 0.3 0.3 0.3 0.3 0.3 0.3 0.3 0.3 0.3 0.3 0.3 0.3 0.3 0.3 0.3 0.3 0.3 0.3 0.3 0.3 0.3 0.3
+  0.3 0.3 0.3 0.3 0.3 0.3 0.3 0.3 0.3 0.3 0.3 0.3 0.3 0.3 0.3 0.3 0.3 0.3 0.3 0.3 0.3 0.3 0.3 0.3 0.3 0.3 0.3 0.3 0.3 0.3 0.3 0.3 0.3 0.3 0.3 0.3 0.3 0.3 0.3 0.3 0.3 0.3 0.3 0.3 0.3 0.3 0.3 0.3 0.3 0.3
+  0.3 0.3 0.3 0.3 0.3 0.3 0.3 0.3 0.3 0.3 0.3 0.3 0.3 0.3 0.3 0.3 0.3 0.3 0.3 0.3 0.3 0.3 0.3 0.3 0.3 0.3 0.3 0.3 0.3 0.3 0.3 0.3 0.3 0.3 0.3 0.3 0.3 0.3 0.3 0.3 0.3 0.3 0.3 0.3 0.3 0.3 0.3 0.3 0.3 0.3
+  0.3 0.3 0.3 0.3 0.3 0.3 0.3 0.3 0.3 0.3 0.3 0.3 0.3 0.3 0.3 0.3 0.3 0.3 0.3 0.3 0.3 0.3 0.3 0.3 0.3 0.3 0.3 0.3 0.3 0.3 0.3 0.3 0.3 0.3 0.3 0.3 0.3 0.3 0.3 0.3 0.3 0.3 0.3 0.3 0.3 0.3 0.3 0.3 0.3 0.3
+  0.3 0.3 0.3 0.3 0.3 0.3 0.3 0.3 0.3 0.3 0.3 0.3 0.3 0.3 0.3 0.3 0.3 0.3 0.3 0.3 0.3 0.3 0.3 0.3 0.3 0.3 0.3 0.3 0.3 0.3 0.3 0.3 0.3 0.3 0.3 0.3 0.3 0.3 0.3 0.3 0.3 0.3 0.3 0.3 0.3 0.3 0.3 0.3 0.3 0.3
+  0.3 0.3 0.3 0.3 0.3 0.3 0.3 0.3 0.3 0.3 0.3 0.3 0.3 0.3 0.3 0.3 0.3 0.3 0.3 0.3 0.3 0.3 0.3 0.3 0.3 0.3 0.3 0.3 0.3 0.3 0.3 0.3 0.3 0.3 0.3 0.3 0.3 0.3 0.3 0.3 0.3 0.3 0.3 0.3 0.3 0.3 0.3 0.3 0.3 0.3
+  0.3 0.3 0.3 0.3 0.3 0.3 0.3 0.3 0.3 0.3 0.3 0.3 0.3 0.3 0.3 0.3 0.3 0.3 0.3 0.3 0.3 0.3 0.3 0.3 0.3 0.3 0.3 0.3 0.3 0.3 0.3 0.3 0.3 0.3 0.3 0.3 0.3 0.3 0.3 0.3 0.3 0.3 0.3 0.3 0.3 0.3 0.3 0.3 0.3 0.3
+  0.3 0.3 0.3 0.3 0.3 0.3 0.3 0.3 0.3 0.3 0.3 0.3 0.3 0.3 0.3 0.3 0.3 0.3 0.3 0.3 0.3 0.3 0.3 0.3 0.3 0.3 0.3 0.3 0.3 0.3 0.3 0.3 0.3 0.3 0.3 0.3 0.3 0.3 0.3 0.3 0.3 0.3 0.3 0.3 0.3 0.3 0.3 0.3 0.3 0.3
+  0.3 0.3 0.3 0.3 0.3 0.3 0.3 0.3 0.3 0.3 0.3 0.3 0.3 0.3 0.3 0.3 0.3 0.3 0.3 0.3 0.3 0.3 0.3 0.3 0.3 0.3 0.3 0.3 0.3 0.3 0.3 0.3 0.3 0.3 0.3 0.3 0.3 0.3 0.3 0.3 0.3 0.3 0.3 0.3 0.3 0.3 0.3 0.3 0.3 0.3
+  0.3 0.3 0.3 0.3 0.3 0.3 0.3 0.3 0.3 0.3 0.3 0.3 0.3 0.3 0.3 0.3 0.3 0.3 0.3 0.3 0.3 0.3 0.3 0.3 0.3 0.3 0.3 0.3 0.3 0.3 0.3 0.3 0.3 0.3 0.3 0.3 0.3 0.3 0.3 0.3 0.3 0.3 0.3 0.3 0.3 0.3 0.3 0.3 0.3 0.3
+  0.3 0.3 0.3 0.3 0.3 0.3 0.3 0.3 0.3 0.3 0.3 0.3 0.3 0.3 0.3 0.3 0.3 0.3 0.3 0.3 0.3 0.3 0.3 0.3 0.3 0.3 0.3 0.3 0.3 0.3 0.3 0.3 0.3 0.3 0.3 0.3 0.3 0.3 0.3 0.3 0.3 0.3 0.3 0.3 0.3 0.3 0.3 0.3 0.3 0.3
+  0.3 0.3 0.3 0.3 0.3 0.3 0.3 0.3 0.3 0.3 0.3 0.3 0.3 0.3 0.3 0.3 0.3 0.3 0.3 0.3 0.3 0.3 0.3 0.3 0.3 0.3 0.3 0.3 0.3 0.3 0.3 0.3 0.3 0.3 0.3 0.3 0.3 0.3 0.3 0.3 0.3 0.3 0.3 0.3 0.3 0.3 0.3 0.3 0.3 0.3
+  0.3 0.3 0.3 0.3 0.3 0.3 0.3 0.3 0.3 0.3 0.3 0.3 0.3 0.3 0.3 0.3 0.3 0.3 0.3 0.3 0.3 0.3 0.3 0.3 0.3 0.3 0.3 0.3 0.3 0.3 0.3 0.3 0.3 0.3 0.3 0.3 0.3 0.3 0.3 0.3 0.3 0.3 0.3 0.3 0.3 0.3 0.3 0.3 0.3 0.3
+  0.3 0.3 0.3 0.3 0.3 0.3 0.3 0.3 0.3 0.3 0.3 0.3 0.3 0.3 0.3 0.3 0.3 0.3 0.3 0.3 0.3 0.3 0.3 0.3 0.3 0.3 0.3 0.3 0.3 0.3 0.3 0.3 0.3 0.3 0.3 0.3 0.3 0.3 0.3 0.3 0.3 0.3 0.3 0.3 0.3 0.3 0.3 0.3 0.3 0.3
+  0.3 0.3 0.3 0.3 0.3 0.3 0.3 0.3 0.3 0.3 0.3 0.3 0.3 0.3 0.3 0.3 0.3 0.3 0.3 0.3 0.3 0.3 0.3 0.3 0.3 0.3 0.3 0.3 0.3 0.3 0.3 0.3 0.3 0.3 0.3 0.3 0.3 0.3 0.3 0.3 0.3 0.3 0.3 0.3 0.3 0.3 0.3 0.3 0.3 0.3
+  0.3 0.3 0.3 0.3 0.3 0.3 0.3 0.3 0.3 0.3 0.3 0.3 0.3 0.3 0.3 0.3 0.3 0.3 0.3 0.3 0.3 0.3 0.3 0.3 0.3 0.3 0.3 0.3 0.3 0.3 0.3 0.3 0.3 0.3 0.3 0.3 0.3 0.3 0.3 0.3 0.3 0.3 0.3 0.3 0.3 0.3 0.3 0.3 0.3 0.3
+  0.3 0.3 0.3 0.3 0.3 0.3 0.3 0.3 0.3 0.3 0.3 0.3 0.3 0.3 0.3 0.3 0.3 0.3 0.3 0.3 0.3 0.3 0.3 0.3 0.3 0.3 0.3 0.3 0.3 0.3 0.3 0.3 0.3 0.3 0.3 0.3 0.3 0.3 0.3 0.3 0.3 0.3 0.3 0.3 0.3 0.3 0.3 0.3 0.3 0.3
+  0.3 0.3 0.3 0.3 0.3 0.3 0.3 0.3 0.3 0.3 0.3 0.3 0.3 0.3 0.3 0.3 0.3 0.3 0.3 0.3 0.3 0.3 0.3 0.3 0.3 0.3 0.3 0.3 0.3 0.3 0.3 0.3 0.3 0.3 0.3 0.3 0.3 0.3 0.3 0.3 0.3 0.3 0.3 0.3 0.3 0.3 0.3 0.3 0.3 0.3
+  0.3 0.3 0.3 0.3 0.3 0.3 0.3 0.3 0.3 0.3 0.3 0.3 0.3 0.3 0.3 0.3 0.3 0.3 0.3 0.3 0.3 0.3 0.3 0.3 0.3 0.3 0.3 0.3 0.3 0.3 0.3 0.3 0.3 0.3 0.3 0.3 0.3 0.3 0.3 0.3 0.3 0.3 0.3 0.3 0.3 0.3 0.3 0.3 0.3 0.3
+  0.3 0.3 0.3 0.3 0.3 0.3 0.3 0.3 0.3 0.3 0.3 0.3 0.3 0.3 0.3 0.3 0.3 0.3 0.3 0.3 0.3 0.3 0.3 0.3 0.3 0.3 0.3 0.3 0.3 0.3 0.3 0.3 0.3 0.3 0.3 0.3 0.3 0.3 0.3 0.3 0.3 0.3 0.3 0.3 0.3 0.3 0.3 0.3 0.3 0.3
+  0.3 0.3 0.3 0.3 0.3 0.3 0.3 0.3 0.3 0.3 0.3 0.3 0.3 0.3 0.3 0.3 0.3 0.3 0.3 0.3 0.3 0.3 0.3 0.3 0.3 0.3 0.3 0.3 0.3 0.3 0.3 0.3 0.3 0.3 0.3 0.3 0.3 0.3 0.3 0.3 0.3 0.3 0.3 0.3 0.3 0.3 0.3 0.3 0.3 0.3
+  Generation :
+  *1 []
+  *2 [{ x: 2, y: 2 }]
+  *3 [{ x: 2, y: 2 },{ x: 2, y: 7 }]
+  *4 [{ x: 2, y: 2 },{ x: 2, y: 7 },{ x: 2, y: 12 }]
+  *5 [{ x: 2, y: 2 },{ x: 2, y: 7 },{ x: 2, y: 12 },{ x: 2, y: 17 }]
+  *6 [{ x: 2, y: 2 },{ x: 2, y: 7 },{ x: 2, y: 12 },{ x: 2, y: 17 },{ x: 2, y: 22 }]
+  *7 [{ x: 2, y: 2 },{ x: 2, y: 7 },{ x: 2, y: 12 },{ x: 2, y: 17 },{ x: 2, y: 22 },{ x: 2, y: 27 }]
+  `;
+
   // 生成每個格子
   function renderGrid(size, layout = []) {
     clickableBox.innerHTML = ''; // 清空原本內容
@@ -104,7 +206,7 @@ document.addEventListener('DOMContentLoaded', function () {
     clickableBox.style.gridTemplateRows = `repeat(${size}, 1fr)`;
   
     // 計算每個格子的大小
-    const boxSize = 300; // 黑色框框大小 (已在CSS固定300px)
+    const boxSize = 600; // 黑色框框大小 (已在CSS固定300px)
     const cellSize = Math.floor(boxSize / size);
     const cells = []; // 儲存格子狀態
 
@@ -151,16 +253,26 @@ document.addEventListener('DOMContentLoaded', function () {
         // 更新 Gbest 顯示
         gbestDisplay.textContent = `${sensorCount}`;
         calculateDetectionProbability(size, sensors, clickableBox);
+
+        // 自動更新連線
+        if (isConnectMode) {
+          connectSensors();
+        }
       });
       // 滑鼠靠近時顯示 Tooltip
       cell.addEventListener('mousemove', function (e) {
         const probability = cell.dataset.probability || 0; // 取得當前機率
-        const thresholdText = threshold.toFixed(2); // 取得 threshold
+        // 計算當前格子的 threshold 值
+        let currentThreshold = 0.3; // 預設值
+        if (limitThreshold && limitThreshold[y] && limitThreshold[y][x] !== undefined) {
+          currentThreshold = limitThreshold[y][x]; // 從 limitThreshold 中取得對應值
+        }
       
         // 更新 Tooltip 內容
         tooltip.innerHTML = `
+          Row: ${x+1}, Column: ${y+1}<br>
           Detection Probability: ${parseFloat(probability).toFixed(3)}<br>
-          Threshold: ${thresholdText}
+          Threshold: ${currentThreshold.toFixed(2)}
         `;
       
         // 設置 Tooltip 位置（滑鼠右上角）
@@ -175,19 +287,24 @@ document.addEventListener('DOMContentLoaded', function () {
 
       clickableBox.appendChild(cell);
     }
-
     gbestDisplay.textContent = `${sensorCount}`;
     calculateDetectionProbability(size, sensors, clickableBox);
+    // 如果處於連線模式，自動觸發連線功能
+    if (isConnectMode) {
+      connectSensors();
+    }
+    // 更新進度條的generation
+    generationSlider.max = Object.keys(generations).length;
+    updateProgressBar(0); // 同步更新進度條
   }
   // 生成xy軸標籤
   function renderAxes(gridSize) {
     // 獲取 clickableBox 的寬度和高度
-    let boxWidth = clickableBox.offsetWidth;
-    let boxHeight = clickableBox.offsetHeight;
-
+    let boxWidth = clickableBox.offsetWidth - 8;
+    let boxHeight = clickableBox.offsetHeight - 8;
     // 計算每個格子的大小
-    if(boxWidth === 0 ) boxWidth = 600 - 8;
-    if(boxHeight === 0) boxHeight = 600 - 8;
+    if(boxWidth === -8) boxWidth = 600 - 8;
+    if(boxHeight === -8) boxHeight = 600 - 8;
     const cellWidth = boxWidth / gridSize;
     const cellHeight = boxHeight / gridSize;
 
@@ -238,6 +355,33 @@ document.addEventListener('DOMContentLoaded', function () {
       yAxis.appendChild(label);
     }
   }
+  // 依據世代數，更新格子資訊
+  function updateGrid(generationData) {
+    // 1. 清空現有的感測器標記
+    sensors.length = 0;
+    sensorCount = 0;
+    const cells = clickableBox.childNodes;
+    cells.forEach(cell => {
+      cell.classList.remove('sensor'); // 移除感測器標記
+      cell.style.backgroundColor = 'rgb(0, 45, 255)'; // 恢復預設顏色
+      cell.classList.remove('dissatisfy'); // 移除不滿足標記
+      cell.dataset.probability = 0; // 重置機率
+    });
+  
+    // 2. 根據 generationData 更新感測器位置
+    generationData.forEach(sensor => {
+      const index = sensor.y * gridSize + sensor.x; // 計算格子索引
+      const cell = cells[index];
+      cell.classList.add('sensor'); // 標記為感測器
+      sensorCount++;
+      sensors.push(sensor);
+      cell.style.backgroundColor = 'black'; // 更新顏色
+    });
+
+    // 更新 Gbest 顯示
+    gbestDisplay.textContent = `${sensorCount}`;
+    calculateDetectionProbability(gridSize, sensors, clickableBox);
+  }
   // 計算map的偵測機率
   function calculateDetectionProbability(gridSize, sensors, grid) {
     // 初始化所有格子的機率為 0
@@ -248,10 +392,10 @@ document.addEventListener('DOMContentLoaded', function () {
       const sensorX = sensor.x;
       const sensorY = sensor.y;
   
-      for (let dx = -5; dx <= 5; dx++) {
-        for (let dy = -5; dy <= 5; dy++) {
+      for (let dx = -sensingRange; dx <= sensingRange; dx++) {
+        for (let dy = -sensingRange; dy <= sensingRange; dy++) {
           const distance = Math.sqrt(dx * dx + dy * dy); // 計算歐幾里得距離
-          if (distance > 5 || distance === 0) continue; // 超出範圍或自身略過
+          if (distance > sensingRange || distance === 0) continue; // 超出範圍或自身略過
   
           const prob = 1 / distance; // 偵測機率是距離的倒數
           const targetX = sensorX + dx;
@@ -288,8 +432,22 @@ document.addEventListener('DOMContentLoaded', function () {
   }
   // 更新格子的狀態
   function applyProbabilitiesToGrid(probabilities, grid) {
+    let currentThreshold = threshold; // 預設為 0.3
+
+    // 過濾出所有格子，排除連線等其他元素
+    const cells = Array.from(grid.childNodes).filter(cell => cell.classList.contains('grid-cell'));
+
     // 根據機率更新格子顏色
-    grid.childNodes.forEach((cell, index) => {
+    cells.forEach((cell, index) => {
+      const rows = Math.sqrt(cells.length); // 假設 grid 為正方形
+      const row = Math.floor(index / rows); // 計算該格子的行號
+      const col = index % rows; // 計算該格子的列號
+
+      // 如果有檔案中的 limitThreshold，取對應的值
+      if (limitThreshold && limitThreshold[row] && limitThreshold[row][col] !== undefined) {
+        currentThreshold = limitThreshold[row][col];
+      }
+      // 更新格子樣式
       if (cell.classList.contains('sensor')) {
         // 如果是 sensor，顏色保持黑色
         cell.style.backgroundColor = 'black';
@@ -298,7 +456,7 @@ document.addEventListener('DOMContentLoaded', function () {
         const probability = probabilities[index];
         cell.dataset.probability = probability; // 儲存機率
 
-        if (probability > threshold) {
+        if (probability > currentThreshold) {
           // 機率大於 Threshold，顯示機率顏色
           cell.style.backgroundColor = getColorFromProbability(probability);
           cell.classList.remove('dissatisfy'); // 移除紅色斜線
@@ -308,7 +466,7 @@ document.addEventListener('DOMContentLoaded', function () {
             cell.style.backgroundColor = getColorFromProbability(probability);
           } else {
             // 機率小於等於 Threshold，顯示 Threshold 顏色並加紅色斜線
-            cell.style.backgroundColor = getColorFromProbability(threshold);
+            cell.style.backgroundColor = getColorFromProbability(currentThreshold);
           }
           cell.classList.add('dissatisfy'); // 添加紅色斜線
         }
@@ -351,7 +509,10 @@ document.addEventListener('DOMContentLoaded', function () {
   }
   // 計算完成率
   function calculateCompletionRate(grid) {
-    const totalCells = grid.childNodes.length; // 格子總數
+    // 過濾出所有格子元素，排除連線元素
+    const cells = Array.from(grid.childNodes).filter(cell => cell.classList.contains('grid-cell'));
+
+    const totalCells = cells.length; // 格子總數
     let nonDissatisfyCount = 0;
   
     // 遍歷所有格子，計算非 dissatisfy 的數量
@@ -365,13 +526,252 @@ document.addEventListener('DOMContentLoaded', function () {
     const completionRate = ((nonDissatisfyCount / totalCells) * 100).toFixed(2); // 保留兩位小數
     return completionRate; // 保證寬度一致
   }
+  // 繪製連線
+  function connectSensors() {
+    clearConnections(); // 確保連線不重疊
+
+    const cellSize = (clickableBox.offsetWidth-8) / gridSize; // 計算每個格子的大小
+
+    sensors.forEach((sensorA, indexA) => {
+      sensors.forEach((sensorB, indexB) => {
+        if (indexA >= indexB) return; // 避免重複計算或自連
+
+        const distance = Math.sqrt(
+          Math.pow(sensorA.x - sensorB.x, 2) + Math.pow(sensorA.y - sensorB.y, 2)
+        );
+
+        if (distance <= connectDistance) {
+          const line = document.createElement('div');
+          line.classList.add('connection-line');
+
+          // 起點與終點位置計算
+          const startX = (sensorA.x + 0.5) * cellSize + 4;
+          const startY = (sensorA.y + 0.5) * cellSize + 4;
+          const endX = (sensorB.x + 0.5) * cellSize + 4;
+          const endY = (sensorB.y + 0.5) * cellSize + 4;
+
+          const length = Math.sqrt(Math.pow(endX - startX, 2) + Math.pow(endY - startY, 2));
+          const angle = Math.atan2(endY - startY, endX - startX) * (180 / Math.PI);
+
+          // 設置線條位置與角度
+          line.style.width = `${length}px`;
+          line.style.height = `2px`; // 固定高度
+          line.style.transform = `rotate(${angle}deg)`;
+          line.style.backgroundColor = `black`; // 確保顏色為黑色
+          line.style.left = `${startX}px`;
+          line.style.top = `${startY}px`;
+
+          clickableBox.appendChild(line); // 添加到 clickable-box 中
+          connectionLines.push(line);
+        }
+      });
+    });
+  }
+  // 清除所有連線
+  function clearConnections() {
+    connectionLines.forEach(line => line.remove());
+    connectionLines = [];
+  }
+  // 解析檔案內容
+  function parseFileContent(content) {
+    const lines = content.split('\n').map(line => line.trim());
+    let currentSection = null;
+    let generation = 0;
+    generations = {}; // 重置 generations
+    limitThreshold = []; // 重置 limitThreshold
+
+
+    lines.forEach(line => {
+      if (line.startsWith('Map')) {
+        currentSection = 'Map';
+      } else if (line.startsWith('Sensing_range')) {
+        currentSection = 'Sensing_range';
+      } else if (line.startsWith('Connect')) {
+        currentSection = 'Connect';
+      } else if (line.startsWith('Limit')) {
+        currentSection = 'Limit';
+      } else if (line.startsWith('Generation')) {
+        currentSection = 'Generation';
+      } else if (line.startsWith('*')) {
+        currentSection = 'GenerationData';
+      }
+
+      switch (currentSection) {
+        case 'Map':
+          const sizeMatch = line.match(/(\d+)x(\d+)/);
+          if (sizeMatch) {
+            mapSize = parseInt(sizeMatch[1]);
+          }
+          break;
+
+        case 'Sensing_range':
+          const rangeMatch = line.match(/(\d+)/);
+          if (rangeMatch) {
+            sensingRange = parseInt(rangeMatch[1]);
+          }
+          break;
+
+        case 'Connect':
+          const connectMatch = line.match(/(\d+)/);
+          if (connectMatch) {
+            connectDistance = parseInt(connectMatch[1]);
+          }
+          break;
+
+        case 'Limit':
+          if (!line.startsWith('Limit')) {
+            limitThreshold.push(line.split(' ').map(Number));
+          }
+          break;
+
+        case 'GenerationData':
+          line = line.trim(); // 移除多餘空白
+          const generationMatch = line.match(/\[.*\]/);
+          if (generationMatch) {
+            // 找到包含感測器座標的 JSON 區域
+            const dataMatch = line.match(/\[.*\]/);
+            if (dataMatch) {
+              // 將座標 JSON 字串轉為陣列
+              const sensorData = JSON.parse(dataMatch[0].replace(/(\w+):/g, '"$1":'));
+              generations[generation] = sensorData;
+            }
+            generation++;
+          }
+          break;
+      }
+    });
+    updateMap(mapSize, sensingRange, connectDistance, limitThreshold, generations);
+  }
+  // 更新地圖
+  function updateMap(mapSize, sensingRange, connectDistance, limitThreshold, generations) {
+    // console.log('Map Size:', mapSize);
+    // console.log('Sensing Range:', sensingRange);
+    // console.log('Connect Distance:', connectDistance);
+    // console.log('Limit Threshold:', limitThreshold);
+    // console.log('Generations:', generations);
+
+    // 更新地圖大小和格子配置
+    gridSize = mapSize; // 更新全域變數
+    renderGrid(gridSize, generations[0] || []); // 預設顯示第一代感測器擺放位置
+  }
+  // 更新進度條的值和顯示的 generation 數
+  function updateProgressBar(generation) {
+    generationSlider.value = generation + 1; // 更新滑桿位置
+    currentGenerationDisplay.textContent = generation + 1; // 更新顯示的 generation
+  }
+  // 開始播放功能
+  function startPlayback() {
+    playInterval = setInterval(() => {
+      // 如果已播放到最後一代，自動暫停
+      if (currentGeneration >= Object.keys(generations).length) {
+        clearInterval(playInterval); // 清除計時器
+        isPlaying = false;
+        playPauseBtn.textContent = 'Play'; // 更新按鈕文字
+        currentGeneration = 0;
+      } else {
+        updateGrid(generations[currentGeneration] || []); // 更新格子資訊
+        updateProgressBar(currentGeneration); // 同步更新進度條
+        currentGeneration++; // 進入下一代
+      }
+    }, 1000 / playbackSpeed); // 根據速度倍率調整間隔
+  }
+  // 根據選項更新格子
+  solutionDropdown.addEventListener('change', function () {
+    const selectedValue = parseInt(this.value);
+    limitThreshold = [];
+    generations = {};
+
+    if (selectedValue === 1){
+      parseFileContent(fileContent);
+    }
+    else if (selectedValue === 2) {
+      gridSize = 50;  // 預設map大小
+      sensingRange = 5; // 預設感測範圍
+      connectDistance = 8; // 預設連線距離
+      // 傳入對應的初始 sensor 位置
+      renderGrid(gridSize, sensorLayouts[selectedValue] || []);
+    }
+  });
+  parseFileContent(fileContent);
   // 切換threshold / detection probability 模式
-  toggleBtn.addEventListener('click', function () {
+  thresholdBtn.addEventListener('click', function () {
     isThresholdMode = !isThresholdMode;
-    toggleBtn.textContent = isThresholdMode ? 'Detection Probability' : 'Threshold';
+    thresholdBtn.textContent = isThresholdMode ? 'Detection Probability' : 'Threshold';
 
     applyProbabilitiesToGrid(probabilitiesCache, clickableBox);
   });
+  // 連線與移除連線
+  connectBtn.addEventListener('click', function () {
+    isConnectMode = !isConnectMode;
+    connectBtn.textContent = isConnectMode ? 'Disconnect' : 'Connect';
 
-  renderGrid(50, sensorLayouts[1] || []);
+    if (isConnectMode) {
+      connectSensors();
+    } else {
+      clearConnections();
+    }
+  });
+  // 檔案讀取
+  fileInput.addEventListener('change', function (event) {
+    const file = event.target.files[0];
+    if (!file) return;
+    
+    const reader = new FileReader();
+    reader.onload = function (e) {
+      const content = e.target.result;
+      parseFileContent(content); // 解析檔案內容
+    };
+    reader.readAsText(file);
+
+    // **重置 input 的值**
+    fileInput.value = ''; // 讓相同檔案再次被選取時能觸發事件
+  }); 
+  // 按下播放/暫停按鈕時觸發
+  playPauseBtn.addEventListener('click', function () {
+    if (isPlaying) {
+      // 如果正在播放，則暫停播放
+      clearInterval(playInterval); // 清除計時器
+      isPlaying = false;
+      playPauseBtn.textContent = 'Play'; // 更新按鈕文字
+    } else {
+      // 如果暫停，則開始播放
+      isPlaying = true;
+      playPauseBtn.textContent = 'Pause'; // 更新按鈕文字
+  
+      startPlayback(); // 開始播放
+    }
+  });
+  // 拖曳進度條可選擇generation，更新進度條的值和顯示的 generation 數
+  generationSlider.addEventListener('input', function () {
+    const generation = parseInt(generationSlider.value, 10) - 1; // 取得滑桿的值
+    currentGeneration = generation;
+    updateProgressBar(currentGeneration); // 更新進度條顯示
+    updateGrid(generations[currentGeneration] || []); // 更新格子資訊
+  });
+  // 加速功能
+  speedUpBtn.addEventListener('click', () => {
+    if (playbackSpeed < maxSpeed) {
+      playbackSpeed++;
+      speedDisplay.textContent = `Speed: ${playbackSpeed}x`;
+
+      // 如果正在播放，重新調整播放間隔
+      if (isPlaying) {
+        clearInterval(playInterval); // 清除當前計時器
+        startPlayback(); // 使用新的速度重新啟動播放
+      }
+    }
+  });
+  // 減速功能
+  speedDownBtn.addEventListener('click', () => {
+    if (playbackSpeed > minSpeed) {
+      playbackSpeed--;
+      speedDisplay.textContent = `Speed: ${playbackSpeed}x`;
+
+      // 如果正在播放，重新調整播放間隔
+      if (isPlaying) {
+        clearInterval(playInterval); // 清除當前計時器
+        startPlayback(); // 使用新的速度重新啟動播放
+      }
+    }
+  });
 });
