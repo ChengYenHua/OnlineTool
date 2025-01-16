@@ -1,0 +1,656 @@
+<!DOCTYPE html>
+<html lang="zh-Hant">
+<head>
+    <meta charset="UTF-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0">
+    <title>量子電路可視化</title>
+    <script src="https://cdnjs.cloudflare.com/ajax/libs/mathjs/11.5.0/math.min.js"></script>
+    <style>
+        body {
+            font-family: Arial, sans-serif;
+            margin: 0;
+            padding: 20px;
+            display: flex;
+            flex-direction: row;
+            justify-content: space-between;
+        }
+
+        .container {
+            display: flex;
+            flex-direction: row;
+            gap: 20px;
+            width: 100%;
+        }
+
+        .left-panel {
+            width: 30%; /* 增加左側面板的寬度 */
+            display: flex;
+            flex-direction: column;
+            gap: 40px;
+        }
+
+        .left-panel input, .left-panel select {
+            width: 100%;
+            padding: 12px;
+            font-size: 16px;
+        }
+
+        .box {
+            border: 1px solid black;
+            border-radius: 8px;
+            padding: 15px;
+            box-sizing: border-box;
+        }
+
+        .input-box {
+            height: 700px;
+            display: flex;
+            flex-direction: column;
+            justify-content: space-between;
+        }
+
+        #input-circuit {
+            height: 100%;
+            width: 100%;
+            resize: none; /* 禁止調整大小 */
+            font-size: 16px;
+            padding: 12px;
+            border: 1px solid #000;
+            border-radius: 8px;
+            box-sizing: border-box;
+        }
+
+        .right-panel {
+            width: 70%; /* 縮小右側面板的寬度 */
+            display: flex;
+            flex-direction: column;
+            gap: 60px;
+        }
+
+        .right-panel .box {
+            flex-grow: 1;
+        }
+
+        #top-box {
+            flex: 1; /* 改小比例 */
+            height: 30%; /* 修改為小比例 */
+        }
+
+        #bottom-box {
+            flex: 2; /* 改大比例 */
+            height: 70%; /* 修改為大比例 */
+        }
+
+        .circuit-diagram {
+            display: flex;
+            flex-direction: column;
+            gap: 10px;
+            padding: 20px;
+            background-color: #f9f9f9;
+            border: 1px solid #ccc;
+            border-radius: 8px;
+            position: relative; /* 讓絕對定位的子元素基於此元素 */
+            overflow: hidden; /* 防止內容超出框框 */
+        }
+
+        .qubit {
+            display: flex;
+            align-items: center;
+            gap: 10px;
+        }
+
+        .qubit-label {
+            font-weight: bold;
+            min-width: 50px;
+        }
+
+        .gate {
+            display: flex;
+            justify-content: center;
+            align-items: center;
+            width: 40px;
+            height: 40px;
+            border: 1px solid #000;
+            border-radius: 4px;
+            background-color: #e0e0e0;
+            text-align: center;
+        }
+
+        .cx-line {
+            position: absolute;
+            height: 2px;
+            background-color: #000;
+            z-index: 1;
+        }
+
+        .cx-control {
+            width: 10px;
+            height: 10px;
+            border-radius: 50%;
+            background-color: #000;
+            z-index: 2;
+        }
+
+        .cx-target {
+            width: 20px;
+            height: 20px;
+            border: 2px solid #000;
+            border-radius: 50%;
+            z-index: 2;
+        }
+
+    </style>
+</head>
+<body>
+    <div class="container">
+        <!-- 左側面板 -->
+        <div class="left-panel">
+            <div class="box input-box">
+                <label for="input-circuit">Input Circuit:</label>
+                <textarea id="input-circuit" placeholder="輸入 Clifford+T gate set，例如：&#10;t q[0];&#10;h q[0];&#10;cx q[1],q[2];&#10;tdg q[0];"></textarea>
+            </div>
+            <button id="submit-button">輸入</button>
+            <select id="dropdown-menu">
+                <option value="Toffoli">Toffoli</option>
+                <option value="Fredkin">Fredkin</option>
+                <option value="Peres">Peres</option>
+                <option value="OR">OR</option>
+                <option value="Toffoli_PN">Toffoli_PN</option>
+            </select>
+        </div>
+
+        <!-- 右側面板 -->
+        <div class="right-panel">
+            <div class="box" id="top-box">
+                <div class="circuit-diagram" id="circuit-diagram">
+                    <!-- 電路圖將顯示在這裡 -->
+                </div>
+            </div>
+            <div class="box" id="bottom-box">
+                <!-- 下方功能框 -->
+            </div>
+        </div>
+    </div>
+    <script>
+
+        // 定義量子門矩陣
+        const targetMatrices = {
+            Toffoli: [
+                [1, 0, 0, 0, 0, 0, 0, 0],
+                [0, 1, 0, 0, 0, 0, 0, 0],
+                [0, 0, 1, 0, 0, 0, 0, 0],
+                [0, 0, 0, 1, 0, 0, 0, 0],
+                [0, 0, 0, 0, 1, 0, 0, 0],
+                [0, 0, 0, 0, 0, 1, 0, 0],
+                [0, 0, 0, 0, 0, 0, 0, 1],
+                [0, 0, 0, 0, 0, 0, 1, 0]
+            ],
+            Fredkin: [
+                [1, 0, 0, 0, 0, 0, 0, 0],
+                [0, 1, 0, 0, 0, 0, 0, 0],
+                [0, 0, 1, 0, 0, 0, 0, 0],
+                [0, 0, 0, 1, 0, 0, 0, 0],
+                [0, 0, 0, 0, 1, 0, 0, 0],
+                [0, 0, 0, 0, 0, 0, 1, 0],
+                [0, 0, 0, 0, 0, 1, 0, 0],
+                [0, 0, 0, 0, 0, 0, 0, 1]
+            ],
+            Peres: [
+                [1, 0, 0, 0, 0, 0, 0, 0],
+                [0, 1, 0, 0, 0, 0, 0, 0],
+                [0, 0, 1, 0, 0, 0, 0, 0],
+                [0, 0, 0, 1, 0, 0, 0, 0],
+                [0, 0, 0, 0, 0, 0, 0, 1],
+                [0, 0, 0, 0, 0, 0, 1, 0],
+                [0, 0, 0, 0, 1, 0, 0, 0],
+                [0, 0, 0, 0, 0, 1, 0, 0]
+            ],
+            OR: [
+                [1, 0, 0, 0, 0, 0, 0, 0],
+                [0, 1, 0, 0, 0, 0, 0, 0],
+                [0, 0, 0, 1, 0, 0, 0, 0],
+                [0, 0, 1, 0, 0, 0, 0, 0],
+                [0, 0, 0, 0, 0, 1, 0, 0],
+                [0, 0, 0, 0, 1, 0, 0, 0],
+                [0, 0, 0, 0, 0, 0, 0, 1],
+                [0, 0, 0, 0, 0, 0, 1, 0]
+            ],
+            Toffoli_PN: [
+                [1, 0, 0, 0, 0, 0, 0, 0],
+                [0, 1, 0, 0, 0, 0, 0, 0],
+                [0, 0, 1, 0, 0, 0, 0, 0],
+                [0, 0, 0, 1, 0, 0, 0, 0],
+                [0, 0, 0, 0, 0, 1, 0, 0],
+                [0, 0, 0, 0, 1, 0, 0, 0],
+                [0, 0, 0, 0, 0, 0, 1, 0],
+                [0, 0, 0, 0, 0, 0, 0, 1]
+            ]
+            // 可添加更多矩陣
+        };
+
+        function parseQubitIndex(input, qubitCount) {
+            // 移除多餘空格並檢查格式
+            input = input.trim();
+            const match = input.match(/^q\[(\d+)\]$/); // 正確匹配 q[x] 格式
+            // 確保索引在合法範圍內
+            const index = parseInt(match[1], 10);
+
+            return index;
+        }
+
+        function renderCircuit(input) {
+            const circuitDiagram = document.getElementById('circuit-diagram');
+            const bottomBox = document.getElementById('bottom-box'); // 右側底部框框
+            circuitDiagram.innerHTML = ''; // 清空現有的電路圖
+
+            const lines = input.split(';').map(line => line.trim()).filter(line => line);
+            const qubitCount = 3; // 限制為 3 qubits
+
+            // 創建每條 qubit 的行
+            const qubits = Array.from({ length: qubitCount }, (_, i) => {
+                const qubitContainer = document.createElement('div');
+                qubitContainer.className = 'qubit';
+                qubitContainer.style.position = 'relative';
+                qubitContainer.style.display = 'flex';
+                qubitContainer.style.alignItems = 'center';
+                qubitContainer.style.height = '60px';
+
+                const qubitLabel = document.createElement('div');
+                qubitLabel.className = 'qubit-label';
+                qubitLabel.textContent = `q[${i}]`;
+                qubitLabel.style.marginRight = '10px';
+
+                const line = document.createElement('div');
+                line.className = 'qubit-line';
+                line.style.position = 'absolute';
+                line.style.left = '50px';
+                line.style.right = '0';
+                line.style.top = '50%';
+                line.style.height = '2px';
+                line.style.backgroundColor = 'black';
+                line.style.zIndex = '0'; // 將線放置於最底層
+
+                qubitContainer.appendChild(qubitLabel);
+                qubitContainer.appendChild(line);
+
+                return qubitContainer;
+            });
+
+            // 用來跟蹤每個 qubit 的當前位置
+            const positions = Array(qubitCount).fill(0);
+
+            lines.forEach( (line, index) => {
+                // 確保指令行內容被正確解析
+                const components = line.split(/\s+/); // 使用正則表達式處理多餘的空格
+                const instruction = components[0]?.toLowerCase(); // 指令名稱
+                const operands = components.slice(1).join('').split(','); // 處理操作數，移除多餘空格
+
+                const gateSpacing = 60; // 基本間距
+                const bitSpacing = 70;
+
+                if (instruction === 't' || instruction === 'tdg' || instruction === 'h') {
+                    // 單 qubit 操作
+                    const qubitIndex = parseQubitIndex(operands[0], qubitCount);
+                    const gateDiv = document.createElement('div');
+                    gateDiv.className = 'gate';
+                    gateDiv.style.backgroundColor =
+                        instruction === 'h' ? '#FF6666' : (instruction === 'tdg' ? '#0099FF' : '#66CCFF'); // 顏色
+                    gateDiv.textContent = instruction.toUpperCase();
+                    gateDiv.style.zIndex = '1'; // 設置 gate 在線之上
+
+                    // 設定 gate 的水平和垂直位置
+                    gateDiv.style.position = 'absolute';
+                    gateDiv.style.left = `${positions[qubitIndex] * gateSpacing + 80}px`;
+                    gateDiv.style.top = `${qubitIndex * bitSpacing + 30}px`; // 中心對齊 qubit 行
+
+                    // 添加事件監聽器
+                    gateDiv.addEventListener('mouseover', () => {
+                        bottomBox.textContent = `${line} (Gate: ${index}) (Fitness: ${calculateFromInput()})`;
+                        renderBarChart(line, index); // 新增柱狀圖渲染
+                    });
+                    gateDiv.addEventListener('mouseout', () => {
+                        bottomBox.textContent = '';
+                    });
+
+                    circuitDiagram.appendChild(gateDiv);
+                    positions[qubitIndex]++;
+                } else if (instruction === 'cx') {
+                    // 控制點和目標點操作
+                    const [control, target] = operands.map(parseQubitIndex);
+                    const currentPosition = Math.max(positions[control], positions[target]);
+                    const currentPositionY = Math.min(control, target);
+
+                    // 控制點
+                    const controlDot = document.createElement('div');
+                    controlDot.className = 'cx-control';
+                    const controlDotSize = 10;
+                    controlDot.style.position = 'absolute';
+                    controlDot.style.width = `${controlDotSize}px`;
+                    controlDot.style.height = `${controlDotSize}px`;
+                    controlDot.style.borderRadius = '50%';
+                    controlDot.style.backgroundColor = '#000';
+                    controlDot.style.left = `${currentPosition * gateSpacing + 80 + 21 - controlDotSize / 2}px`; // 水平位置
+                    controlDot.style.top = `${control * bitSpacing + 30 +21 - controlDotSize / 2}px`; // 控制點垂直位置
+                    circuitDiagram.appendChild(controlDot);
+
+                    // 目標點
+                    const targetCircle = document.createElement('div');
+                    targetCircle.className = 'cx-target';
+                    const targetCircleSize = 30;
+                    targetCircle.style.position = 'absolute';
+                    targetCircle.style.width = `${targetCircleSize}px`;
+                    targetCircle.style.height = `${targetCircleSize}px`;
+                    targetCircle.style.border = '2px solid #000';
+                    targetCircle.style.borderRadius = '50%';
+                    targetCircle.style.left = `${currentPosition * gateSpacing + 80 + 19 - targetCircleSize / 2}px`; // 水平位置
+                    targetCircle.style.top = `${target * bitSpacing + 30 + 18 - targetCircleSize / 2}px`; // 目標點垂直位置
+                    circuitDiagram.appendChild(targetCircle);
+                    
+
+                    // 連接線
+                    const Line = document.createElement('div');
+                    Line.className = 'cx-line';
+                    Line.style.position = 'absolute';
+                    Line.style.width = '2px';
+                    Line.style.left = `${currentPosition * gateSpacing + 80 + 21 - 1}px`; // 水平位置
+                    let topPosition = 0;
+                    if (control < target) {
+                        topPosition = controlDotSize / 2;
+                    } else {
+                        topPosition = targetCircleSize / 2 + 2;
+                    }
+                    Line.style.top = `${currentPositionY * bitSpacing + 30 +21 - topPosition}px`; // 起點位置
+                    let lineheight = 70 * Math.abs(control - target);
+                    if (control < target) {
+                        lineheight = lineheight + targetCircleSize / 2 + 6;
+                    } else {
+                        lineheight = lineheight + controlDotSize / 2 + 10;
+                    }
+                    Line.style.height = `${lineheight}px`; // 高度
+                    Line.style.backgroundColor = '#000';
+                    circuitDiagram.appendChild(Line);
+
+                    // 添加事件監聽器
+                    controlDot.addEventListener('mouseover', () => {
+                        bottomBox.textContent = `${line} (Gate: ${index}) (Fitness: ${calculateFromInput()})`;
+                        renderBarChart(line, index); // 新增柱狀圖渲染
+                    });
+                    controlDot.addEventListener('mouseout', () => {
+                        bottomBox.textContent = '';
+                    });
+                    targetCircle.addEventListener('mouseover', () => {
+                        bottomBox.textContent = `${line} (Gate: ${index}) (Fitness: ${calculateFromInput()})`;
+                        renderBarChart(line, index); // 新增柱狀圖渲染
+                    });
+                    targetCircle.addEventListener('mouseout', () => {
+                        bottomBox.textContent = '';
+                    });
+
+                    circuitDiagram.appendChild(controlDot);
+                    circuitDiagram.appendChild(targetCircle);
+
+                    // 更新位置
+                    positions[control] = currentPosition + 1;
+                    positions[target] = currentPosition + 1;
+                }
+            });
+
+            qubits.forEach(qubit => circuitDiagram.appendChild(qubit));
+        }
+
+        function calculateFitness(gateSolution, Toffoli) {
+            // 定義基本矩陣
+            const I = [
+                [1, 0],
+                [0, 1]
+            ];
+
+            const h = [
+                [1 / Math.sqrt(2), 1 / Math.sqrt(2)],
+                [1 / Math.sqrt(2), -1 / Math.sqrt(2)]
+            ];
+
+            const t = [
+                [1, 0],
+                [0, math.complex(Math.cos(Math.PI / 4), Math.sin(Math.PI / 4))]
+            ];
+
+            const tdg = [
+                [1, 0],
+                [0, math.complex(Math.cos(Math.PI / 4), -Math.sin(Math.PI / 4))]
+            ];
+
+            const cx_matrices = {
+                "cx q[0], q[1]": [
+                    [1, 0, 0, 0, 0, 0, 0, 0],
+                    [0, 1, 0, 0, 0, 0, 0, 0],
+                    [0, 0, 1, 0, 0, 0, 0, 0],
+                    [0, 0, 0, 1, 0, 0, 0, 0],
+                    [0, 0, 0, 0, 0, 0, 1, 0],
+                    [0, 0, 0, 0, 0, 0, 0, 1],
+                    [0, 0, 0, 0, 1, 0, 0, 0],
+                    [0, 0, 0, 0, 0, 1, 0, 0]
+                ],
+                "cx q[1], q[2]": [
+                    [1, 0, 0, 0, 0, 0, 0, 0],
+                    [0, 1, 0, 0, 0, 0, 0, 0],
+                    [0, 0, 0, 1, 0, 0, 0, 0],
+                    [0, 0, 1, 0, 0, 0, 0, 0],
+                    [0, 0, 0, 0, 1, 0, 0, 0],
+                    [0, 0, 0, 0, 0, 1, 0, 0],
+                    [0, 0, 0, 0, 0, 0, 0, 1],
+                    [0, 0, 0, 0, 0, 0, 1, 0]
+                ],
+                "cx q[0], q[2]": [
+                    [1, 0, 0, 0, 0, 0, 0, 0],
+                    [0, 1, 0, 0, 0, 0, 0, 0],
+                    [0, 0, 1, 0, 0, 0, 0, 0],
+                    [0, 0, 0, 1, 0, 0, 0, 0],
+                    [0, 0, 0, 0, 0, 1, 0, 0],
+                    [0, 0, 0, 0, 1, 0, 0, 0],
+                    [0, 0, 0, 0, 0, 0, 0, 1],
+                    [0, 0, 0, 0, 0, 0, 1, 0]
+                ],
+                "cx q[1], q[0]": [
+                    [1, 0, 0, 0, 0, 0, 0, 0],
+                    [0, 1, 0, 0, 0, 0, 0, 0],
+                    [0, 0, 0, 0, 0, 0, 1, 0],
+                    [0, 0, 0, 0, 0, 0, 0, 1],
+                    [0, 0, 0, 0, 1, 0, 0, 0],
+                    [0, 0, 0, 0, 0, 1, 0, 0],
+                    [0, 0, 1, 0, 0, 0, 0, 0],
+                    [0, 0, 0, 1, 0, 0, 0, 0]
+                ],
+                "cx q[2], q[1]": [
+                    [1, 0, 0, 0, 0, 0, 0, 0],
+                    [0, 0, 0, 1, 0, 0, 0, 0],
+                    [0, 0, 1, 0, 0, 0, 0, 0],
+                    [0, 1, 0, 0, 0, 0, 0, 0],
+                    [0, 0, 0, 0, 1, 0, 0, 0],
+                    [0, 0, 0, 0, 0, 0, 0, 1],
+                    [0, 0, 0, 0, 0, 0, 1, 0],
+                    [0, 0, 0, 0, 0, 1, 0, 0]
+                ],
+                "cx q[2], q[0]": [
+                    [1, 0, 0, 0, 0, 0, 0, 0],
+                    [0, 0, 0, 0, 0, 1, 0, 0],
+                    [0, 0, 1, 0, 0, 0, 0, 0],
+                    [0, 0, 0, 0, 0, 0, 0, 1],
+                    [0, 0, 0, 0, 1, 0, 0, 0],
+                    [0, 1, 0, 0, 0, 0, 0, 0],
+                    [0, 0, 0, 0, 0, 0, 1, 0],
+                    [0, 0, 0, 1, 0, 0, 0, 0]
+                ]
+            };
+
+            // 初始化 population_matrix 為單位矩陣
+            let population_matrix = math.identity(8)._data;
+
+            // 遍歷所有 gates
+            gateSolution.forEach(gate => {
+                let tmp_matrix = math.identity(8)._data;
+
+                if (gate === "h q[0]") {
+                    tmp_matrix = math.kron(math.kron(h, I), I);
+                } else if (gate === "h q[1]") {
+                    tmp_matrix = math.kron(math.kron(I, h), I);
+                } else if (gate === "h q[2]") {
+                    tmp_matrix = math.kron(math.kron(I, I), h);
+                } else if (gate === "t q[0]") {
+                    tmp_matrix = math.kron(math.kron(t, I), I);
+                } else if (gate === "t q[1]") {
+                    tmp_matrix = math.kron(math.kron(I, t), I);
+                } else if (gate === "t q[2]") {
+                    tmp_matrix = math.kron(math.kron(I, I), t);
+                } else if (gate === "tdg q[0]") {
+                    tmp_matrix = math.kron(math.kron(tdg, I), I);
+                } else if (gate === "tdg q[1]") {
+                    tmp_matrix = math.kron(math.kron(I, tdg), I);
+                } else if (gate === "tdg q[2]") {
+                    tmp_matrix = math.kron(math.kron(I, I), tdg);
+                } else if (cx_matrices[gate]) {
+                    tmp_matrix = cx_matrices[gate];
+                }
+                // population_matrix 更新
+                population_matrix = math.multiply(tmp_matrix, population_matrix);
+            });
+
+            // 計算 fitness
+            const mat = math.multiply(math.conj(math.transpose(population_matrix)), Toffoli);
+            const num = math.abs(math.trace(mat));
+            const dem = mat.length;
+            const fitness = 1 - (num / dem);
+            return fitness;
+        }
+
+        function calculateFromInput() {
+            const inputGates = document.getElementById("input-circuit").value;
+            const gateSolution = inputGates
+                .split(";")
+                .map(line => line.trim())
+                .filter(line => line && !line.startsWith("qreg q[3]")); // 過濾空行和 qreg q[3];
+
+            const selectedGate = document.getElementById("dropdown-menu").value;
+
+            const targetMatrix = targetMatrices[selectedGate];
+            const fitness = calculateFitness(gateSolution, targetMatrix);
+
+            return fitness;
+        }
+
+        function renderBarChart(line, index) {
+            const bottomBox = document.getElementById('bottom-box'); // 確保正確取得 bottom-box 元素
+            bottomBox.innerHTML = ''; // 清空內容
+
+            const gates = [
+                "h q[0]", "h q[1]", "h q[2]",
+                "t q[0]", "t q[1]", "t q[2]",
+                "tdg q[0]", "tdg q[1]", "tdg q[2]",
+                "cx q[0], q[2]", "cx q[1], q[2]", "cx q[0], q[1]",
+                "cx q[1], q[0]", "cx q[2], q[1]", "cx q[2], q[0]"
+            ];
+
+            const inputCircuit = document.getElementById('input-circuit').value;
+            const gateSolution = inputCircuit
+                .split(";")
+                .map(line => line.trim())
+                .filter(line => line && !line.startsWith("qreg q[3]"));
+
+            const selectedGate = document.getElementById("dropdown-menu").value;
+
+            const targetMatrix = targetMatrices[selectedGate];
+            const fitnessValues = gates.map(gate => {
+                const modifiedSolution = [...gateSolution];
+                modifiedSolution[index] = gate; // 替換指定 gate
+                return calculateFitness(modifiedSolution, targetMatrix);
+            });
+
+            // 創建畫布
+            const canvas = document.createElement('canvas');
+            canvas.width = 900;
+            canvas.height = 400;
+            bottomBox.appendChild(canvas);
+
+            const ctx = canvas.getContext('2d');
+            // 設定畫布背景和邊框
+            ctx.fillStyle = '#FFFFFF';
+            ctx.fillRect(0, 0, canvas.width, canvas.height);
+
+            // XY 軸設定
+            const paddingBottom = 70; // 增加底部留白
+            const padding = 50; // 留白
+            const chartWidth = canvas.width - padding * 2;
+            const chartHeight = canvas.height - padding - paddingBottom; // 調整圖表高度
+            const barSpacing = 20; // 柱子間距
+            const barWidth = (chartWidth - (gates.length - 1) * barSpacing) / gates.length;
+
+            // 繪製 XY 軸
+            ctx.strokeStyle = '#000';
+            ctx.lineWidth = 2;
+
+            // Y 軸
+            ctx.beginPath();
+            ctx.moveTo(padding, padding);
+            ctx.lineTo(padding, canvas.height - padding);
+            ctx.stroke();
+
+            // X 軸
+            ctx.beginPath();
+            ctx.moveTo(padding, canvas.height - padding);
+            ctx.lineTo(canvas.width - padding, canvas.height - padding);
+            ctx.stroke();
+
+            // 繪製柱狀圖
+            const maxFitness = Math.max(...fitnessValues);
+            fitnessValues.forEach((fitness, i) => {
+                const barHeight = (fitness / maxFitness) * chartHeight;
+                const barX = padding + i * (barWidth + barSpacing);
+                const barY = canvas.height - padding - barHeight;
+
+                // 繪製柱子
+                ctx.fillStyle = '#66CCFF';
+                ctx.fillRect(barX, barY, barWidth, barHeight);
+
+                // 繪製 gate 名稱
+                ctx.fillStyle = '#000';
+                ctx.font = '12px Arial';
+                ctx.textAlign = 'center';
+                //ctx.fillText(gates[i], barX + barWidth / 2, canvas.height - padding + 15);
+                // 繪製 gate 名稱（旋轉 45 度）
+                ctx.save(); // 保存當前狀態
+                ctx.translate(barX + barWidth / 2, canvas.height - paddingBottom  + 20); // 平移到文字位置
+                ctx.rotate(-Math.PI / 4); // 旋轉 -45 度
+                ctx.textAlign = 'right'; // 調整文字對齊方式
+                ctx.fillText(gates[i], 0, 0); // 繪製文字
+                ctx.restore(); // 恢復狀態
+
+                // 繪製 fitness 值
+                ctx.fillText(fitness.toFixed(3), barX + barWidth / 2, barY - 10);
+            });
+
+            // 繪製 Y 軸刻度
+            const yTicks = 5; // 刻度數量
+            for (let i = 0; i <= yTicks; i++) {
+                const yValue = (maxFitness / yTicks) * i;
+                const yPosition = canvas.height - padding - (yValue / maxFitness) * chartHeight;
+
+                // 刻度線
+                ctx.beginPath();
+                ctx.moveTo(padding - 5, yPosition);
+                ctx.lineTo(padding, yPosition);
+                ctx.stroke();
+
+                // 刻度值
+                ctx.fillStyle = '#000';
+                ctx.textAlign = 'right';
+                ctx.fillText(yValue.toFixed(2), padding - 10, yPosition + 5);
+            }
+        }
+
+        document.getElementById('submit-button').addEventListener('click', () => {
+            const inputCircuit = document.getElementById('input-circuit').value;
+            renderCircuit(inputCircuit);
+        });
+    </script>
+</body>
+</html>
