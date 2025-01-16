@@ -305,12 +305,12 @@
 
                     // 添加事件監聽器
                     gateDiv.addEventListener('mouseover', () => {
-                        bottomBox.textContent = `${line} (Gate: ${index}) (Fitness: ${calculateFromInput()})`;
-                        renderBarChart(line, index); // 新增柱狀圖渲染
+                        //bottomBox.textContent = `${line} (Gate: ${index}) (Fitness: ${calculateFromInput()})`;
+                        renderBarChart(line, index-1); // 新增柱狀圖渲染
                     });
-                    gateDiv.addEventListener('mouseout', () => {
-                        bottomBox.textContent = '';
-                    });
+                    //gateDiv.addEventListener('mouseout', () => {
+                    //    bottomBox.textContent = '';
+                    //});
 
                     circuitDiagram.appendChild(gateDiv);
                     positions[qubitIndex]++;
@@ -372,19 +372,19 @@
 
                     // 添加事件監聽器
                     controlDot.addEventListener('mouseover', () => {
-                        bottomBox.textContent = `${line} (Gate: ${index}) (Fitness: ${calculateFromInput()})`;
-                        renderBarChart(line, index); // 新增柱狀圖渲染
+                        //bottomBox.textContent = `${line} (Gate: ${index}) (Fitness: ${calculateFromInput()})`;
+                        renderBarChart(line, index-1); // 新增柱狀圖渲染
                     });
-                    controlDot.addEventListener('mouseout', () => {
-                        bottomBox.textContent = '';
-                    });
+                    //controlDot.addEventListener('mouseout', () => {
+                    //    bottomBox.textContent = '';
+                    //});
                     targetCircle.addEventListener('mouseover', () => {
-                        bottomBox.textContent = `${line} (Gate: ${index}) (Fitness: ${calculateFromInput()})`;
-                        renderBarChart(line, index); // 新增柱狀圖渲染
+                        //bottomBox.textContent = `${line} (Gate: ${index}) (Fitness: ${calculateFromInput()})`;
+                        renderBarChart(line, index-1); // 新增柱狀圖渲染
                     });
-                    targetCircle.addEventListener('mouseout', () => {
-                        bottomBox.textContent = '';
-                    });
+                    //targetCircle.addEventListener('mouseout', () => {
+                    //    bottomBox.textContent = '';
+                    //});
 
                     circuitDiagram.appendChild(controlDot);
                     circuitDiagram.appendChild(targetCircle);
