@@ -466,7 +466,7 @@ document.addEventListener('DOMContentLoaded', function () {
             cell.style.backgroundColor = getColorFromProbability(probability);
           } else {
             // 機率小於等於 Threshold，顯示 Threshold 顏色並加紅色斜線
-            cell.style.backgroundColor = getColorFromProbability(currentThreshold);
+            cell.style.backgroundColor = lightenColor(getColorFromProbability(currentThreshold), 0.6);
           }
           cell.classList.add('dissatisfy'); // 添加紅色斜線
         }
@@ -506,6 +506,19 @@ document.addEventListener('DOMContentLoaded', function () {
     }
 
     return `rgb(0, 45, 255)`; // 預設返回深藍色
+  }
+  // 機率小於Threshold，顯示淡色
+  function lightenColor(color, factor) {
+    // 假設 color 是 RGB 格式，例如 "rgb(255, 0, 0)"
+    const colorValues = color.match(/\d+/g).map(Number); // 提取 RGB 值
+    const [r, g, b] = colorValues;
+  
+    // 根據 factor 計算變淡的顏色
+    const newR = Math.min(255, r + (255 - r) * factor);
+    const newG = Math.min(255, g + (255 - g) * factor);
+    const newB = Math.min(255, b + (255 - b) * factor);
+  
+    return `rgb(${Math.round(newR)}, ${Math.round(newG)}, ${Math.round(newB)})`;
   }
   // 計算完成率
   function calculateCompletionRate(grid) {
