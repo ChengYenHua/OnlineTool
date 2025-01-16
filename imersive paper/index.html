@@ -1056,21 +1056,80 @@
 
         <h3>Deployment Optimization Interface</h3>
 
-        <figure id="Deploy_fire" class="text-center" style="text-align: left;">
-          <div style="display: flex; justify-content: center; gap: 10px;">
-            <div style="text-align: center;">
-              <img src="img/03 Deploy/Deploy_50x50fire_threshold.svg" width="255" height="220">
-              <p>(a)</p>
+        <div class="framed">
+          <div class="inside">
+            <!-- 上方標題 -->
+            <div class="eyebrow">
+              You can interact with the map by clicking...
             </div>
-            <div style="text-align: center;">
-              <img src="img/03 Deploy/Deploy_50x50fire_136.svg" width="255" height="220">
-              <p>(b)</p>
+            <!-- 主內容區塊 -->
+            <div class="interactive-panel-5050-firemap">
+              <!-- Left Clickable Box -->
+              <div id="clickable-box-5050-firemap" class="clickable-box-5050-firemap"></div>
+      
+              <!-- Status Bar -->
+              <div id="status-bar-5050-firemap" class="status-bar-5050-firemap"></div>
+      
+              <!-- Right Section -->
+              <div class="dropdown-section">
+                <input type="file" id="file-input-firemap" accept=".epin" />
+                <div>
+                  <label for="solution"></label>
+                  <select id="solution-5050-firemap">
+                    <option value="1">FireSense Map</option>
+                    <option value="2">FireSense Optimized Map</option>
+                  </select>
+                </div>
+                <!-- 記錄數字 -->
+                <div>Sensor Count: <span id="gbest-5050-firemap" class="bold-text"></span></div>
+                <div>Map Check: <span id="map-check-5050-firemap" class="bold-text"></span></div>
+                <!-- 標籤 (Legend) -->
+                <div class="label-box">
+                  <div class="sensor-box"></div> : Sensor
+                </div>
+                <div class="label-box">
+                  <div class="dissatisfy-box">
+                    <div class="diagonal-line"></div>
+                  </div>
+                  : Dissatisfy
+                </div>
+                <div class="progress-container">
+                  <label for="generation-slider-5050">Gen.(s): </label>
+                  <span id="current-generation-5050-firemap" class="current-generation-5050">1</span>
+                  <input
+                    type="range"
+                    class = "generation-slider-5050-firemap"
+                    id="generation-slider-5050-firemap"
+                    min="1"
+                    max="100"
+                    value="1"
+                  />
+                </div>
+                <button id="play-pause-btn-5050-firemap">Play</button>
+                <div class="speed-control-container">
+                  <button id="speed-up-btn-firemap">+</button>
+                  <span id="speed-display-firemap">Speed: 1x</span>
+                  <button id="speed-down-btn-firemap">-</button>
+                </div>
+                <button id="threshold-btn-5050-firemap">Detection Probability</button>
+                <button id="connect-btn-5050-firemap">Connect</button>
+              </div>
             </div>
-            <div style="text-align: center;">
-              <img src="img/03 Deploy/Deploy_50x50fire_136_connect.svg" width="255" height="220">
-              <p>(c)</p>
+
+            <div class="caption"><b>Figure 12:</b> 
+              someword to explain.
             </div>
           </div>
+
+          <script src="./panel/map_model_5050_firemap.js"></script>
+        </div>
+
+
+
+
+
+
+        <figure id="Deploy_fire" class="text-center" style="text-align: left;">
           <div style="display: flex; justify-content: center; gap: 10px;">
             <div style="text-align: center;">
               <img src="img/03 Deploy/Deploy_50x50fire_136_box.svg" width="255" height="220">
