@@ -293,6 +293,74 @@
 
         <h3>1.General Model</h3>
 
+        <div class="framed">
+          <div class="inside">
+            <!-- 上方標題 -->
+            <div class="eyebrow">
+              You can interact with the map by clicking...
+            </div>
+            <!-- 主內容區塊 -->
+            <div class="interactive-panel-Binary">
+              <!-- Left Clickable Box -->
+              <div id="DynVisBox" class="DynVis-box-Binary"></div>
+
+              <!-- Fitness 顯示區 -->
+              <div id="fitness-container"></div>
+      
+              <!-- Status Bar -->
+              <div id="status-bar-Binary" class="status-bar-Binary" style="display: none;"></div>
+            </div>
+      
+            <!-- 下方控制按鈕 -->
+            <div class="control-panel">
+              <!-- 輸入檔案 -->
+              <input type="file" id="file-input-Binary" accept=".epin" />
+              <!-- 拖拉進度條 -->
+              <div class="progress-container">
+                <label for="generation-slider-Binary">Gen.(s): </label>
+                <span id="current-generation-Binary" class="current-generation-Binary">1</span>
+                <input
+                  type="range"
+                  class = "generation-slider-Binary"
+                  id="generation-slider-Binary"
+                  min="1"
+                  max="100"
+                  value="1"
+                />
+              </div>
+              <!-- 播放暫停 -->
+              <button id="play-pause-btn-Binary">Play</button>
+              <!-- 播放加速減速 -->
+              <div class="speed-control-container">
+                <button id="speed-up-btn-Binary">+</button>
+                <span id="speed-display-Binary">Speed: 1x</span>
+                <button id="speed-down-btn-Binary">-</button>
+              </div>
+            </div>
+            <div class="button-panel">
+              <!-- 機率模式 -->
+              <button id="toggle-status-bar">Probability Model</button>
+            </div>
+
+            <!-- Label -->
+            <!-- Y 軸標籤 (Generation) -->
+            <div id="y-axis-label" class="axis-label">Gen.</div>
+            <!-- X 軸標籤 (Bit) -->
+            <div id="x-axis-label" class="axis-label">Bit</div>
+            <!-- Fitness 軸標籤 -->
+            <div id="fitness-axis-label" class="axis-label">Fitness</div>
+            <!-- Fitness 標籤上方的顏色說明 -->
+            <div id="fitness-color-legend" class="axis-label">□ :0  ■ :1</div>
+
+            <div class="caption"><b>Figure 12:</b> 
+              someword to explain.
+            </div>
+          </div>
+
+          <script src="./panel/Binary_model.js"></script>
+        </div>
+        
+
         <figure id="Binary_beginning" class="text-center" style="text-align: left;">
           <div style="display: flex; justify-content: center; gap: 10px;">
             <div style="text-align: center;">
@@ -1123,9 +1191,6 @@
 
           <script src="./panel/map_model_5050_firemap.js"></script>
         </div>
-
-
-
 
 
 
