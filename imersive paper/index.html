@@ -302,7 +302,12 @@
             <!-- 主內容區塊 -->
             <div class="interactive-panel-Binary">
               <!-- Left Clickable Box -->
-              <div id="DynVisBox" class="DynVis-box-Binary"></div>
+              <div id="DynVisBox" class="DynVis-box-Binary">
+                <!-- 顯示粒子資訊 -->
+                <div id="particle-info-overlay" class="particle-info-overlay"></div>
+              </div>
+              <!-- bit 資訊顯示 -->
+              <div id="bit-tooltip" class="bit-tooltip"></div>
 
               <!-- Fitness 顯示區 -->
               <div id="fitness-container"></div>
@@ -340,6 +345,10 @@
             <div class="button-panel">
               <!-- 機率模式 -->
               <button id="toggle-status-bar">Probability Model</button>
+              <!-- 機率模式 -->
+              <button id="toggle-view-particles">View Particles</button>
+              <!-- 顯示資訊模式 -->
+              <button id="toggle-particle-info">Show Information</button>
             </div>
 
             <!-- Label -->
