@@ -126,10 +126,17 @@ document.addEventListener('DOMContentLoaded', function () {
   const speedDisplay = document.getElementById('speed-display-Binary');
   // 機率模式功能
   const toggleBtn = document.getElementById('toggle-status-bar');
+  // 查看當代粒子功能
+  const toggleViewBtn = document.getElementById('toggle-view-particles');
+  // 顯示資訊功能
+  const overlay = document.getElementById("particle-info-overlay");
+  const toggleParinfo = document.getElementById("toggle-particle-info");
+  // 顯示bit資訊
+  const tooltip = document.getElementById("bit-tooltip");
 
   let generations = parseFileContent(fileContent);
 
-  //功能按鈕
+  // 功能按鈕
   // 判斷是否處於播放狀態
   let isPlaying = false; 
   let currentGeneration = 0; // 當前播放的代數
@@ -138,8 +145,12 @@ document.addEventListener('DOMContentLoaded', function () {
   generationSlider.max = Object.keys(generations).length;
   // 加減速功能變數
   let playbackSpeed = 1; // 默認速度倍率
-  const maxSpeed = 4; // 最大速度倍率
+  const maxSpeed = 32; // 最大速度倍率
   const minSpeed = 1; // 最小速度倍率
+  // 是否顯示所有粒子
+  let showAllParticles = false;
+  // 是否顯示資訊
+  let showInformation = false;
 
   // 清空狀態條內部
   statusBar.innerHTML = '';
@@ -326,8 +337,9 @@ document.addEventListener('DOMContentLoaded', function () {
     const useProbabilityMode = statusBar.style.display === 'block'; // 當 StatusBar 顯示時啟用機率模式
 
     // 清空原有內容`
-    DynVisBox.innerHTML = ""; 
+    DynVisBox.innerHTML = "";
     fitnessContainer.innerHTML = '';
+    overlay.innerHTML = "";
 
     const maxGenerations = 20; // 最多顯示 20 代
     const allGenerations = Object.keys(generations).map(Number).sort((a, b) => a - b);
@@ -338,8 +350,9 @@ document.addEventListener('DOMContentLoaded', function () {
     // 計算要顯示的範圍
     const startGen = Math.max(0, currentGeneration - maxGenerations + 1); // 取得應該顯示的最舊代數
     const displayGenerations = allGenerations.slice(startGen, currentGeneration + 1); // 取得應顯示的代數
-    const missingRows = maxGenerations - displayGenerations.length; // 計算需要填充的空白行數
+    //const missingRows = maxGenerations - displayGenerations.length; // 計算需要填充的空白行數
 
+    let bestSolution = null;
     let bestOverallSolution = null;
     let bestFitnessOverall = -Infinity;
     let bitCount = 0;
@@ -369,96 +382,185 @@ document.addEventListener('DOMContentLoaded', function () {
       if (bestFitness > bestFitnessOverall || bestOverallSolution === null) {
         bestFitnessOverall = bestFitness;
         bestOverallSolution = bestParticle.bits; // 更新歷史最佳解
+        bestSolution = bestParticle;
       }
 
       bitCount = bestParticle.bits.length; // 設定 bit 數量
     }
 
-    //更新xy軸
-    updateAxes(bitCount, displayGenerations.length);
-    //更新Fitness
-    for (let i = 0; i < displayGenerations.length; i++) {
+    if(!showAllParticles){
+      // 設定 Grid 樣式
+      DynVisBox.style.gridTemplateColumns = `repeat(${bitCount}, 1fr)`;
+      DynVisBox.style.gridTemplateRows = `repeat(${maxGenerations  + 1}, 1fr)`;
+      //更新xy軸
+      updateAxes(bitCount, displayGenerations.length);
+      //更新Fitness
+      for (let i = 0; i < displayGenerations.length; i++) {
+        const fitnessLabel = document.createElement('div');
+        fitnessLabel.style.display = 'flex';
+        fitnessLabel.style.alignItems = 'center'; 
+        fitnessLabel.style.justifyContent = 'right'; 
+        fitnessLabel.style.fontSize = '10px';
+        fitnessLabel.style.height = '23.5px';
+        fitnessLabel.textContent = generations[currentGeneration - displayGenerations.length + i + 2].bestFitness; // Fitness 數值
+        fitnessContainer.appendChild(fitnessLabel);
+      }
+      //更新最佳Fitness
       const fitnessLabel = document.createElement('div');
       fitnessLabel.style.display = 'flex';
-      fitnessLabel.style.alignItems = 'center'; 
-      fitnessLabel.style.justifyContent = 'right'; 
+      fitnessLabel.style.alignItems = 'center';
+      fitnessLabel.style.justifyContent = 'right';
       fitnessLabel.style.fontSize = '10px';
       fitnessLabel.style.height = '23.5px';
-      fitnessLabel.textContent = generations[currentGeneration - displayGenerations.length + i + 2].bestFitness; // Fitness 數值
+      fitnessLabel.textContent = bestFitnessOverall;
       fitnessContainer.appendChild(fitnessLabel);
-    }
-    //更新最佳Fitness
-    const fitnessLabel = document.createElement('div');
-    fitnessLabel.style.display = 'flex';
-    fitnessLabel.style.alignItems = 'center';
-    fitnessLabel.style.justifyContent = 'right';
-    fitnessLabel.style.fontSize = '10px';
-    fitnessLabel.style.height = '23.5px';
-    fitnessLabel.textContent = bestFitnessOverall;
-    fitnessContainer.appendChild(fitnessLabel);
 
-    // 設定 Grid 樣式
-    DynVisBox.style.gridTemplateColumns = `repeat(${bitCount}, 1fr)`;
-    DynVisBox.style.gridTemplateRows = `repeat(${maxGenerations  + 1}, 1fr)`;
+      // 建立 grid，顯示當前代數與之前 20 代
+      displayGenerations.forEach((gen, index) => {
+        const genData = generations[gen];
+        // **找出當前代的最佳粒子**
+        let bestParticle = genData.particles[0];
 
-    // 建立 grid，顯示當前代數與之前 20 代
-    displayGenerations.forEach((gen) => {
-      const genData = generations[gen];
+        if (isMinimization) {
+          bestParticle = genData.particles.reduce((best, p) => (p.fitness < best.fitness ? p : best), genData.particles[0]);
+        } else {
+          bestParticle = genData.particles.reduce((best, p) => (p.fitness > best.fitness ? p : best), genData.particles[0]);
+        }
+        const generationBits = bestParticle.bits;
+
+        generationBits.forEach((bit, bitIndex) => {
+          const cell = document.createElement("div");
+          cell.classList.add("bit-cell");
+
+          // 🔹 設定 data-bit-index，確保每個 bit 都有唯一索引
+          cell.setAttribute("data-bit-index", bitIndex);
+
+          // 先清除舊的 class，避免樣式衝突
+          cell.classList.remove("bit-current", "bit-current-not-selected", "bit-past", "bit-past-not-selected");
+
+          if (useProbabilityMode) {
+            // 🔹 機率模式: 根據機率變顏色
+            cell.style.backgroundColor = getColorFromProbability(bit.probability);
+            cell.style.boxShadow = "0 0 0 0.5px rgb(172, 172, 172)"; // 保留黑色外框
+          } else {
+            if (gen === currentGeneration + 1) {
+              // 當前 generation (黑白)
+              cell.classList.add(bit.selected ? "bit-current" : "bit-current-not-selected");
+            } else {
+              // 過去 generations (灰白)
+              cell.classList.add(bit.selected ? "bit-past" : "bit-past-not-selected");
+            }
+          }
+          DynVisBox.appendChild(cell);
+        });
+        // 當代最佳的顯示資訊
+        const infoDiv = document.createElement("div");
+        infoDiv.textContent = bestParticle.particleInfo;
+        infoDiv.style.position = "absolute";
+        infoDiv.style.top = `${(index / (maxGenerations + 1)) * 100}%`;
+        infoDiv.style.left = "15px"; 
+        infoDiv.style.color = "black"; // 確保字體顏色清晰
+        infoDiv.style.fontSize = "12px"; // 避免字體過大
+        overlay.appendChild(infoDiv);
+      });
+
+      // 加入歷史最佳解 (最下面一排，紅白)
+      if (bestOverallSolution) {
+        bestOverallSolution.forEach((bit, bitIndex) => {
+          const cell = document.createElement("div");
+          cell.classList.add("bit-cell");
+          cell.setAttribute("data-bit-index", bitIndex);
+          if(!useProbabilityMode){
+            cell.classList.add(bit.selected ? "bit-best" : "bit-best-not-selected");
+          } else {
+            cell.classList.add(bit.selected ? "bit-current" : "bit-current-not-selected");
+          }
+          DynVisBox.appendChild(cell);
+        });
+      }
+      // 歷史最佳解的顯示資訊
+      const infoDiv = document.createElement("div");
+      infoDiv.textContent = bestSolution.particleInfo;
+      infoDiv.style.position = "absolute";
+      infoDiv.style.top = `${(displayGenerations.length / (maxGenerations + 1)) * 100}%`;
+      infoDiv.style.left = "15px"; 
+      infoDiv.style.color = "black"; // 確保字體顏色清晰
+      infoDiv.style.fontSize = "12px"; // 避免字體過大
+      overlay.appendChild(infoDiv);
+
+      // 更新資訊到DynVisBox
+      DynVisBox.appendChild(overlay);
+
+      // **填充空白行 (如果 `generations` 少於 20 代)**
+      /*
+      for (let i = 0; i < missingRows; i++) {
+        for (let j = 0; j < bitCount; j++) {
+          const emptyCell = document.createElement("div");
+          emptyCell.classList.add("bit-cell");
+          DynVisBox.appendChild(emptyCell);
+        }
+      }
+      */
+    } else {
+      const tmp_row = generations[currentGeneration + 1].particles.length;
+      // 設定 Grid 樣式
+      DynVisBox.style.gridTemplateColumns = `repeat(${bitCount}, 1fr)`;
+      DynVisBox.style.gridTemplateRows = `repeat(${tmp_row}, 1fr)`;
+      //更新xy軸
+      updateAxes(bitCount, tmp_row);
       // **找出當前代的最佳粒子**
+      const genData = generations[currentGeneration + 1];
+      // **找出當代的最佳及最差粒子**
       let bestParticle = genData.particles[0];
-
+      let worstParticle = genData.particles[0];
       if (isMinimization) {
         bestParticle = genData.particles.reduce((best, p) => (p.fitness < best.fitness ? p : best), genData.particles[0]);
+        worstParticle = genData.particles.reduce((best, p) => (p.fitness > best.fitness ? p : best), genData.particles[0]);
       } else {
         bestParticle = genData.particles.reduce((best, p) => (p.fitness > best.fitness ? p : best), genData.particles[0]);
+        worstParticle = genData.particles.reduce((best, p) => (p.fitness < best.fitness ? p : best), genData.particles[0]);
       }
-      const generationBits = bestParticle.bits;
+      
+      for (let i = 0; i < tmp_row; i++) {
+        const generationBits = genData.particles[i];
+        //更新Fitness
+        const fitnessLabel = document.createElement('div');
+        fitnessLabel.style.display = 'flex';
+        fitnessLabel.style.alignItems = 'center'; 
+        fitnessLabel.style.justifyContent = 'right'; 
+        fitnessLabel.style.fontSize = '10px';
+        const tmp_height = 496.0 / tmp_row;
+        fitnessLabel.style.height = `${tmp_height}px`;
+        fitnessLabel.textContent = generationBits.fitness; // Fitness 數值
+        fitnessContainer.appendChild(fitnessLabel);
 
-      generationBits.forEach((bit) => {
-        const cell = document.createElement("div");
-        cell.classList.add("bit-cell");
-
-        // 先清除舊的 class，避免樣式衝突
-        cell.classList.remove("bit-current", "bit-current-not-selected", "bit-past", "bit-past-not-selected");
-
-        if (useProbabilityMode) {
-          // 🔹 機率模式: 根據機率變顏色
-          cell.style.backgroundColor = getColorFromProbability(bit.probability);
-          cell.style.boxShadow = "0 0 0 0.5px rgb(172, 172, 172)"; // 保留黑色外框
-        } else {
-          if (gen === currentGeneration + 1) {
-            // 當前 generation (黑白)
-            cell.classList.add(bit.selected ? "bit-current" : "bit-current-not-selected");
+        generationBits.bits.forEach((bit, bitIndex) => {
+          const cell = document.createElement("div");
+          cell.classList.add("bit-cell");
+          cell.setAttribute("data-bit-index", bitIndex);
+          if (generationBits.fitness == bestParticle.fitness){
+            cell.classList.add(bit.selected ? "bit-best" : "bit-best-not-selected");
+          } else if (generationBits.fitness == worstParticle.fitness){
+            cell.classList.add(bit.selected ? "bit-worst" : "bit-current-not-selected");
           } else {
-            // 過去 generations (灰白)
-            cell.classList.add(bit.selected ? "bit-past" : "bit-past-not-selected");
+            cell.classList.add(bit.selected ? "bit-current" : "bit-current-not-selected");
           }
-        }
-        DynVisBox.appendChild(cell);
-      });
-    });
+          DynVisBox.appendChild(cell);
+        });
 
-    // 加入歷史最佳解 (最下面一排，紅白)
-    if (bestOverallSolution) {
-      bestOverallSolution.forEach((bit) => {
-        const cell = document.createElement("div");
-        cell.classList.add("bit-cell");
-        if(!useProbabilityMode){
-          cell.classList.add(bit.selected ? "bit-best" : "bit-best-not-selected");
-        } else {
-          cell.classList.add(bit.selected ? "bit-current" : "bit-current-not-selected");
-        }
-        DynVisBox.appendChild(cell);
-      });
-    }
-
-    // **填充空白行 (如果 `generations` 少於 20 代)**
-    for (let i = 0; i < missingRows; i++) {
-      for (let j = 0; j < bitCount; j++) {
-        const emptyCell = document.createElement("div");
-        emptyCell.classList.add("bit-cell");
-        DynVisBox.appendChild(emptyCell);
+        // 當代解的顯示資訊
+        const infoDiv = document.createElement("div");
+        infoDiv.textContent = generationBits.particleInfo;
+        infoDiv.style.position = "absolute";
+        infoDiv.style.top = `${(i / tmp_row) * 100}%`;
+        infoDiv.style.left = "15px"; 
+        infoDiv.style.color = "black"; // 確保字體顏色清晰
+        infoDiv.style.fontSize = "12px"; // 避免字體過大
+        overlay.appendChild(infoDiv);
       }
+
+      // 更新資訊到DynVisBox
+      DynVisBox.appendChild(overlay);
     }
   }
   // 生成xy軸標籤
@@ -474,10 +576,6 @@ document.addEventListener('DOMContentLoaded', function () {
     xAxis.style.gridTemplateColumns = `repeat(${bitCount}, 1fr)`;
     xAxis.style.width = `${892}px`; // 每個 bit 寬度為總寬度
 
-    // 設定 Y 軸 Grid
-    yAxis.style.gridTemplateRows = `repeat(${genCount}, 1fr)`;
-    yAxis.style.height = `${genCount * 10}px`; // 假設每個世代高度為 10px
-
     // **X 軸: 每 10 個 bit 顯示標籤**
     for (let i = 0; i < bitCount; i++) {
       const xLabel = document.createElement('div');
@@ -487,26 +585,44 @@ document.addEventListener('DOMContentLoaded', function () {
       xAxis.appendChild(xLabel);
     }
 
-    // **Y 軸: 每個世代標示**
-    for (let i = 0; i < genCount; i++) {
+    // 設定 Y 軸 Grid
+    yAxis.style.gridTemplateRows = `repeat(${genCount}, 1fr)`;
+    yAxis.style.height = `${genCount * 10}px`; // 假設每個世代高度為 10px
+
+    if (!showAllParticles){
+      // **Y 軸: 每個世代標示**
+      for (let i = 0; i < genCount; i++) {
+        const yLabel = document.createElement('div');
+        yLabel.style.display = 'flex';
+        yLabel.style.alignItems = 'center'; // 讓數字在格子內垂直置中
+        yLabel.style.justifyContent = 'right'; // 確保數字靠右
+        yLabel.style.fontSize = '10px';
+        yLabel.style.height = '23.5px'; // 確保與 DynVisBox 格子的高度一致 (需根據實際大小調整)
+        yLabel.textContent = currentGeneration - genCount + i + 2; // 由上往下排列
+        yAxis.appendChild(yLabel);
+      }
+      // GB標示
       const yLabel = document.createElement('div');
       yLabel.style.display = 'flex';
       yLabel.style.alignItems = 'center'; // 讓數字在格子內垂直置中
       yLabel.style.justifyContent = 'right'; // 確保數字靠右
       yLabel.style.fontSize = '10px';
       yLabel.style.height = '23.5px'; // 確保與 DynVisBox 格子的高度一致 (需根據實際大小調整)
-      yLabel.textContent = currentGeneration - genCount + i + 2; // 由上往下排列
+      yLabel.textContent = "GB"; // 由上往下排列
       yAxis.appendChild(yLabel);
+    } else {
+      // **Y 軸: 當前世代標示**
+      for (let i = 0; i < genCount; i++) {
+        const yLabel = document.createElement('div');
+        yLabel.style.display = 'flex';
+        yLabel.style.alignItems = 'center'; // 讓數字在格子內垂直置中
+        yLabel.style.justifyContent = 'right'; // 確保數字靠右
+        yLabel.style.fontSize = '10px';
+        yLabel.style.height = `${496.0 / genCount}px`; // 確保與 DynVisBox 格子的高度一致 (需根據實際大小調整)
+        yLabel.textContent = i + 1; // 由上往下排列
+        yAxis.appendChild(yLabel);
+      }
     }
-    // GB標示
-    const yLabel = document.createElement('div');
-    yLabel.style.display = 'flex';
-    yLabel.style.alignItems = 'center'; // 讓數字在格子內垂直置中
-    yLabel.style.justifyContent = 'right'; // 確保數字靠右
-    yLabel.style.fontSize = '10px';
-    yLabel.style.height = '23.5px'; // 確保與 DynVisBox 格子的高度一致 (需根據實際大小調整)
-    yLabel.textContent = "GB"; // 由上往下排列
-    yAxis.appendChild(yLabel);
   }
   // 動態調整數字寬度
   function updateMaxGenerationDisplay(maxGen) {
@@ -560,7 +676,7 @@ document.addEventListener('DOMContentLoaded', function () {
   // 加速功能
   speedUpBtn.addEventListener('click', () => {
     if (playbackSpeed < maxSpeed) {
-      playbackSpeed++;
+      playbackSpeed = playbackSpeed * 2;
       speedDisplay.textContent = `Speed: ${playbackSpeed}x`;
 
       // 如果正在播放，重新調整播放間隔
@@ -573,7 +689,7 @@ document.addEventListener('DOMContentLoaded', function () {
   // 減速功能
   speedDownBtn.addEventListener('click', () => {
     if (playbackSpeed > minSpeed) {
-      playbackSpeed--;
+      playbackSpeed = playbackSpeed / 2;
       speedDisplay.textContent = `Speed: ${playbackSpeed}x`;
 
       // 如果正在播放，重新調整播放間隔
@@ -591,8 +707,57 @@ document.addEventListener('DOMContentLoaded', function () {
         statusBar.style.display = 'none';
     }
 
+    //updateProgressBar(currentGeneration); // 更新進度條顯示
     updateGrid(); // 更新 DynVisBox
   });
+  // 顯示當代機率模式
+  toggleViewBtn.addEventListener('click', () => {
+    showAllParticles = !showAllParticles;
+    toggleViewBtn.textContent = showAllParticles ? 'View Generations' : 'View Particles';
+    updateGrid();
+  });
+  // 顯示或隱藏粒子資訊
+  toggleParinfo.addEventListener('click', () => {
+    showInformation = !showInformation;
+    toggleParinfo.textContent = showInformation ? 'Hide Information' : 'Show Information';
+    overlay.style.display = showInformation ? "flex" : "none";
+    updateGrid();
+  });
+  // 監聽滑鼠移入事件
+  DynVisBox.addEventListener("mouseover", function(event) {
+    const bitCell = event.target.closest(".bit-cell"); // 找到對應的 bit cell
+    if (!bitCell) return;
+    console.log(bitCell);
+
+    // 取得 bit 資訊
+    const bitIndex = bitCell.dataset.bitIndex; // 取得 data-bit-index 屬性
+    const generation = parseInt(document.getElementById("generation-slider-Binary").value);
+    const particleIndex = Math.floor(bitIndex / 100); // 計算粒子編號
+    const bitID = bitIndex % 100; // 計算 bit ID
+
+    if (!generations[generation] || !generations[generation].particles[particleIndex]) return;
+    const bitData = generations[generation].particles[particleIndex].bits[bitID];
+
+    // 更新 tooltip 內容
+    tooltip.innerHTML = `
+        <b>Bit:</b> ${bitData.bitInfo}<br>
+        <b>Selected:</b> ${bitData.selected}<br>
+        <b>Probability:</b> ${bitData.probability}
+    `;
+    tooltip.style.display = "block";
+  });
+  // 監聽滑鼠移動事件 (更新 tooltip 位置)
+  DynVisBox.addEventListener("mousemove", function(event) {
+    if (tooltip.style.display === "block") {
+        tooltip.style.left = `${event.pageX + 10}px`; // 滑鼠右側顯示
+        tooltip.style.top = `${event.pageY + 10}px`;  // 滑鼠下方顯示
+    }
+  });
+  // 監聽滑鼠移出事件 (隱藏 tooltip)
+  DynVisBox.addEventListener("mouseout", function(event) {
+    tooltip.style.display = "none";
+  });
+
 
   updateGrid(); // 更新 DynVisBox
 });
