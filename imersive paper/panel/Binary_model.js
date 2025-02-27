@@ -727,7 +727,6 @@ document.addEventListener('DOMContentLoaded', function () {
   DynVisBox.addEventListener("mouseover", function(event) {
     const bitCell = event.target.closest(".bit-cell"); // 找到對應的 bit cell
     if (!bitCell) return;
-    console.log(bitCell);
 
     // 取得 bit 資訊
     const bitIndex = bitCell.dataset.bitIndex; // 取得 data-bit-index 屬性
