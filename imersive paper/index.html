@@ -315,24 +315,17 @@
               <!-- Status Bar -->
               <div id="status-bar-Binary" class="status-bar-Binary" style="display: none;"></div>
             </div>
-      
+
+            <!-- 拖拉進度條&進度條顯示區 -->
+            <div id="generation-progress-container" class="generation-progress-container">
+              <div id="generation-progress-bar" class="generation-progress-bar"></div>
+              <div id="generation-progress-text" class="generation-progress-text">1 / 100 (generation)</div>
+            </div>
+
             <!-- 下方控制按鈕 -->
             <div class="control-panel">
               <!-- 輸入檔案 -->
               <input type="file" id="file-input-Binary" accept=".epin" />
-              <!-- 拖拉進度條 -->
-              <div class="progress-container">
-                <label for="generation-slider-Binary">Gen.(s): </label>
-                <span id="current-generation-Binary" class="current-generation-Binary">1</span>
-                <input
-                  type="range"
-                  class = "generation-slider-Binary"
-                  id="generation-slider-Binary"
-                  min="1"
-                  max="100"
-                  value="1"
-                />
-              </div>
               <!-- 播放暫停 -->
               <button id="play-pause-btn-Binary">Play</button>
               <!-- 播放加速減速 -->
@@ -361,7 +354,7 @@
             <!-- Fitness 標籤上方的顏色說明 -->
             <div id="fitness-color-legend" class="axis-label">□ :0  ■ :1</div>
 
-            <div class="caption"><b>Figure 12:</b> 
+            <div class="caption"><b>Figure 3:</b> 
               someword to explain.
             </div>
           </div>
