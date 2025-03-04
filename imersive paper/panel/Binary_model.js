@@ -117,9 +117,12 @@ document.addEventListener('DOMContentLoaded', function () {
   const fileInput = document.getElementById('file-input-Binary');
   //播放暫停
   const playPauseBtn = document.getElementById('play-pause-btn-Binary');
+  let Genlast = false;
   // 獲取進度條和顯示的元素
-  const generationSlider = document.getElementById('generation-slider-Binary');
-  const currentGenerationDisplay = document.getElementById('current-generation-Binary');
+  const progressContainer = document.getElementById("generation-progress-container");
+  const progressBar = document.getElementById("generation-progress-bar");
+  const progressText = document.getElementById("generation-progress-text");
+
   // 加減速功能
   const speedUpBtn = document.getElementById('speed-up-btn-Binary');
   const speedDownBtn = document.getElementById('speed-down-btn-Binary');
@@ -134,19 +137,30 @@ document.addEventListener('DOMContentLoaded', function () {
   // 顯示bit資訊
   const tooltip = document.getElementById("bit-tooltip");
 
+  // 預設解是越小越好
+  let isMinimization = true;
+  // 儲存每一代的當前最佳解
+  let currentBestPartilce = {};
+  // 儲存每一代的歷史最佳解
+  let historyBestParticle = {};
+  // 儲存每一代的資料
   let generations = parseFileContent(fileContent);
 
   // 功能按鈕
   // 判斷是否處於播放狀態
   let isPlaying = false; 
-  let currentGeneration = 0; // 當前播放的代數
   let playInterval; // 播放的計時器
   // 初始化進度條的最大值
-  generationSlider.max = Object.keys(generations).length;
+  let isDragging = false; // 是否正在拖曳
+  let animationFrameId = null; // 用來存 requestAnimationFrame
+  let totalGenerations = Object.keys(generations).length; // 設定總世代數量 可以根據實際數據修改
+  let currentGeneration = 0; // 當前播放的代數
   // 加減速功能變數
   let playbackSpeed = 1; // 默認速度倍率
   const maxSpeed = 32; // 最大速度倍率
   const minSpeed = 1; // 最小速度倍率
+  // 是否變成機率模式
+  let showProbability = false;
   // 是否顯示所有粒子
   let showAllParticles = false;
   // 是否顯示資訊
@@ -306,27 +320,108 @@ document.addEventListener('DOMContentLoaded', function () {
       }
     });
 
-    console.log(generations); // 確認解析結果
+    //console.log(generations); // 確認解析結果
+
+    // 取得當代最佳解&歷史最佳解
+    currentBestPartilce = {};
+    historyBestParticle = {};
+
+    const allGenerations = Object.keys(generations).map(Number).sort((a, b) => a - b);
+
+    // **找出所有代數的最佳 fitness 趨勢 (最大 or 最小)**
+    const firstGen = allGenerations[0];
+    isMinimization = true; // 預設為越小越好
+    if (firstGen) {
+      const fitnessValues = generations[firstGen].particles.map(p => p.fitness);
+      const bestFitness = generations[firstGen].bestFitness;
+      isMinimization = bestFitness === Math.min(...fitnessValues); // 如果 `bestFitness` 是該代最小值，則表示是最小化問題
+    }
+
+    let bestSolution = null;
+    let bestFitnessOverall = -Infinity;
+    if (isMinimization) {
+      bestFitnessOverall = Infinity;
+    }
+
+    // **找出歷史最佳解 (包含當前代數)**
+    for (const gen of allGenerations) {
+      const genData = generations[gen];
+      
+      // **從當前代數的所有粒子中，選擇 `fitness == bestFitness` 的粒子**
+      let bestParticle = genData.particles[0]; // 預設取第一個
+      if (isMinimization) {
+        bestParticle = genData.particles.reduce((best, p) => (p.fitness < best.fitness ? p : best), genData.particles[0]);
+      } else {
+        bestParticle = genData.particles.reduce((best, p) => (p.fitness > best.fitness ? p : best), genData.particles[0]);
+      }
+      const bestFitness = bestParticle.fitness;
+      
+      // 這裡在取小的時候可能會有問題，之後要留意
+      if (!isMinimization && bestFitness > bestFitnessOverall) {
+        bestFitnessOverall = bestFitness;
+        bestSolution = bestParticle;
+      } else if (isMinimization && bestFitness < bestFitnessOverall) {
+        bestFitnessOverall = bestFitness;
+        bestSolution = bestParticle;
+      }
+
+      currentBestPartilce[gen] = {
+        bestFitness: bestFitness, // 最佳 fitness
+        particles: bestParticle,  // 粒子資訊
+      };
+
+      historyBestParticle[gen] = {
+        bestFitness: bestFitnessOverall, // 最佳 fitness
+        particles: bestSolution,  // 粒子資訊
+      };
+    }
+
+    //console.log(currentBestPartilce);
+    //console.log(historyBestParticle);
+
     return generations;
   }
   // 更新進度條的值和顯示的 generation 數
   function updateProgressBar(generation) {
-    generationSlider.value = generation + 1; // 更新滑桿位置
-    currentGenerationDisplay.textContent = generation + 1; // 更新顯示的 generation
+    if (animationFrameId) return; // 如果有動畫排程，就先不重複請求
+    animationFrameId = requestAnimationFrame(() => {
+      const percentage = (generation / totalGenerations) * 100;
+      progressBar.style.width = `${percentage}%`; // 設定進度條寬度
+      progressText.textContent = `${generation} / ${totalGenerations} (generation)`;
+      animationFrameId = null; // 動畫執行完畢後清空
+    });
+  }
+  // 取得滑鼠點擊位置，計算對應的 generation
+  function setGenerationFromEvent(event) {
+    const rect = progressContainer.getBoundingClientRect();
+    const offsetX = event.clientX - rect.left; // 滑鼠點擊相對於進度條的 X 位置
+    const percentage = offsetX / rect.width; // 計算點擊位置比例
+    currentGeneration = Math.round(percentage * totalGenerations); // 轉換為 generation 數值
+    currentGeneration = Math.max(1, Math.min(totalGenerations, currentGeneration)) - 1; // 限制範圍
+    updateProgressBar(currentGeneration + 1);
+    updateGrid(); // 更新 DynVisBox
   }
   // 開始播放功能
   function startPlayback() {
     playInterval = setInterval(() => {
       // 如果已播放到最後一代，自動暫停
-      if (currentGeneration >= Object.keys(generations).length) {
+      if (currentGeneration >= Object.keys(generations).length - 1) {
         clearInterval(playInterval); // 清除計時器
         isPlaying = false;
         playPauseBtn.textContent = 'Play'; // 更新按鈕文字
         currentGeneration = 0;
+        Genlast = true;
       } else {
-        updateGrid(); // 更新 DynVisBox
-        updateProgressBar(currentGeneration); // 同步更新進度條
-        currentGeneration++; // 進入下一代
+        if (Genlast) {
+          updateGrid(); // 更新 DynVisBox
+          updateProgressBar(currentGeneration + 1); // 同步更新進度條
+          Genlast = false;
+        } else {
+          currentGeneration++; // 進入下一代
+          updateGrid(); // 更新 DynVisBox
+          updateProgressBar(currentGeneration + 1); // 同步更新進度條
+        }
+
       }
     }, 1000 / playbackSpeed); // 根據速度倍率調整間隔
   }
@@ -342,7 +437,7 @@ document.addEventListener('DOMContentLoaded', function () {
     overlay.innerHTML = "";
 
     const maxGenerations = 20; // 最多顯示 20 代
-    const allGenerations = Object.keys(generations).map(Number).sort((a, b) => a - b);
+    const allGenerations = Object.keys(currentBestPartilce).map(Number).sort((a, b) => a - b);
   
     // 確保當前代數不超過已有代數的範圍
     currentGeneration = Math.min(currentGeneration, allGenerations.length - 1);
@@ -352,41 +447,8 @@ document.addEventListener('DOMContentLoaded', function () {
     const displayGenerations = allGenerations.slice(startGen, currentGeneration + 1); // 取得應顯示的代數
     //const missingRows = maxGenerations - displayGenerations.length; // 計算需要填充的空白行數
 
-    let bestSolution = null;
-    let bestOverallSolution = null;
-    let bestFitnessOverall = -Infinity;
-    let bitCount = 0;
-
-    // **找出所有代數的最佳 fitness 趨勢 (最大 or 最小)**
-    const firstGen = displayGenerations[0];
-    let isMinimization = true; // 預設為越小越好
-    if (firstGen) {
-      const fitnessValues = generations[firstGen].particles.map(p => p.fitness);
-      const bestFitness = generations[firstGen].bestFitness;
-      isMinimization = bestFitness === Math.min(...fitnessValues); // 如果 `bestFitness` 是該代最小值，則表示是最小化問題
-    }
-
-    // **找出歷史最佳解 (包含當前代數)**
-    for (const gen of displayGenerations) {
-      const genData = generations[gen];
-      const bestFitness = genData.bestFitness;
-      
-      // **從當前代數的所有粒子中，選擇 `fitness == bestFitness` 的粒子**
-      let bestParticle = genData.particles[0]; // 預設取第一個
-      if (isMinimization) {
-        bestParticle = genData.particles.reduce((best, p) => (p.fitness < best.fitness ? p : best), genData.particles[0]);
-      } else {
-        bestParticle = genData.particles.reduce((best, p) => (p.fitness > best.fitness ? p : best), genData.particles[0]);
-      }
-      
-      if (bestFitness > bestFitnessOverall || bestOverallSolution === null) {
-        bestFitnessOverall = bestFitness;
-        bestOverallSolution = bestParticle.bits; // 更新歷史最佳解
-        bestSolution = bestParticle;
-      }
-
-      bitCount = bestParticle.bits.length; // 設定 bit 數量
-    }
+    let bestOverallSolution = historyBestParticle[currentGeneration + 1].particles.bits;
+    let bitCount = bestOverallSolution.length;
 
     if(!showAllParticles){
       // 設定 Grid 樣式
@@ -402,7 +464,7 @@ document.addEventListener('DOMContentLoaded', function () {
         fitnessLabel.style.justifyContent = 'right'; 
         fitnessLabel.style.fontSize = '10px';
         fitnessLabel.style.height = '23.5px';
-        fitnessLabel.textContent = generations[currentGeneration - displayGenerations.length + i + 2].bestFitness; // Fitness 數值
+        fitnessLabel.textContent = currentBestPartilce[currentGeneration - displayGenerations.length + i + 2].bestFitness; // Fitness 數值
         fitnessContainer.appendChild(fitnessLabel);
       }
       //更新最佳Fitness
@@ -412,31 +474,24 @@ document.addEventListener('DOMContentLoaded', function () {
       fitnessLabel.style.justifyContent = 'right';
       fitnessLabel.style.fontSize = '10px';
       fitnessLabel.style.height = '23.5px';
-      fitnessLabel.textContent = bestFitnessOverall;
+      fitnessLabel.textContent = historyBestParticle[currentGeneration + 1].bestFitness;
       fitnessContainer.appendChild(fitnessLabel);
 
       // 建立 grid，顯示當前代數與之前 20 代
       displayGenerations.forEach((gen, index) => {
-        const genData = generations[gen];
-        // **找出當前代的最佳粒子**
-        let bestParticle = genData.particles[0];
-
-        if (isMinimization) {
-          bestParticle = genData.particles.reduce((best, p) => (p.fitness < best.fitness ? p : best), genData.particles[0]);
-        } else {
-          bestParticle = genData.particles.reduce((best, p) => (p.fitness > best.fitness ? p : best), genData.particles[0]);
-        }
+        const genData = currentBestPartilce[gen];
+        // **當前代的最佳粒子**
+        let bestParticle = genData.particles;
         const generationBits = bestParticle.bits;
 
         generationBits.forEach((bit, bitIndex) => {
           const cell = document.createElement("div");
           cell.classList.add("bit-cell");
 
-          // 🔹 設定 data-bit-index，確保每個 bit 都有唯一索引
-          cell.setAttribute("data-bit-index", bitIndex);
-
-          // 先清除舊的 class，避免樣式衝突
-          cell.classList.remove("bit-current", "bit-current-not-selected", "bit-past", "bit-past-not-selected");
+          // 設定dataset，確保每個 bit-cell 內含完整資訊
+          cell.setAttribute("data-bit-index", bitIndex); // bit 的數字
+          cell.setAttribute("data-generation", gen);  // 該bit 所屬的世代
+          cell.setAttribute("data-particle-index", -1);  // -1表示當代最佳、-2表示歷史最佳、正整數表示當代某粒子 
 
           if (useProbabilityMode) {
             // 🔹 機率模式: 根據機率變顏色
@@ -469,7 +524,11 @@ document.addEventListener('DOMContentLoaded', function () {
         bestOverallSolution.forEach((bit, bitIndex) => {
           const cell = document.createElement("div");
           cell.classList.add("bit-cell");
-          cell.setAttribute("data-bit-index", bitIndex);
+          // 設定dataset，確保每個 bit-cell 內含完整資訊
+          cell.setAttribute("data-bit-index", bitIndex); // bit 的數字
+          cell.setAttribute("data-generation", currentGeneration + 1);  // 該bit 所屬的世代
+          cell.setAttribute("data-particle-index", -2);  // -1表示當代最佳、-2表示歷史最佳、正整數表示當代某粒子 
+
           if(!useProbabilityMode){
             cell.classList.add(bit.selected ? "bit-best" : "bit-best-not-selected");
           } else {
@@ -480,7 +539,7 @@ document.addEventListener('DOMContentLoaded', function () {
       }
       // 歷史最佳解的顯示資訊
       const infoDiv = document.createElement("div");
-      infoDiv.textContent = bestSolution.particleInfo;
+      infoDiv.textContent = historyBestParticle[currentGeneration + 1].particles.particleInfo;
       infoDiv.style.position = "absolute";
       infoDiv.style.top = `${(displayGenerations.length / (maxGenerations + 1)) * 100}%`;
       infoDiv.style.left = "15px"; 
@@ -491,16 +550,6 @@ document.addEventListener('DOMContentLoaded', function () {
       // 更新資訊到DynVisBox
       DynVisBox.appendChild(overlay);
 
-      // **填充空白行 (如果 `generations` 少於 20 代)**
-      /*
-      for (let i = 0; i < missingRows; i++) {
-        for (let j = 0; j < bitCount; j++) {
-          const emptyCell = document.createElement("div");
-          emptyCell.classList.add("bit-cell");
-          DynVisBox.appendChild(emptyCell);
-        }
-      }
-      */
     } else {
       const tmp_row = generations[currentGeneration + 1].particles.length;
       // 設定 Grid 樣式
@@ -529,7 +578,7 @@ document.addEventListener('DOMContentLoaded', function () {
         fitnessLabel.style.alignItems = 'center'; 
         fitnessLabel.style.justifyContent = 'right'; 
         fitnessLabel.style.fontSize = '10px';
-        const tmp_height = 496.0 / tmp_row;
+        const tmp_height = 492.0 / tmp_row;
         fitnessLabel.style.height = `${tmp_height}px`;
         fitnessLabel.textContent = generationBits.fitness; // Fitness 數值
         fitnessContainer.appendChild(fitnessLabel);
@@ -537,7 +586,11 @@ document.addEventListener('DOMContentLoaded', function () {
         generationBits.bits.forEach((bit, bitIndex) => {
           const cell = document.createElement("div");
           cell.classList.add("bit-cell");
-          cell.setAttribute("data-bit-index", bitIndex);
+          // 設定dataset，確保每個 bit-cell 內含完整資訊
+          cell.setAttribute("data-bit-index", bitIndex); // bit 的數字
+          cell.setAttribute("data-generation", currentGeneration + 1);  // 該bit 所屬的世代
+          cell.setAttribute("data-particle-index", i);  // -1表示當代最佳、-2表示歷史最佳、0或正整數表示當代某粒子
+
           if (generationBits.fitness == bestParticle.fitness){
             cell.classList.add(bit.selected ? "bit-best" : "bit-best-not-selected");
           } else if (generationBits.fitness == worstParticle.fitness){
@@ -618,17 +671,11 @@ document.addEventListener('DOMContentLoaded', function () {
         yLabel.style.alignItems = 'center'; // 讓數字在格子內垂直置中
         yLabel.style.justifyContent = 'right'; // 確保數字靠右
         yLabel.style.fontSize = '10px';
-        yLabel.style.height = `${496.0 / genCount}px`; // 確保與 DynVisBox 格子的高度一致 (需根據實際大小調整)
+        yLabel.style.height = `${492.0 / genCount}px`; // 確保與 DynVisBox 格子的高度一致 (需根據實際大小調整)
         yLabel.textContent = i + 1; // 由上往下排列
         yAxis.appendChild(yLabel);
       }
     }
-  }
-  // 動態調整數字寬度
-  function updateMaxGenerationDisplay(maxGen) {
-    const genDisplay = document.getElementById("current-generation-Binary");
-    const digitCount = maxGen.toString().length; // 計算最大世代數字長度
-    genDisplay.style.width = `${digitCount}ch`; // 設定寬度，根據最大數字變化
   }
   // 檔案讀取
   fileInput.addEventListener('change', function (event) {
@@ -640,16 +687,16 @@ document.addEventListener('DOMContentLoaded', function () {
       const content = e.target.result;
       generations = parseFileContent(content); // 解析檔案內容
       // 更新進度條的generation
-      generationSlider.max = Object.keys(generations).length;
+      currentGeneration = 0;
+      totalGenerations = Object.keys(generations).length;
       updateProgressBar(0); // 同步更新進度條
-      updateMaxGenerationDisplay(generationSlider.max); // 動態調整數字寬度
 
       updateGrid(); // 更新 DynVisBox
     };
     reader.readAsText(file);
 
     // **重置 input 的值**
-    fileInput.value = ''; // 讓相同檔案再次被選取時能觸發事件
+    //fileInput.value = ''; // 讓相同檔案再次被選取時能觸發事件
   });
   // 按下播放/暫停按鈕時觸發
   playPauseBtn.addEventListener('click', function () {
@@ -666,12 +713,17 @@ document.addEventListener('DOMContentLoaded', function () {
       startPlayback(); // 開始播放
     }
   });
+  // 監聽滑鼠拖曳變更 generation
+  progressContainer.addEventListener("mousedown", (event) => {
+      isDragging = true;
+      setGenerationFromEvent(event); // 初始點擊也要改變 generation
+  });
   // 拖曳進度條可選擇generation，更新進度條的值和顯示的 generation 數
-  generationSlider.addEventListener('input', function () {
-    const generation = parseInt(generationSlider.value, 10) - 1; // 取得滑桿的值
-    currentGeneration = generation;
-    updateProgressBar(currentGeneration); // 更新進度條顯示
-    updateGrid(); // 更新 DynVisBox
+  document.addEventListener("mousemove", (event) => {
+    if (isDragging) setGenerationFromEvent(event);
+  });
+  document.addEventListener("mouseup", () => {
+      isDragging = false;
   });
   // 加速功能
   speedUpBtn.addEventListener('click', () => {
@@ -701,13 +753,9 @@ document.addEventListener('DOMContentLoaded', function () {
   });
   // 機率模式
   toggleBtn.addEventListener('click', function () {
-    if (statusBar.style.display === 'none') {
-        statusBar.style.display = 'block';
-    } else {
-        statusBar.style.display = 'none';
-    }
-
-    //updateProgressBar(currentGeneration); // 更新進度條顯示
+    showProbability = !showProbability;
+    toggleBtn.textContent = showProbability ? 'General Model' : 'Probability Model';
+    statusBar.style.display = showProbability ? 'block' : 'none';
     updateGrid(); // 更新 DynVisBox
   });
   // 顯示當代機率模式
@@ -729,13 +777,22 @@ document.addEventListener('DOMContentLoaded', function () {
     if (!bitCell) return;
 
     // 取得 bit 資訊
-    const bitIndex = bitCell.dataset.bitIndex; // 取得 data-bit-index 屬性
-    const generation = parseInt(document.getElementById("generation-slider-Binary").value);
-    const particleIndex = Math.floor(bitIndex / 100); // 計算粒子編號
-    const bitID = bitIndex % 100; // 計算 bit ID
+    const bitID = bitCell.dataset.bitIndex; // 取得粒子編號
+    const generation = bitCell.dataset.generation; // 取得該粒子的世代數
+    const particleIndex = bitCell.dataset.particleIndex; // 確認粒子是當前最佳、歷史最佳、還是當代粒子
 
-    if (!generations[generation] || !generations[generation].particles[particleIndex]) return;
-    const bitData = generations[generation].particles[particleIndex].bits[bitID];
+    //console.log("generation: " + generation);
+    //console.log("particleIndex: " + particleIndex);
+    //console.log("bit: " + bitID);
+    let bitData = {};
+
+    if (particleIndex == -2) {
+      bitData = historyBestParticle[generation].particles.bits[bitID]
+    } else if (particleIndex == -1) {
+      bitData = currentBestPartilce[generation].particles.bits[bitID]
+    } else {
+      bitData = generations[generation].particles[particleIndex].bits[bitID];
+    }
 
     // 更新 tooltip 內容
     tooltip.innerHTML = `

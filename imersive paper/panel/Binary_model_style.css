@@ -69,7 +69,7 @@ body {
 .control-panel {
   display: flex;
   align-items: center;    /* 元素水平置中 */
-  margin-top: 20px;       /* 與上方地圖保持間距 */
+  margin-top: 10px;       /* 與上方地圖保持間距 */
   margin-left: 40px;      /* 向右移動整體區塊 */
 }
 /* 下方內容區 */
@@ -106,22 +106,50 @@ select {
   margin-right: 10px; /* 按鈕之間的間距 */
 }
 
-.progress-container {
+
+
+/* 外部進度條容器 (可點擊) */
+.generation-progress-container {
+  position: relative;
+  margin-top: 10px;       /* 與上方地圖保持間距 */
+  margin-left: 40px;      /* 向右移動整體區塊 */
+  width: 900px; /* 設定進度條寬度 */
+  height: 25px; /* 設定進度條高度 */
+  background-color: white; /* 進度條背景白色 */
+  border: 2px solid black; /* 進度條外框 */
+  border-radius: 5px;
+  overflow: hidden; /* 確保內部元素不超出範圍 */
   display: flex;
   align-items: center;
-  gap: 10px; /* 控制文本和滑桿的間距 */
+  cursor: pointer; /* 讓滑鼠顯示可點擊 */
 }
 
-#generation-slider-Binary {
-  flex-grow: 1; /* 滑桿填滿剩餘空間 */
-  height: 5px;
-  background: #ddd;
-  border-radius: 5px;
-  outline: none;
+/* 綠色進度條 */
+.generation-progress-bar {
+  position: absolute;
+  top: 0;
+  left: 0;
+  height: 100%;
+  width: 0%; /* 初始寬度為 0% */
+  background: rgb(66, 190, 66); /* 綠色漸變到白色 */
+  transition: width 0.1s ease-in-out; /* 平滑動畫 */
 }
 
-#current-generation-Binary {
+/* 進度條上的文字 */
+.generation-progress-text {
+  position: absolute;
+  left: 50%;
+  transform: translateX(-50%); /* 確保文字水平置中 */
+  z-index: 2; /* 讓文字顯示在上層，但不影響點擊 */
+  text-align: center;
+  font-size: 14px;
   font-weight: bold;
+  color: black;
+  pointer-events: none !important; /* 讓文字不影響點擊 */
+  user-select: none; /* 禁止文字選取 */
+  -webkit-user-select: none;
+  -moz-user-select: none;
+  -ms-user-select: none;
 }
 
 .speed-control-container {
