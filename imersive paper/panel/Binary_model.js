@@ -245,6 +245,9 @@ document.addEventListener('DOMContentLoaded', function () {
 
   // 更新 getColorFromProbability 函數
   function getColorFromProbability(prob) {
+    if (prob < 0) prob = 0;
+    if (prob > 1) prob = 1;
+    
     const colors = [
       { stop: 0.0, r: 0, g: 45, b: 255 },     // 深藍色
       { stop: 0.2, r: 0, g: 95, b: 255 },     // 藍色
