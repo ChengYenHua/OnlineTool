@@ -816,7 +816,35 @@ document.addEventListener('DOMContentLoaded', function () {
   DynVisBox.addEventListener("mouseout", function(event) {
     tooltip.style.display = "none";
   });
-
-
   updateGrid(); // 更新 DynVisBox
+
+  document.addEventListener("keydown", function(event) {
+    // 檢查是否是左右鍵
+    if (event.key === "ArrowRight" || event.key === "ArrowLeft") {
+      event.preventDefault(); // ❗防止視窗跟著捲動
+    }
+    // 檢查當前是否已定義 `currentGeneration` 和 `totalGenerations`
+    if (typeof currentGeneration === 'undefined' || typeof totalGenerations === 'undefined') {
+        console.error("currentGeneration 或 totalGenerations 未定義");
+        return;
+    }
+
+    if (event.key === "ArrowRight") {
+        // ➡️ 右鍵：加一代
+        if (currentGeneration < totalGenerations) {
+            currentGeneration++;
+            updateProgressBar(currentGeneration);
+            updateGrid(); // 更新 DynVisBox
+        }
+    }
+
+    if (event.key === "ArrowLeft") {
+        // ⬅️ 左鍵：減一代
+        if (currentGeneration > 1) {
+            currentGeneration--;
+            updateProgressBar(currentGeneration);
+            updateGrid(); // 更新 DynVisBox
+        }
+    }
+  });
 });
