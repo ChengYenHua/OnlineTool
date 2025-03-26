@@ -32,7 +32,7 @@ document.addEventListener('DOMContentLoaded', function () {
   let gridSize = 50; // 初始 Grid 大小
   let mapSize = 50;
   let sensingRange = 5; // 預設感測範圍
-  let connectDistance = 5; // 預設連線距離
+  let connectDistance = 8; // 預設連線距離
   let limitThreshold = []; // 儲存 threshold 資訊
   let generations = {}; // 儲存每一代的感測器位置
   const sensors = []; // 儲存所有 sensor 位置
@@ -40,8 +40,8 @@ document.addEventListener('DOMContentLoaded', function () {
 
   //初始sensor擺放位置
   const sensorLayouts = {
-    1: [{ x: 2, y: 2 }], // 50 × 50 測試用初始解
-    2: [{ x: 10, y: 0 }, { x: 18, y: 0 }, { x: 36, y: 1 }, { x: 2, y: 2 }, { x: 22, y: 2 }, { x: 29, y: 2 }, { x: 42, y: 2 }, { x: 48, y: 3 }, { x: 15, y: 6 }, { x: 9, y: 7 }, { x: 2, y: 9 }, { x: 22, y: 9 }, { x: 34, y: 9 }, { x: 27, y: 10 }, { x: 40, y: 10 }, { x: 47, y: 10 }, { x: 16, y: 13 }, { x: 9, y: 14 }, { x: 25, y: 15 }, { x: 2, y: 16 }, { x: 33, y: 16 }, { x: 24, y: 17 }, { x: 32, y: 17 }, { x: 40, y: 17 }, { x: 47, y: 17 }, { x: 17, y: 19 }, { x: 9, y: 21 }, { x: 38, y: 22 }, { x: 1, y: 23 }, { x: 46, y: 23 }, { x: 24, y: 24 }, { x: 30, y: 24 }, { x: 16, y: 26 }, { x: 8, y: 28 }, { x: 38, y: 28 }, { x: 46, y: 29 }, { x: 0, y: 30 }, { x: 30, y: 30 }, { x: 23, y: 31 }, { x: 15, y: 33 }, { x: 39, y: 33 }, { x: 7, y: 34 }, { x: 32, y: 35 }, { x: 46, y: 35 }, { x: 2, y: 38 }, { x: 17, y: 38 }, { x: 24, y: 38 }, { x: 10, y: 39 }, { x: 31, y: 39 }, { x: 39, y: 40 }, { x: 46, y: 41 }, { x: 4, y: 42 }, { x: 24, y: 45 }, { x: 6, y: 46 }, { x: 15, y: 46 }, { x: 19, y: 46 }, { x: 28, y: 46 }, { x: 34, y: 46 }, { x: 2, y: 47 }, { x: 9, y: 47 }, { x: 40, y: 47 }, { x: 47, y: 47 }] // 50 × 50 找到的最佳解
+    1: [{ x: 10, y: 0 }, { x: 18, y: 0 }, { x: 36, y: 1 }, { x: 2, y: 2 }, { x: 22, y: 2 }, { x: 29, y: 2 }, { x: 42, y: 2 }, { x: 48, y: 3 }, { x: 15, y: 6 }, { x: 9, y: 7 }, { x: 2, y: 9 }, { x: 22, y: 9 }, { x: 34, y: 9 }, { x: 27, y: 10 }, { x: 40, y: 10 }, { x: 47, y: 10 }, { x: 16, y: 13 }, { x: 9, y: 14 }, { x: 25, y: 15 }, { x: 2, y: 16 }, { x: 33, y: 16 }, { x: 24, y: 17 }, { x: 32, y: 17 }, { x: 40, y: 17 }, { x: 47, y: 17 }, { x: 17, y: 19 }, { x: 9, y: 21 }, { x: 38, y: 22 }, { x: 1, y: 23 }, { x: 46, y: 23 }, { x: 24, y: 24 }, { x: 30, y: 24 }, { x: 16, y: 26 }, { x: 8, y: 28 }, { x: 38, y: 28 }, { x: 46, y: 29 }, { x: 0, y: 30 }, { x: 30, y: 30 }, { x: 23, y: 31 }, { x: 15, y: 33 }, { x: 39, y: 33 }, { x: 7, y: 34 }, { x: 32, y: 35 }, { x: 46, y: 35 }, { x: 2, y: 38 }, { x: 17, y: 38 }, { x: 24, y: 38 }, { x: 10, y: 39 }, { x: 31, y: 39 }, { x: 39, y: 40 }, { x: 46, y: 41 }, { x: 4, y: 42 }, { x: 24, y: 45 }, { x: 6, y: 46 }, { x: 15, y: 46 }, { x: 19, y: 46 }, { x: 28, y: 46 }, { x: 34, y: 46 }, { x: 2, y: 47 }, { x: 9, y: 47 }, { x: 40, y: 47 }, { x: 47, y: 47 }], // 50 × 50 找到的最佳解
+    2: [{ x: 2, y: 2 }] // 50 × 50 測試用初始解
   };
 
   // 根據 Threshold 統一顯示顏色，這裡設置 threshold = 0.3
@@ -695,17 +695,17 @@ document.addEventListener('DOMContentLoaded', function () {
     generations = {};
 
     if (selectedValue === 1){
-      parseFileContent(fileContent);
-    }
-    else if (selectedValue === 2) {
       gridSize = 50;  // 預設map大小
       sensingRange = 5; // 預設感測範圍
       connectDistance = 8; // 預設連線距離
       // 傳入對應的初始 sensor 位置
       renderGrid(gridSize, sensorLayouts[selectedValue] || []);
     }
+    else if (selectedValue === 2) {
+      parseFileContent(fileContent);
+    }
   });
-  parseFileContent(fileContent);
+  renderGrid(gridSize, sensorLayouts[1] || []);
   // 切換threshold / detection probability 模式
   thresholdBtn.addEventListener('click', function () {
     isThresholdMode = !isThresholdMode;
