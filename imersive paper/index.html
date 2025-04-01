@@ -170,68 +170,49 @@
         <!-- Section title -->
         <h2>I. Introduction</h2>
 
-        <figure id="DJIA_stock_example" class="text-center" style="text-align: center;">
-          <div style="display: flex; justify-content: center; gap: 10px;">
-            <div style="text-align: center;">
-              <img src="img/Introduction/Deployment Problem.svg" style="height: 220px; width: auto;">
-              <p>(a)</p>
-            </div>
-            <div style="text-align: center;">
-              <img src="img/Introduction/Stock Selection Problem.svg" style="height: 220px; width: auto;">
-              <p>(b)</p>
-            </div>
-            <div style="text-align: center;">
-              <img src="img/Introduction/Circuit Synthesis Problem.svg" style="height: 220px; width: auto;">
-              <p>(c)</p>
-            </div>
-          </div>
-          <figcaption><strong>Figure 1:</strong> Optimization problems: (a) Deployment Problem In Wireless Sensor Network, (b) Stock Selection Problem, and (c) Circuit Synthesis Problem
-          </figcaption>
-        </figure>
-
         <p>
-          The business industry encompasses a wide range of optimization problems, including the classical 0/1 knapsack problem, stock trend prediction [<a href="#ref_2">2</a>], wireless sensor network deployment [<a href="#ref_4">4</a>], and the traveling salesman problem (TSP). These problems often involve combinatorial decision-making, requiring the selection or exclusion of certain options. Additionally, some problems, such as the TSP, focus not only on which elements to select but also on determining their optimal order — for instance, deciding the sequence in which cities should be visited. Regardless of the specific problem type, the overarching objective is to minimize costs while maximizing overall benefits.
+          Optimization problems can generally be categorized into two types: numerical optimization problems, which involve continuous real-valued variables, and combinatorial optimization problems, which deal with discrete decision variables such as selection (e.g., choose or not choose) or permutations. Regardless of the type, the primary objective remains the same: to minimize costs while maximizing overall benefits.
         </p>
 
         <p>
-          在工商業界會碰到許多最佳化問題，像是無線網路拓樸擺放問題，擇時選股問題、電路合成問題……等。最佳化問題大致有兩種，連續實數的問題，以及離散、選與不選或是排列組合的問題。不論是哪一種，就是要達成成本最小化，利益最大化的目的。
+          In the business industry, a wide variety of optimization problems are encountered, ranging from well-known combinatorial problems like the 0/1 knapsack problem and the traveling salesman problem (TSP), to more domain-specific applications such as the wireless sensor network deployment [<a href="#ref_4">4</a>], stock selection problem [<a href="#ref_2">2</a>] and circuit synthesis problem. These problems often involve complex decision-making under constraints.
         </p>
 
         <div style="display: flex; justify-content: center; gap: 20px;">
           <figure id="DJIA_stock_example" class="text-center" style="text-align: center;">
             <img src="img/Stock_example.svg" style="max-width: 90%; height: auto;">
-            <figcaption><strong>Figure 2:</strong> Illustration of combination complexity in stock selection problem.</figcaption>
+            <figcaption><strong>Figure 1:</strong> Illustration of combination complexity in stock selection problem.</figcaption>
           </figure>
         </div>
 
         <p>
-          以擇時選股問題為例，在三檔股票時，每檔股票進行選擇，都不選是000，全選是111，有8種組合，複雜度是2的三次方。四檔股票時，有16種組合，複雜度是2的四次方。但是在50檔股票時，複雜度將高達2的50次方，超過一千兆種以上的組合。基於這些最佳化問題過於複雜且困難，無法在短時間內解決。          
+          Take the problem of stock selection and timing as an example. When considering three stocks, each stock can either be selected or not, resulting in $2^3 = 8$ possible combinations—ranging from selecting none (000) to selecting all (111). With four stocks, the number of combinations increases to $2^4 = 16$. However, as the number of stocks increases to fifty, the number of possible combinations explodes to $2^50$, which exceeds one quadrillion. This exponential growth in complexity renders exhaustive search computationally infeasible within a reasonable timeframe. This makes such problems ideal candidates for advanced optimization techniques, such as metaheuristic algorithms, which are specifically designed to efficiently explore large and complex solution spaces.
+        </p>
+
+        <p>
+          Metaheuristic algorithms, such as genetic algorithm (GA)[<a href="#ref_6">6</a>], particle swarm optimization (PSO)[<a href="#ref_7">7</a>], ant colony optimization (ACO)[<a href="#ref_8">8</a>], estimation of the distribution algorithm (EDA)[<a href="#ref_9">9</a>], quantum-inspired evolutionary algorithm (QEA)[<a href="#ref_10">10</a>], and quantum-inspired tabu search algorithm (QTS)[<a href="#ref_11">11</a>], are widely applied to address complex real-world optimization problems. Most metaheuristic algorithms are population-based and iterative in nature. By adapting encoding strategies and problem representations, they can be tailored to solve a variety of problem types and are capable of finding near-optimal solutions within a finite amount of time.
         </p>
 
         <figure id="num_function" class="text-center" style="text-align: center;">
           <div style="display: flex; justify-content: center; gap: 20px;">
             <div style="text-align: center;">
-              <img src="img/Introduction/Schwefel.svg" style="height: 280px; width: auto;">
+              <img src="img/Introduction/Schwefel.svg" style="height: 220px; width: auto;">
               <p>(a) Schwefel</p>
             </div>
             <div style="text-align: center;">
-              <img src="img/Introduction/Michalewicz.svg" style="height: 280px; width: auto;">
+              <img src="img/Introduction/Michalewicz.svg" style="height: 220px; width: auto;">
               <p>(b) Michalewicz</p>
             </div>
             <div style="text-align: center;">
-              <img src="img/Introduction/Ackley.svg" style="height: 280px; width: auto;">
+              <img src="img/Introduction/Ackley.svg" style="height: 220px; width: auto;">
               <p>(c) Ackley</p>
             </div>
           </div>
-          <figcaption><strong>Figure 2.5:</strong> 數值最佳化方程式</figcaption>
+          <figcaption><strong>Figure 2:</strong> Visualization of numerical optimization benchmark functions: (a) Schwefel, (b) Michalewicz, and (c) Ackley. </figcaption>
         </figure>
-
+        
         <p>
-          Metaheuristic algorithms are commonly utilized to handle these complex real-world applications. They may solve non-specific issues through some modification of encoding and achieve a near-optimal solution in a finite amount of time. Most metaheuristic algorithms are population- and iterative-based, and the solution gets better with the evolved process in iterations with efficient and effective searchability, such as the genetic algorithm (GA)[<a href="#ref_6">6</a>], particle swarm optimization (PSO)[<a href="#ref_7">7</a>], ant colony optimization (ACO)[<a href="#ref_8">8</a>], estimation of the distribution algorithm (EDA)[<a href="#ref_9">9</a>], quantum-inspired evolutionary algorithm (QEA)[<a href="#ref_10">10</a>], and quantum-inspired tabu search algorithm (QTS)[<a href="#ref_11">11</a>]. Various optimization problem-solving techniques have their own unique characteristics. Typically, the optimization search process of metaheuristic algorithms used to solve these problems is treated as a black box.
-        </p>
-
-        <p>
-          因此就需要最佳化演算法地當忙，常見的像是基因演算法、粒子群優演算法、人工蜂群演算法…..等。在連續實數方面，為了測試演算法的好壞，研究者會使用困難且複雜方程式進行試驗。光是看到這些方程式，就很難想像方程式的長相。就像Schweful、Michalewizs、Ackley更不用說工商業界的方程式都是未知的黑盒子，更加不可能預測他的方程式長相。
+          In numerical optimization problems, researchers often evaluate the performance of metaheuristic algorithms using challenging and highly complex mathematical functions. These benchmark functions—such as Schwefel, Michalewicz, and Ackley—are intentionally designed to be deceptive, multi-modal, and difficult to optimize. In many cases, the mathematical expressions of these functions are so complex and unintuitive that it is difficult to form any mental image of their landscape. Moreover, in business and industrial contexts, the objective functions are often entirely unknown and treated as black boxes, making it virtually impossible to predict their mathematical form or landscape.
         </p>
 
         <figure id="Cmd_text_log_file" class="text-center" style="text-align: center;">
@@ -249,7 +230,7 @@
         </figure>
 
         <p>
-          以往研究者分析演算法解題過程的時候，會使用命令提示字元、command line、終端機、或DOS模式，也就是俗稱的小黑窗，將過程一一顯示。或是將結果輸出在excel檔上，並對log檔進行分析。          
+          In earlier studies, researchers commonly analyzed the behavior and performance of optimization algorithms through text-based interfaces such as command-line environments, terminal consoles, or the traditional DOS interface—often referred to as the "black window." These environments would display the optimization process step by step in real time. Alternatively, results were frequently exported to Excel files or other spreadsheet software, where further analysis could be conducted using log files and manual interpretation.
         </p>
 
         <div class="framed">
@@ -274,7 +255,11 @@
         </div>
 
         <p>
-          透過小黑窗想知道粒子的移動方向，就需要一一核對粒子的座標。但是整個方程式，就算只有100代，每代20個粒子，就高達2000個位置。要判斷每個點的移動方向，是非常耗時、不直覺，且不可能進行分析的。因此本團隊研發一套系統，以動態視覺化的方式展示演算法尋優的過程，藉此提升使用者的分析效率並減輕負擔。
+          However, analyzing particle movement through command-line outputs often requires manually checking and comparing particle coordinates across iterations. Even with a relatively small setup—for example, 100 generations with 20 particles each—this results in 2,000 data points to examine. Determining the direction of movement for each particle becomes time-consuming, unintuitive, and practically infeasible.
+        </p>
+
+        <p>
+          To address this challenge, this paper developed a dynamic visualization system that graphically presents the optimization process in real time. This system aims to enhance analytical efficiency, improve user intuitiveness, and significantly reduce the cognitive load involved in understanding algorithm behavior.
         </p>
         
       </section>
@@ -580,7 +565,18 @@
         </div>
 
         <p>
-          有大型活動時，例如跨年演唱會、造勢活動，會有許多人聚集，那會要多少基地台車，擺放在什麼位置，才能滿足所有民眾的通話品質呢?我們用黑色方塊則代表基地台擺放的位置，紅到藍的顏色則表示不同的感測機率。在5x5的地圖只要一顆sensor就可以滿足監控條件。10x10就只要4個。到了20 x 20，面積是原來的16倍，應該要用16個sensor。但感測機率，是1減掉沒有被所有感測器偵測到的機率。例如當她受到兩顆以上的感測器監控時，偵測機率就會由藍色提升到綠色。所以這地圖只需要12顆，就可以滿足條件。
+          有大型活動時，例如跨年演唱會、造勢活動，會有許多人聚集，那會要多少基地台車，擺放在什麼位置，才能滿足所有民眾的通話品質呢?我們用黑色方塊則代表基地台擺放的位置，紅到藍的顏色則表示不同的感測機率。在5x5的地圖只要一顆sensor就可以滿足監控條件。10x10就只要4個。到了20 x 20，面積是原來的16倍，應該要用16個sensor。但感測機率，是1減掉沒有被所有感測器偵測到的機率:
+        </p>
+
+        <div class="equation">
+          <div class="formula">
+            $$\mathcal{P}_p = 1 - \prod_{s \in V_p} \left(1 - P_p^s \right)$$
+          </div>
+          <div class="number">(1)</div>
+        </div>
+
+        <p>
+          where $\mathcal{P}_p$是第$p$個格子的總感測機率、$P_p^s$是感測器$s$偵測到格子$p$的機率、$V_p$是所有能感測到格子$p$的感測器集合。例如當她受到兩顆以上的感測器監控時，偵測機率就會由藍色提升到綠色。所以這地圖只需要12顆，就可以滿足條件。
         </p>
 
         <div class="framed">
