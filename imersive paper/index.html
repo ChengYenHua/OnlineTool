@@ -351,7 +351,11 @@
         </div>
 
         <p>
-          在組合最佳化的分析模式中，黑色代表選，白色代表不選。每一行代表一個世代，左邊的數字是世代數，而右邊的則是當代適應值。最下面這行紅色的是全域最佳解。這裡用基因演算法解0/1背包問題為例，一開始物品是隨機選取，所以評審可以看到畫面中會黑白交錯。基因演算法演變過程會選擇適應值較好的親代交配，產出子代，以找到更好的解。
+          In the combinatorial optimization visualization mode, black cells represent selected items, while white cells represent unselected items. Each horizontal row corresponds to a single generation, with the generation index displayed on the left and the corresponding fitness value on the right. The bottom-most red row indicates the global best solution found throughout the evolutionary process.
+        </p>
+
+        <p>
+          In this example, the visualization demonstrates the application of a genetic algorithm to solve the 0/1 knapsack problem. Initially, item selections are made randomly, resulting in a mixed pattern of black and white cells. As the algorithm evolves, it performs selection, crossover, and mutation based on the fitness values of the parents, gradually guiding the population toward higher-quality solutions.
         </p>
 
         <div style="display: flex; justify-content: center; gap: 20px;">
@@ -362,7 +366,7 @@
         </div>
 
         <p>
-          接著為了方便展示，我們將物品的CP值設為左高又低。演算法演變到後期時，我們可以觀察到黑色自動集中在左邊。
+          To facilitate the demonstration, we configured the items’ cost-performance (C/P) ratios such that items on the left have higher values while those on the right have lower values. As the algorithm progresses into later generations, we can observe that the black cells—representing selected items—gradually concentrate on the left side, indicating that the algorithm is effectively learning to favor items with higher cost-efficiency.
         </p>
 
         <div class="framed">
@@ -435,8 +439,16 @@
         </div>
 
         <p>
-          此外，有的演算法會不只有0與1，選與不選的問題，而是會依據機率來決定，就像這些演算法。點選"機率"按鈕後，使用者可以用紅到藍的漸層顏色來觀察每個粒子的機率。在演變初期，我們可以看見畫面中呈現綠色，代表機率為0.5，要選或不選的機率相同。隨世代演進，我們看見顏色慢慢轉變，機率從0.5漸漸增加到1 或減少到0。越紅的偏選，越藍的偏不選。接著我們可以觀察到在紅色區域中，有幾條藍色的線。發現演算法會自動跳過某些CP值高的物品，改去右邊拿CP值較低的，以滿足背包容量限制，這是0/1背包之所以是NP-Complete問題，也是他極困難且有趣的地方。
+          In addition to binary selection (0 or 1), some algorithms incorporate probabilistic decision-making mechanisms. For example, several algorithms determine item selection based on probability values rather than fixed binary choices. By clicking the "Probability" button in the interface, users can visualize each particle’s probability using a color gradient ranging from red to blue.
         </p>
+
+        <p>
+          In the early stages of evolution, the grid appears predominantly green, indicating a probability of 0.5, where the likelihood of selecting or not selecting an item is equal. As the generations progress, the colors gradually shift—probabilities increase toward 1 (red) or decrease toward 0 (blue), reflecting the algorithm's increasing certainty in its selections. Redder grids indicate stronger selection preference, while bluer grids suggest a stronger tendency to exclude.
+        </p>
+
+        <p>
+          A notable observation is the presence of distinct vertical blue stripes within red-dominated regions, indicating that the algorithm has learned to consistently exclude certain high C/P items on the left. This behavior occurs in order to satisfy the knapsack's capacity constraint, choosing instead lower C/P items from the right to construct a feasible yet optimal combination. This phenomenon exemplifies the inherent complexity of the 0/1 knapsack problem, highlighting its NP-complete nature and the nuanced trade-offs involved in combinatorial decision-making—which are precisely what make the problem both extremely challenging and intellectually intriguing.
+        </P>
         
         <div style="display: flex; justify-content: center; gap: 20px;">
           <figure id="xxx" class="text-center" style="text-align: center;">
@@ -474,7 +486,15 @@
         </div>
 
         <p>
-          接著進入與排列順序有關的分析介面，這裡以旅行推銷員問題為例，我們可以透過線條變動觀察到演算法是如何尋找最佳路徑。在此，我們用經典的bench mark，TSP Library來分析。我們可以從網站下載TSP檔案。為了方便觀察，我們選擇burma14來分析，系統會劃出緬甸14個城市的地圖。並藉由漸層顏色來顯示不同的路徑長度，越長是紅色，越短則是藍色。此時，我們可以看見演算法已經跑到了這題的最短路徑。然而當城市數量越高，問題就會以階層成長，變得更複雜。因此除了分析模式外，我們也做了遊戲介面。
+          This section presents a visualization interface designed for analyzing permutation-based optimization problems, using the Traveling Salesman Problem (TSP) as an example. This interface allows users to observe how the algorithm searches for the optimal route through dynamic path visualization. For demonstration purposes, we utilize classic benchmark data from the TSP Library, which provides a variety of well-known problem instances.
+        </p>
+
+        <p>
+          In this case, we selected the burma14 instance for ease of observation. The system plots a map of 14 cities in Myanmar, and the evolving routes are displayed with a color gradient representing path length—red for longer paths and blue for shorter ones. Through this visualization, users can clearly observe the algorithm’s progress, and in this instance, it has already converged to the shortest known path for the problem.
+        </p>
+
+        <p>
+          However, as the number of cities increases, the solution space grows factorially, significantly increasing the complexity of the problem. To further engage users and provide an intuitive understanding of the algorithm’s behavior in such complex cases, we have also developed an interactive game interface in addition to the analysis mode.
         </p>
 
         <figure id="Permutation_game_mod" class="text-center" style="text-align: left;">
@@ -489,7 +509,11 @@
         </figure>
 
         <p>
-          選擇台灣地圖后，開始連線地圖右邊會顯示台東連線至高雄的金額並且線條部分也以顏色來區分遠近以方便觀察。當路線選到成本較高，並線條呈現紅色時，重新選擇較短的路線。此外，我們也模擬路況問題例如從南投至花蓮會發生土石流，就像工商業界會遇到許多有限制式，更複雜的最佳化問題，也能增加遊戲的趣味性。玩家連線完畢會顯示遊戲過關。
+          Upon selecting the Taiwan map, the interface begins by allowing users to connect cities. As connections are made, the system displays the travel cost—for example, from Taitung to Kaohsiung—on the right side of the screen. To facilitate intuitive observation, the connecting lines are color-coded based on distance or cost: red indicates a longer or more expensive route, while blue represents a shorter or more economical one. If a high-cost route is chosen and appears in red, users are encouraged to reconsider and select a more efficient path.
+        </p>
+
+        <p>
+          In addition, the system simulates real-world traffic constraints. For instance, a landslide between Nantou and Hualien may prevent direct travel, mirroring real-life industrial scenarios involving constraint-based optimization. These features not only enhance the realism of the problem but also increase the game's engagement and educational value. Once the user successfully completes all the connections within the given constraints, the system displays a "Good Job" message.
         </p>
         
         <figure id="Cmd_text_log_file" class="text-center" style="text-align: center;">
@@ -507,7 +531,7 @@
         </figure>
 
         <p>
-          一旦城市數量變多像是美國和歐洲地圖，此時就會變成複雜度極高的問題，藉助群眾的力量在遊玩的過程中也能幫我們找到最佳解，當越多人玩遊戲，就越多人幫我們做研究。
+          As the number of cities increases—such as in the United States or Europe map—the problem quickly escalates into a highly complex optimization task. By leveraging the power of the crowd, the interactive game interface not only enhances user engagement but also contributes to the discovery of high-quality or even optimal solutions. The more participants engage with the game, the more collective effort is directed toward solving the problem, effectively transforming gameplay into a form of distributed research collaboration.
         </p>
 
         <!-- 擺放最佳化的介面 -->
@@ -552,7 +576,6 @@
                   </div>
                   : Dissatisfy
                 </div>
-                <button id="toggle-btn">Threshold</button>
               </div>
             </div>
 
@@ -565,7 +588,11 @@
         </div>
 
         <p>
-          有大型活動時，例如跨年演唱會、造勢活動，會有許多人聚集，那會要多少基地台車，擺放在什麼位置，才能滿足所有民眾的通話品質呢?我們用黑色方塊則代表基地台擺放的位置，紅到藍的顏色則表示不同的感測機率。在5x5的地圖只要一顆sensor就可以滿足監控條件。10x10就只要4個。到了20 x 20，面積是原來的16倍，應該要用16個sensor。但感測機率，是1減掉沒有被所有感測器偵測到的機率:
+          The last interface focuses on deployment-based optimization, commonly encountered in scenarios involving large-scale public events, such as New Year’s Eve concerts or political rallies. In such situations, a critical question arises: How many mobile base stations are needed, and where should they be placed to ensure adequate communication quality for all attendees? In this interface, black squares indicate the positions of deployed base stations (or sensors), while the color gradient from red to blue represents varying levels of detection or signal coverage probability.
+        </p>
+
+        <p>
+          For example, on a 5×5 grid, a single sensor can sufficiently satisfy the monitoring requirements. On a 10×10 grid, only four sensors are required. However, when the grid size increases to 20×20—which is 16 times larger in area—one might assume that 16 sensors are necessary. In reality, the overall coverage probability is determined by subtracting the probability that a given point is not detected by any sensor from 1:
         </p>
 
         <div class="equation">
@@ -576,7 +603,7 @@
         </div>
 
         <p>
-          where $\mathcal{P}_p$是第$p$個格子的總感測機率、$P_p^s$是感測器$s$偵測到格子$p$的機率、$V_p$是所有能感測到格子$p$的感測器集合。例如當她受到兩顆以上的感測器監控時，偵測機率就會由藍色提升到綠色。所以這地圖只需要12顆，就可以滿足條件。
+          where $\mathcal{P}_p$ represents the overall detection probability of grid $p$, $P_p^s$ denotes the probability that sensor $s$ detects grid $p$, and $V_p$ is the set of all sensors capable of detecting grid $p$. For instance, when a grid is monitored by two or more sensors, its detection probability increases—visually transitioning from blue to green on the map. As a result, only 12 sensors are required to satisfy the coverage conditions for the entire grid.
         </p>
 
         <div class="framed">
@@ -647,7 +674,7 @@
         </div>
 
         <p>
-          到了50 x 50 ，複雜度就高達2的2500次方，這時候就需要演算法來幫助找到更好的解，有國外學者投稿ICC做到63個，後來更用62個投稿上Computer Networks期刊。
+          When the grid size increases to 50×50, the problem complexity escalates to $2^{2500}$ possible combinations, making exhaustive search computationally infeasible. In such cases, optimization algorithms become essential for identifying high-quality solutions within a reasonable time. In previous studies, international researchers successfully submitted a solution using 63 sensors to the IEEE International Conference on Communications (ICC). Later, a more refined solution using only 62 sensors was accepted and published in the journal Computer Networks, demonstrating the effectiveness of algorithmic approaches in tackling such large-scale deployment problems.
         </p>
 
         <figure id="Deploy_example_50x50" class="text-center" style="text-align: left;">
@@ -662,7 +689,11 @@
         </figure>
 
         <p>
-          可是因為用小黑窗/純文字檔比較難分析，所以我們透過視覺化介面，用玩遊戲的方式觀察到在左下角的這地方可以拿掉一個sensor，中間這密集的地方我們可以拿掉三個補上兩個，很簡單的就將數量降到61甚至是60，仍然滿足整張地圖的偵測機率。我不會做研究但是我很會玩遊戲，能透過社群運算，可以幫助研究人員找到更好的解。
+          However, analyzing such results through traditional text-based outputs or log files is often difficult and unintuitive. By leveraging a visualization interface designed in the form of an interactive game, users can easily identify potential improvements. For instance, it becomes visually apparent that one sensor in the lower-left corner can be removed, and in the densely covered central area, three sensors can be replaced with two, effectively reducing the total number of sensors to 61 or even 60, while still satisfying the overall coverage probability across the entire map.
+        </p>
+
+        <p>
+          This approach highlights the potential of crowdsourced computation, where individuals without formal research training—but with strong problem-solving intuition through gameplay—can contribute to discovering improved solutions and assist researchers in addressing complex optimization challenges.
         </p>
 
       </section>
