@@ -11,7 +11,6 @@ document.addEventListener('DOMContentLoaded', function () {
   const statusBar = document.getElementById('status-bar');
   const gbestDisplay = document.getElementById('gbest');
   const mapCheck = document.getElementById('map-check');
-  const toggleBtn = document.getElementById('toggle-btn'); // 按鈕
   
   let sensorCount = 0; // 追蹤 sensor 的總數量
   let gridSize = 5; // 初始 Grid 大小
@@ -31,9 +30,6 @@ document.addEventListener('DOMContentLoaded', function () {
 
   // 根據 Threshold 統一顯示顏色，這裡設置 threshold = 0.3
   const threshold = 0.3;
-
-  //功能按鈕
-  let isThresholdMode = false; // 判斷是否為 Threshold 模式
 
   // 清空狀態條內部
   statusBar.innerHTML = '';
@@ -310,13 +306,7 @@ document.addEventListener('DOMContentLoaded', function () {
           cell.style.backgroundColor = getColorFromProbability(probability);
           cell.classList.remove('dissatisfy'); // 移除紅色斜線
         } else {
-          if (!isThresholdMode) {
-            // 非 Threshold 模式時，顯示機率顏色
-            cell.style.backgroundColor = getColorFromProbability(probability);
-          } else {
-            // 機率小於等於 Threshold，顯示 Threshold 顏色並加紅色斜線
-            cell.style.backgroundColor = getColorFromProbability(threshold);
-          }
+          cell.style.backgroundColor = getColorFromProbability(probability);
           cell.classList.add('dissatisfy'); // 添加紅色斜線
         }
       }
@@ -371,13 +361,6 @@ document.addEventListener('DOMContentLoaded', function () {
     // 計算完成率並返回百分比
     return ((nonDissatisfyCount / totalCells) * 100).toFixed(2); // 保留兩位小數
   }
-  // 切換threshold / detection probability 模式
-  toggleBtn.addEventListener('click', function () {
-    isThresholdMode = !isThresholdMode;
-    toggleBtn.textContent = isThresholdMode ? 'Detection Probability' : 'Threshold';
-
-    applyProbabilitiesToGrid(probabilitiesCache, clickableBox);
-  });
   // 根據選項更新格子
   solutionDropdown.addEventListener('change', function () {
     const selectedValue = parseInt(this.value);
