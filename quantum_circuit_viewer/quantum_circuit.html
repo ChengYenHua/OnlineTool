@@ -1,0 +1,271 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+  <meta charset="UTF-8">
+  <title>Quantum Circuit Viewer</title>
+  <style>
+    body { font-family: Arial, sans-serif; padding: 20px; }
+    #canvasContainer { margin-top: 20px; }
+    canvas { border: 1px solid #ccc; }
+    #fitnessChartContainer { margin-top: 40px; width: 100%; overflow-x: auto; }
+    #fitnessChart { min-width: 1200px; height: 500px; }
+  </style>
+  <script src="https://cdn.jsdelivr.net/npm/chart.js"></script>
+</head>
+<body>
+  <h2>Quantum Circuit Viewer</h2>
+  <input type="file" id="fileInput">
+  <div>
+    <label for="genInput">Go to Generation:</label>
+    <input type="number" id="genInput" min="1" style="width: 80px;">
+    <button onclick="jumpToGeneration()">Go</button>
+  </div>
+  <div style="margin-top: 10px;">
+    Gen.: 
+    <input type="range" id="genSlider" min="1" max="1" value="1" style="width: 450px;">
+    <span id="genLabel">1</span>
+  </div>
+  <div>
+    Fit.: <span id="fitnessValue">0</span>
+  </div>
+  <div id="canvasContainer">
+    <canvas id="circuitCanvas" width="1000" height="150"></canvas>
+  </div>
+  <div id="fitnessChartContainer">
+    <canvas id="fitnessChart"></canvas>
+  </div>
+  
+
+
+  <script>
+    let data = [];
+    const gateMap = ['empty', 'H', 'T', 'T†', 'X', 'C'];
+
+    const canvas = document.getElementById('circuitCanvas');
+    const ctx = canvas.getContext('2d');
+    let fitnessChart;
+
+    document.getElementById('fileInput').addEventListener('change', function(evt) {
+      const file = evt.target.files[0];
+      if (!file) return;
+
+      const reader = new FileReader();
+      reader.onload = function(e) {
+        const lines = e.target.result.split('\n').filter(l => l.trim() !== '');
+        data = [];
+
+        for (let i = 0; i < lines.length; i += 2) {
+          const genNumber = parseInt(lines[i]);
+          const parts = lines[i + 1].match(/\[(.*?)\]\s+\[(.*?)\]\s+(.*)/);
+          if (!parts) continue;
+
+          const q0 = parts[1].trim().split(' ').map(Number);
+          const q1 = parts[2].trim().split(' ').map(Number);
+          const fitness = parseFloat(parts[3]);
+
+          data.push({ gen: genNumber, q0, q1, fitness });
+        }
+
+        document.getElementById('genSlider').max = data.length;
+        updateFitnessChart();
+        renderCircuit(1);
+      };
+      reader.readAsText(file);
+    });
+
+    document.getElementById('genSlider').addEventListener('input', function() {
+      const gen = parseInt(this.value);
+      document.getElementById('genLabel').innerText = gen;
+      renderCircuit(gen);
+    });
+
+    document.addEventListener('keydown', function (event) {
+      const slider = document.getElementById('genSlider');
+      let current = parseInt(slider.value);
+      const max = parseInt(slider.max);
+      const min = parseInt(slider.min);
+
+      if (event.key === 'ArrowLeft') {
+        if (current > min) {
+          slider.value = current - 1;
+          slider.dispatchEvent(new Event('input'));
+        }
+      } else if (event.key === 'ArrowRight') {
+        if (current < max) {
+          slider.value = current + 1;
+          slider.dispatchEvent(new Event('input'));
+        }
+      }
+    });
+
+    function drawGate(x, y, label, type) {
+      ctx.strokeStyle = '#000';
+      ctx.lineWidth = 1;
+      if (type === 'H') {
+        ctx.fillStyle = '#f88';
+        ctx.fillRect(x - 15, y - 15, 30, 30);
+        ctx.strokeRect(x - 15, y - 15, 30, 30);
+      } else if (type === 'T' || type === 'T†') {
+        ctx.fillStyle = (type === 'T') ? '#88f' : '#4cf';
+        ctx.fillRect(x - 15, y - 15, 30, 30);
+        ctx.strokeRect(x - 15, y - 15, 30, 30);
+      } else if (type === 'X') {
+        ctx.fillStyle = '#fff';
+        ctx.beginPath();
+        ctx.arc(x, y, 12, 0, 2 * Math.PI);
+        ctx.fill();
+        ctx.stroke();
+        ctx.beginPath();
+        ctx.moveTo(x, y - 8);
+        ctx.lineTo(x, y + 8);
+        ctx.moveTo(x - 8, y);
+        ctx.lineTo(x + 8, y);
+        ctx.stroke();
+      } else if (type === 'C') {
+        ctx.fillStyle = '#00f';
+        ctx.beginPath();
+        ctx.arc(x, y, 6, 0, 2 * Math.PI);
+        ctx.fill();
+        ctx.stroke();
+      }
+      if (['H', 'T', 'T†'].includes(type)) {
+        ctx.fillStyle = '#000';
+        ctx.font = '14px Arial';
+        ctx.textAlign = 'center';
+        ctx.textBaseline = 'middle';
+        ctx.fillText(label, x, y);
+      }
+    }
+
+    function renderCircuit(gen) {
+      const d = data.find(item => item.gen === gen);
+      if (!d) return;
+
+      document.getElementById('fitnessValue').innerText = d.fitness.toFixed(53);
+
+      ctx.clearRect(0, 0, canvas.width, canvas.height);
+
+      const startX = 60;
+      const stepX = 60;
+      const q0Y = 50;
+      const q1Y = 100;
+
+      ctx.strokeStyle = '#bbb';
+      ctx.lineWidth = 2;
+      ctx.beginPath();
+      ctx.moveTo(startX - 40, q0Y);
+      ctx.lineTo(startX + d.q0.length * stepX, q0Y);
+      ctx.moveTo(startX - 40, q1Y);
+      ctx.lineTo(startX + d.q1.length * stepX, q1Y);
+      ctx.stroke();
+
+      for (let i = 0; i < d.q0.length; i++) {
+        const x = startX + i * stepX;
+        const g0 = gateMap[d.q0[i]];
+        const g1 = gateMap[d.q1[i]];
+
+        if (g0 === 'C' && g1 === 'X') {
+          drawGate(x, q0Y, '', 'C');
+          drawGate(x, q1Y, '', 'X');
+          ctx.beginPath();
+          ctx.moveTo(x, q0Y);
+          ctx.lineTo(x, q1Y);
+          ctx.stroke();
+        } else if (g0 === 'X' && g1 === 'C') {
+          drawGate(x, q0Y, '', 'X');
+          drawGate(x, q1Y, '', 'C');
+          ctx.beginPath();
+          ctx.moveTo(x, q0Y);
+          ctx.lineTo(x, q1Y);
+          ctx.stroke();
+        } else {
+          if (g0 !== 'empty') drawGate(x, q0Y, g0, g0);
+          if (g1 !== 'empty') drawGate(x, q1Y, g1, g1);
+        }
+      }
+    }
+
+    function updateFitnessChart() {
+      const ctxChart = document.getElementById('fitnessChart').getContext('2d');
+      const labels = data.map(d => d.gen);
+      const values = data.map(d => d.fitness);
+
+      if (fitnessChart) fitnessChart.destroy();
+      fitnessChart = new Chart(ctxChart, {
+        type: 'line',
+        data: {
+          labels: labels,
+          datasets: [{
+            label: 'Fitness over Generations',
+            data: values,
+            borderColor: 'rgba(0, 123, 255, 1)',
+            backgroundColor: 'rgba(0, 123, 255, 0.1)',
+            pointRadius: 3,
+            pointHoverRadius: 5,
+            borderWidth: 2,
+            fill: true,
+            tension: 0.2
+          }]
+        },
+        options: {
+          responsive: true,
+          maintainAspectRatio: false,
+          scales: {
+            x: {
+              title: {
+                display: true,
+                text: 'Generation'
+              },
+              ticks: {
+                maxTicksLimit: 20,
+                callback: function(value, index, ticks) {
+                  if (index === 0 || index === ticks.length - 1 || index % Math.ceil(ticks.length / 20) === 0) {
+                    return this.getLabelForValue(value);
+                  }
+                  return '';
+                }
+              }
+            },
+            y: {
+              title: {
+                display: true,
+                text: 'Fitness'
+              },
+              beginAtZero: true
+            }
+          },
+          plugins: {
+            legend: {
+              display: true,
+              labels: {
+                font: { size: 14 }
+              }
+            },
+            tooltip: {
+              animation: false,
+              callbacks: {
+                label: ctx => `Fitness: ${ctx.parsed.y.toFixed(53)}`
+              }
+            }
+          }
+        }
+      });
+    }
+
+    function jumpToGeneration() {
+      const input = document.getElementById('genInput');
+      const slider = document.getElementById('genSlider');
+      const max = parseInt(slider.max);
+      const min = parseInt(slider.min);
+      const value = parseInt(input.value);
+
+      if (!isNaN(value) && value >= min && value <= max) {
+        slider.value = value;
+        slider.dispatchEvent(new Event('input'));
+      } else {
+        alert(`Please enter a number between ${min} and ${max}`);
+      }
+    }
+  </script>
+</body>
+</html>
