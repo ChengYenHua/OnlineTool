@@ -9,8 +9,33 @@
     canvas { border: 1px solid #ccc; }
     #fitnessChartContainer { margin-top: 40px; width: 100%; overflow-x: auto; }
     #fitnessChart { min-width: 1200px; height: 500px; }
+    .gate-palette {
+      display: flex;
+      gap: 10px;
+      margin-bottom: 10px;
+    }
+    .draggable-gate {
+      width: 40px;
+      height: 40px;
+      border: 1px solid #888;
+      border-radius: 6px;
+      text-align: center;
+      line-height: 40px;
+      font-weight: bold;
+      font-family: Arial;
+      font-size: 14px;
+      user-select: none;
+      cursor: grab;
+    }
+    .gate-wire { background-color: #eee; color: #000; }
+    .gate-H { background-color: #f88; color: #000; }
+    .gate-T { background-color: #88f; color: #000; }
+    .gate-Td { background-color: #4cf; color: #000; }
+    .gate-CNOT { background-color: #fff; color: #00f; border: 2px solid #00f; border-radius: 50%; }
   </style>
   <script src="https://cdn.jsdelivr.net/npm/chart.js"></script>
+  <script src="https://cdnjs.cloudflare.com/ajax/libs/mathjs/11.8.0/math.min.js"></script>
+  
 </head>
 <body>
   <h2>Quantum Circuit Viewer</h2>
@@ -28,6 +53,14 @@
   <div>
     Fit.: <span id="fitnessValue">0</span>
   </div>
+  <!-- ✅ Gate Palette -->
+  <div class="gate-palette">
+    <div class="draggable-gate gate-wire" draggable="true" data-gate="0">W</div>
+    <div class="draggable-gate gate-H" draggable="true" data-gate="1">H</div>
+    <div class="draggable-gate gate-T" draggable="true" data-gate="2">T</div>
+    <div class="draggable-gate gate-Td" draggable="true" data-gate="3">T†</div>
+    <div class="draggable-gate gate-CNOT" draggable="true" data-gate="5">⊕</div>
+  </div>
   <div id="canvasContainer">
     <canvas id="circuitCanvas" width="1000" height="150"></canvas>
   </div>
@@ -38,12 +71,21 @@
 
 
   <script>
-    let data = [];
+    let draggedGate = null;
+    let data = [{
+      gen: 1,
+      q0: [5, 1, 5, 2, 5, 1, 5],
+      q1: [4, 2, 4, 3, 4, 0, 4],
+      fitness: 0
+    }];
     const gateMap = ['empty', 'H', 'T', 'T†', 'X', 'C'];
 
     const canvas = document.getElementById('circuitCanvas');
     const ctx = canvas.getContext('2d');
     let fitnessChart;
+
+    updateFitnessChart();
+    renderCircuit(1);
 
     document.getElementById('fileInput').addEventListener('change', function(evt) {
       const file = evt.target.files[0];
@@ -98,6 +140,62 @@
       }
     });
 
+    // Allow dragging
+    document.querySelectorAll('.draggable-gate').forEach(gate => {
+      gate.addEventListener('dragstart', (e) => {
+        draggedGate = e.target.dataset.gate;
+      });
+    });
+
+    // Setup for future drop logic
+    canvas.addEventListener('dragover', (e) => {
+      e.preventDefault();
+    });
+    // 可以拖拉的程式碼
+    canvas.addEventListener('drop', (e) => {
+      e.preventDefault();
+      const gen = parseInt(document.getElementById('genSlider').value);
+      const d = data.find(item => item.gen === gen);
+      if (!d) return;
+
+      const x = e.offsetX;
+      const y = e.offsetY;
+
+      const col = Math.floor((x - 60) / 60);
+      if (col < 0 || col >= d.q0.length) return;
+
+      const g = parseInt(draggedGate);
+
+      // 清除原有 CNOT 結構（若存在）
+      if ((d.q0[col] === 5 && d.q1[col] === 4) || (d.q0[col] === 4 && d.q1[col] === 5)) {
+        d.q0[col] = 0;
+        d.q1[col] = 0;
+      }
+
+      if (g === 5) {
+        // CNOT: determine control and target
+        if (y < 75) {
+          d.q0[col] = 4; // control
+          d.q1[col] = 5; // target
+        } else {
+          d.q0[col] = 5; // target
+          d.q1[col] = 4; // control
+        }
+      } else {
+        if (y < 75) {
+          d.q0[col] = g;
+          // 若另一 qubit 是 CNOT 的一部分，清除
+          if (d.q1[col] === 4 || d.q1[col] === 5) d.q1[col] = 0;
+        } else {
+          d.q1[col] = g;
+          if (d.q0[col] === 4 || d.q0[col] === 5) d.q0[col] = 0;
+        }
+      }
+
+      renderCircuit(gen);
+      updateFitness(d); // 即時更新 fitness
+    });
+
     function drawGate(x, y, label, type) {
       ctx.strokeStyle = '#000';
       ctx.lineWidth = 1;
@@ -135,6 +233,69 @@
         ctx.textBaseline = 'middle';
         ctx.fillText(label, x, y);
       }
+    }
+
+    function updateFitness(d) {
+      const sqrt_swap = [
+        [1, 0, 0, 0],
+        [0, math.complex(0.5, 0.5), math.complex(0.5, -0.5), 0],
+        [0, math.complex(0.5, -0.5), math.complex(0.5, 0.5), 0],
+        [0, 0, 0, 1],
+      ];
+      // const sqrt_swap = [
+      //   [1, 0, 0, 0],
+      //   [0, 1, 0, 0],
+      //   [0, 0, 1, 0],
+      //   [0, 0, 0, 1],
+      // ];
+
+      const gateMatrixMap = {
+        0: [[1, 0], [0, 1]],
+        1: [[1/Math.sqrt(2), 1/Math.sqrt(2)],
+            [1/Math.sqrt(2), -1/Math.sqrt(2)]],
+        2: [[1, 0],
+            [0, math.exp(math.complex(0, Math.PI / 4))]],
+        3: [[1, 0],
+            [0, math.exp(math.complex(0, -Math.PI / 4))]],
+      };
+
+      function getGateMatrix(gid) {
+        return gateMatrixMap[gid] || gateMatrixMap[0];
+      }
+
+      let mat = math.identity(4);
+      for (let i = 0; i < d.q0.length; i++) {
+        const gate0 = d.q0[i], gate1 = d.q1[i];
+        let m;
+        if (gate0 === 5 && gate1 === 4) {
+          // q0 is control
+          m = math.matrix([
+            [1,0,0,0],
+            [0,1,0,0],
+            [0,0,0,1],
+            [0,0,1,0]
+          ]);
+        } else if (gate0 === 4 && gate1 === 5) {
+          // q1 is control
+          m = math.matrix([
+            [1,0,0,0],
+            [0,0,0,1],
+            [0,0,1,0],
+            [0,1,0,0]
+          ]);
+        } else {
+          const g0 = getGateMatrix(gate0);
+          const g1 = getGateMatrix(gate1);
+          m = math.kron(g0, g1);
+        }
+        mat = math.multiply(mat, m);
+      }
+
+      const prod = math.multiply(math.conj(math.transpose(mat)), sqrt_swap);
+      const num = math.abs(math.trace(prod));
+      const dem = prod.size()[0];
+      const fitness = 1 - num / dem;
+      document.getElementById('fitnessValue').innerText = fitness.toFixed(53);
     }
 
     function renderCircuit(gen) {
