@@ -69,7 +69,6 @@
   </div>
   
 
-
   <script>
     let draggedGate = null;
     let data = [{
@@ -295,7 +294,7 @@
       const num = math.abs(math.trace(prod));
       const dem = prod.size()[0];
       const fitness = 1 - num / dem;
-      document.getElementById('fitnessValue').innerText = fitness.toFixed(53);
+      document.getElementById('fitnessValue').innerText = fitness.toFixed(15);
     }
 
     function renderCircuit(gen) {
