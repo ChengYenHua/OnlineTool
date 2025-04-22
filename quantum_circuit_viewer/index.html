@@ -31,7 +31,7 @@
     .gate-H { background-color: #f88; color: #000; }
     .gate-T { background-color: #88f; color: #000; }
     .gate-Td { background-color: #4cf; color: #000; }
-    .gate-CNOT { background-color: #fff; color: #00f; border: 2px solid #00f; border-radius: 50%; }
+    .gate-CNOT { background-color: #fff; color: #00f; border: 2px solid #00f; border-radius: 80%; }
   </style>
   <script src="https://cdn.jsdelivr.net/npm/chart.js"></script>
   <script src="https://cdnjs.cloudflare.com/ajax/libs/mathjs/11.8.0/math.min.js"></script>
@@ -160,7 +160,7 @@
       const x = e.offsetX;
       const y = e.offsetY;
 
-      const col = Math.floor((x - 60) / 60);
+      const col = Math.round((x - 60) / 60);
       if (col < 0 || col >= d.q0.length) return;
 
       const g = parseInt(draggedGate);
@@ -294,7 +294,7 @@
       const num = math.abs(math.trace(prod));
       const dem = prod.size()[0];
       const fitness = 1 - num / dem;
-      document.getElementById('fitnessValue').innerText = fitness.toFixed(15);
+      document.getElementById('fitnessValue').innerText = fitness.toFixed(53);
     }
 
     function renderCircuit(gen) {
