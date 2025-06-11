@@ -296,6 +296,7 @@
       renderCircuit(gen);
       console.log(d.circuit);
     }
+
     function clear_circuit()
     {
       const gen = parseInt(document.getElementById('genSlider').value);
@@ -667,16 +668,15 @@
 
         for (let i = 0; i < lines.length; i += 2) {
           const genNumber = parseInt(lines[i]);
-          const parts = lines[i + 1].match(/\[(.*?)\]\s+\[(.*?)\]\s+(.*)/);
-          if (!parts) continue;
-
-          //const q0 = parts[1].trim().split(' ').map(Number);
-          //const q1 = parts[2].trim().split(' ').map(Number);
+          const match = lines[i + 1].matchAll(/\[([^\]]+)\]/g);
           const circuit = [];
-          for (let j = 1; j < parts.length - 1; j += 1) {
-              circuit.push(parts[j].trim().split(' ').map(Number));
+          for (const m of match) {
+            circuit.push(m[1].trim().split(/\s+/).map(Number));
           }
-          const fitness = parseFloat(parts[parts.length - 1]);
+
+          // 從最後一個中括號後的部分抓取 fitness 值
+          const fitnessStr = lines[i + 1].replace(/\[[^\]]+\]/g, '').trim();
+          const fitness = parseFloat(fitnessStr);
 
           data.push({ gen: genNumber, circuit, fitness });
         }
@@ -728,6 +728,7 @@
       e.preventDefault();
     });
     var d0_gen = 0;
+
     // 可以拖拉的程式碼
     canvas.addEventListener('drop', (e) => {
       e.preventDefault();
