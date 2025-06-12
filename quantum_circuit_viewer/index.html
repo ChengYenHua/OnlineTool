@@ -32,7 +32,16 @@
     .gate-X { background-color: #fff; color: #00f; border: 2px solid #00f; border-radius: 80%; }
     .gate-C { background-color: #fff; color: #00f; border: 2px solid #00f; border-radius: 80%; }
 
-    .matrix td { padding: 4px; border: 1px solid #000; text-align: center; font-family: monospace; font-size:20px;}
+    .matrix td {
+      padding: 8px;
+      border: 1px solid #000;
+      text-align: center;
+      vertical-align: middle;
+      font-family: monospace;
+      font-size: 20px;
+      height: 50px;
+      width: 100px;
+    }
   </style>
   <script src="https://cdn.jsdelivr.net/npm/chart.js"></script>
   <script src="https://cdnjs.cloudflare.com/ajax/libs/mathjs/11.8.0/math.min.js"></script>
@@ -108,9 +117,12 @@
     </div>
     <button onclick="clear_circuit()">清空</button>
     <button onclick="screenshot_onoff()">截圖</button>
+  </div>
+  <div>
     <div style="display: inline-block; vertical-align: top; margin-top: 20px;">
       <table id="matrix" class="matrix"></table>
     </div>
+    <button onclick="captureMatrix()">擷取矩陣</button>
   </div>
 
   <div id="fitnessChartContainer">
@@ -587,24 +599,17 @@
         for (let j = 0; j < size; j++) {
           const cell = document.createElement('td');
           const v = m.get([i, j]);
-          const re = math.round(math.re(v), 8);
-          const im = math.round(math.im(v), 8);
+          const re = math.round(math.re(v), 7);
+          const im = math.round(math.im(v), 7);
           const reColor = (re === 0) ? '#ccc' : '#000';
           const imColor = (im === 0) ? '#ccc' : '#000';
-//          cell.innerHTML = `<span style="color:${reColor}">${re.toFixed(8)}</span>` +
-//                           `<span style="color:#000">${im >= 0 ? '+' : ''}</span>` +
-//                           `<span style="color:${imColor}">${im.toFixed(8)}i</span>`;
 
-          cell.innerHTML = `<span style="color:${reColor}">${re.toFixed(8)}</span>`;
-          if(imColor === '#ccc')
-          {
-            cell.innerHTML += `<span style="color:#ccc">${im >= 0 ? '+' : ''}</span>`;
-          }
-          else
-          {
-            cell.innerHTML += `<span style="color:#000">${im >= 0 ? '+' : ''}</span>`;
-          }
-          cell.innerHTML += `<span style="color:${imColor}">${im.toFixed(8)}i</span>`;
+          cell.innerHTML = `
+            <div style="font-size:20px; line-height:1.2; text-align:center;">
+              <div style="color:${reColor}">${re.toFixed(7)}</div>
+              <div style="color:${imColor}">${im >= 0 ? '+' : ''}${im.toFixed(7)}i</div>
+            </div>
+          `;
 
           row.appendChild(cell);
         }
@@ -1167,32 +1172,47 @@
         for (let i = 0; i < matches.length; i++) {
           const rowStr = matches[i][1];
           const row = rowStr.trim().split(/\s+/).map(Number);
-          if (row.length !== d.circuit[0].length) {
-            return alert(`第 ${i + 1} 行長度 (${row.length}) 不符合 depth (${d.circuit[0].length})`);
-          }
           newCircuit.push(row);
         }
       }
       // ✅ 格式 A: 每行一個 qubit
       else {
         const lines = input.split('\n').map(line => line.trim()).filter(line => line !== "");
-        if (lines.length !== d.circuit.length) {
-          return alert(`輸入行數 (${lines.length}) 不符合 qubit 數 (${d.circuit.length})`);
-        }
-
         for (let i = 0; i < lines.length; i++) {
           const row = lines[i].split(/\s+/).map(Number);
-          if (row.length !== d.circuit[0].length) {
-            return alert(`第 ${i + 1} 行長度 (${row.length}) 不符合 depth (${d.circuit[0].length})`);
-          }
           newCircuit.push(row);
         }
       }
 
+      // ✅ 根據 newCircuit 調整 d0 circuit 深度與 qubit 數
+      const newQubitCount = newCircuit.length;
+      const newDepth = Math.max(...newCircuit.map(row => row.length));
+
+      // 調整 d0 circuit 結構為 newQubitCount x newDepth
+      d0.circuit = Array.from({ length: newQubitCount }, (_, q) => {
+        const row = newCircuit[q] || [];
+        while (row.length < newDepth) row.push(0); // 補齊深度
+        return row;
+      });
+
       // ✅ 套用電路並重新 render
-      d0.circuit = newCircuit;
+      document.getElementById("circuitDepth").value = newDepth;
+      const canvas = document.getElementById("circuitCanvas");
+      canvas.width = 60 + 60 * newDepth;
+      canvas.height = 50 * newQubitCount + 50;
+
       renderCircuit(0);
       updateFitness(d0);
+    }
+
+    function captureMatrix() {
+      const target = document.getElementById('matrix');
+      html2canvas(target).then(canvas => {
+        const link = document.createElement('a');
+        link.download = 'matrix_snapshot.png';
+        link.href = canvas.toDataURL('image/png');
+        link.click();
+      });
     }
   </script>
 
