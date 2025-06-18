@@ -54,11 +54,19 @@
   <label for="FunctionName">Function Name：</label>
   <select id="FunctionName">
       <option value="sqrt(SWAP)">sqrt(SWAP)</option>
+      <option value="ctrlS">ctrl-S</option>
       <option value="HHL">HHL</option>
+      <option value="HHL_global_phase">HHL_global phase(-1)</option>
+      <option value="Toffoli">Toffoli</option>
+      <option value="Peres">Peres</option>
+      <option value="TOFPN">TOF-PN</option>
+      <option value="OR">OR</option>
+      <option value="Fredkin">Fredkin</option>
+      <option value="Permutation">Permutation</option>
   </select>
 
   <label for="circuitDepth">depth 數：</label>
-  <input type="number" id="circuitDepth" value="7" min="1" max="15" style="width: 50px;">
+  <input type="number" id="circuitDepth" value="7" min="1" max="100" style="width: 50px;">
   <button onclick="setCircuitDepth()">套用</button>
 
   <div>
@@ -128,7 +136,7 @@
   <div id="fitnessChartContainer">
     <canvas id="fitnessChart" style="box-sizing: border-box; display: block; height: 530px; width: 1246px;" width="1246" height="530"></canvas>
   </div>
-  <div><br><br>a:last gen, d:next gen, w:last change, s:next change</div>
+  <div><br><br>a:last gen, d:next gen, w:last change, s:next change, double click:remove gate</div>
 
   <script>
     let M = document.getElementById("circuitDepth").value;
@@ -225,8 +233,36 @@
     document.getElementById("FunctionName").addEventListener("change", function() {
       const depthInput = document.getElementById("circuitDepth");
 
-      if (this.value === "sqrt(SWAP)")
+      if (this.value === "ctrlS")
       {
+        d0_gen = 0;
+        N = 2;
+        M = 4;
+        depthInput.value = M;
+
+        TargetArrat = [
+            [1, 0, 0, 0],
+            [0, 1, 0, 0],
+            [0, 0, 1, 0],
+            [0, 0, 0, math.complex(0, 1)],
+        ];
+        data = [{
+          gen: 1,
+          circuit: [[5, 2, 5, 0],
+                    [4, 3, 4, 2]],
+          fitness: 0
+        }];
+
+        gates_arrays = {};
+        setGatesArray();
+        const canvas = document.getElementById("circuitCanvas");
+        canvas.width = 60 + 60 * M;      // 更新寬度（startX + stepX * depth）
+        canvas.height = 50 * N + 50;     // 更新高度（每條線50px + 上下邊界）
+        renderCircuit(1);
+      }
+      else if (this.value === "sqrt(SWAP)")
+      {
+        d0_gen = 0;
         N = 2;
         M = 7;
         depthInput.value = M;
@@ -253,6 +289,7 @@
       }
       else if (this.value === "HHL")
       {
+        d0_gen = 0;
         N = 3;
         M = 12;
         depthInput.value = M;
@@ -282,20 +319,252 @@
         canvas.height = 50 * N + 50;
         renderCircuit(1);
       }
+      else if (this.value === "HHL_global_phase")
+      {
+        d0_gen = 0;
+        N = 3;
+        M = 11;
+        depthInput.value = M;
+
+        TargetArrat = [
+            [0,  0, 0, math.complex(0, 1), 0,  0, 0, 0],
+            [0,  0, 1, 0,                  0,  0, 0, 0],
+            [0, -1, 0, 0,                  0,  0, 0, 0],
+            [1,  0, 0, 0,                  0,  0, 0, 0],
+            [0,  0, 0, 0,                 -1,  0, 0, 0],
+            [0,  0, 0, 0,                  0, -1, 0, 0],
+            [0,  0, 0, 0,                  0,  0, 1, 0],
+            [0,  0, 0, 0,                  0,  0, 0, math.complex(0, -1)]
+        ];
+        data = [{
+          gen: 1,
+          circuit: [[0, 0, 5, 2, 2, 2, 2, 0, 0, 0, 0],
+                    [2, 5, 4, 1, 2, 2, 2, 2, 4, 1, 5],
+                    [2, 4, 3, 0, 0, 0, 0, 0, 5, 0, 4]],
+          fitness: 0
+        }];
+
+        gates_arrays = {};
+        setGatesArray();
+        const canvas = document.getElementById("circuitCanvas");
+        canvas.width = 60 + 60 * M;
+        canvas.height = 50 * N + 50;
+        renderCircuit(1);
+      }
+      else if (this.value === "Toffoli")
+      {
+        d0_gen = 0;
+        N = 3;
+        M = 9;
+        depthInput.value = M;
+
+        TargetArrat = [
+            [1, 0, 0, 0, 0, 0, 0, 0],
+            [0, 1, 0, 0, 0, 0, 0, 0],
+            [0, 0, 1, 0, 0, 0, 0, 0],
+            [0, 0, 0, 1, 0, 0, 0, 0],
+            [0, 0, 0, 0, 1, 0, 0, 0],
+            [0, 0, 0, 0, 0, 1, 0, 0],
+            [0, 0, 0, 0, 0, 0, 0, 1],
+            [0, 0, 0, 0, 0, 0, 1, 0]
+        ];
+        data = [{
+          gen: 1,
+          circuit: [[3, 0, 4, 2, 4, 3, 4, 2, 4],
+                    [0, 4, 2, 4, 5, 3, 0, 0, 5],
+                    [1, 5, 5, 5, 0, 0, 5, 3, 1]],
+          fitness: 0
+        }];
+
+        gates_arrays = {};
+        setGatesArray();
+        const canvas = document.getElementById("circuitCanvas");
+        canvas.width = 60 + 60 * M;
+        canvas.height = 50 * N + 50;
+        renderCircuit(1);
+      }
+      else if (this.value === "Peres")
+      {
+        d0_gen = 0;
+        N = 3;
+        M = 8;
+        depthInput.value = M;
+
+        TargetArrat = [
+            [1, 0, 0, 0, 0, 0, 0, 0],
+            [0, 1, 0, 0, 0, 0, 0, 0],
+            [0, 0, 1, 0, 0, 0, 0, 0],
+            [0, 0, 0, 1, 0, 0, 0, 0],
+            [0, 0, 0, 0, 0, 0, 0, 1],
+            [0, 0, 0, 0, 0, 0, 1, 0],
+            [0, 0, 0, 0, 1, 0, 0, 0],
+            [0, 0, 0, 0, 0, 1, 0, 0]
+        ];
+        data = [{
+          gen: 1,
+          circuit: [[2, 0, 0, 5, 5, 5, 0, 0],
+                    [2, 4, 3, 0, 4, 2, 4, 3],
+                    [1, 5, 2, 4, 3, 4, 5, 1]],
+          fitness: 0
+        }];
+
+        gates_arrays = {};
+        setGatesArray();
+        const canvas = document.getElementById("circuitCanvas");
+        canvas.width = 60 + 60 * M;
+        canvas.height = 50 * N + 50;
+        renderCircuit(1);
+      }
+      else if (this.value === "TOFPN")
+      {
+        d0_gen = 0;
+        N = 3;
+        M = 9;
+        depthInput.value = M;
+
+        TargetArrat = [
+            [1, 0, 0, 0, 0, 0, 0, 0],
+            [0, 1, 0, 0, 0, 0, 0, 0],
+            [0, 0, 1, 0, 0, 0, 0, 0],
+            [0, 0, 0, 1, 0, 0, 0, 0],
+            [0, 0, 0, 0, 0, 1, 0, 0],
+            [0, 0, 0, 0, 1, 0, 0, 0],
+            [0, 0, 0, 0, 0, 0, 1, 0],
+            [0, 0, 0, 0, 0, 0, 0, 1]
+        ];
+        data = [{
+          gen: 1,
+          circuit: [[2, 0, 0, 5, 4, 3, 0, 4, 5],
+                    [3, 4, 2, 4, 0, 3, 4, 2, 4],
+                    [1, 5, 2, 0, 5, 0, 5, 5, 1]],
+          fitness: 0
+        }];
+
+        gates_arrays = {};
+        setGatesArray();
+        const canvas = document.getElementById("circuitCanvas");
+        canvas.width = 60 + 60 * M;
+        canvas.height = 50 * N + 50;
+        renderCircuit(1);
+      }
+      else if (this.value === "OR")
+      {
+        d0_gen = 0;
+        N = 3;
+        M = 9;
+        depthInput.value = M;
+
+        TargetArrat = [
+            [1, 0, 0, 0, 0, 0, 0, 0],
+            [0, 1, 0, 0, 0, 0, 0, 0],
+            [0, 0, 0, 1, 0, 0, 0, 0],
+            [0, 0, 1, 0, 0, 0, 0, 0],
+            [0, 0, 0, 0, 0, 1, 0, 0],
+            [0, 0, 0, 0, 1, 0, 0, 0],
+            [0, 0, 0, 0, 0, 0, 0, 1],
+            [0, 0, 0, 0, 0, 0, 1, 0]
+        ];
+        data = [{
+          gen: 1,
+          circuit: [[0, 4, 3, 4, 3, 4, 2, 4, 2],
+                    [0, 0, 3, 5, 4, 2, 4, 5, 5],
+                    [1, 5, 2, 0, 5, 5, 5, 1, 4]],
+          fitness: 0
+        }];
+
+        gates_arrays = {};
+        setGatesArray();
+        const canvas = document.getElementById("circuitCanvas");
+        canvas.width = 60 + 60 * M;
+        canvas.height = 50 * N + 50;
+        renderCircuit(1);
+      }
+      else if (this.value === "Fredkin")
+      {
+        d0_gen = 0;
+        N = 3;
+        M = 11;
+        depthInput.value = M;
+
+        TargetArrat = [
+            [1, 0, 0, 0, 0, 0, 0, 0],
+            [0, 1, 0, 0, 0, 0, 0, 0],
+            [0, 0, 1, 0, 0, 0, 0, 0],
+            [0, 0, 0, 1, 0, 0, 0, 0],
+            [0, 0, 0, 0, 1, 0, 0, 0],
+            [0, 0, 0, 0, 0, 0, 1, 0],
+            [0, 0, 0, 0, 0, 1, 0, 0],
+            [0, 0, 0, 0, 0, 0, 0, 1]
+        ];
+        data = [{
+          gen: 1,
+          circuit: [[0, 2, 4, 3, 4, 2, 4, 3, 0, 4, 0],
+                    [4, 2, 0, 0, 5, 4, 0, 3, 4, 5, 4],
+                    [5, 1, 5, 2, 0, 5, 5, 0, 5, 1, 5]],
+          fitness: 0
+        }];
+
+        gates_arrays = {};
+        setGatesArray();
+        const canvas = document.getElementById("circuitCanvas");
+        canvas.width = 60 + 60 * M;
+        canvas.height = 50 * N + 50;
+        renderCircuit(1);
+      }
+      else if (this.value === "Permutation")
+      {
+        d0_gen = 0;
+        N = 3;
+        M = 11;
+        depthInput.value = M;
+
+        TargetArrat = [
+            [0, 0, 0, 0, 0, 0, 1, 0],
+            [0, 1, 0, 0, 0, 0, 0, 0],
+            [0, 0, 1, 0, 0, 0, 0, 0],
+            [0, 0, 0, 1, 0, 0, 0, 0],
+            [0, 0, 0, 0, 1, 0, 0, 0],
+            [0, 0, 0, 0, 0, 1, 0, 0],
+            [1, 0, 0, 0, 0, 0, 0, 0],
+            [0, 0, 0, 0, 0, 0, 0, 1]
+        ];
+        data = [{
+          gen: 1,
+          circuit: [[4, 3, 4, 2, 4, 4, 2, 4, 3, 4, 4],
+                    [5, 1, 5, 5, 5, 0, 5, 5, 2, 1, 5],
+                    [0, 3, 0, 4, 2, 5, 4, 0, 0, 5, 0]],
+          fitness: 0
+        }];
+
+        gates_arrays = {};
+        setGatesArray();
+        const canvas = document.getElementById("circuitCanvas");
+        canvas.width = 60 + 60 * M;
+        canvas.height = 50 * N + 50;
+        renderCircuit(1);
+      }
+
         
     });
     
     function setCircuitDepth(){
       const gen = parseInt(document.getElementById('genSlider').value);
       const d = data.find(item => item.gen === gen);
+      const d0 = data0.find(item => item.gen === 1);
       const m_ = document.getElementById("circuitDepth").value;
-      if (m_ > d.circuit[0].length)
+      if (d0_gen !== gen)
       {
-        for (let i = d.circuit[0].length; i < m_; i++)
+        d0.circuit = JSON.parse(JSON.stringify(d.circuit));
+        d0.fitness = JSON.parse(JSON.stringify(d.fitness));
+        d0_gen = gen;
+      }
+      if (m_ > d0.circuit[0].length)
+      {
+        for (let i = d0.circuit[0].length; i < m_; i++)
         {
-          for (let j = 0; j < d.circuit.length; j++)
+          for (let j = 0; j < d0.circuit.length; j++)
           {
-            d.circuit[j].push(0);
+            d0.circuit[j].push(0);
           }
         }
       }
@@ -305,8 +574,8 @@
       const newWidth = 60 + 60 * m_;  // startX + stepX * depth
       canvas.width = newWidth;
 
-      renderCircuit(gen);
-      console.log(d.circuit);
+      renderCircuit(0);
+      //console.log(d.circuit);
     }
 
     function clear_circuit()
@@ -734,6 +1003,48 @@
     });
     var d0_gen = 0;
 
+    // 可以雙擊移除gate的程式碼
+    canvas.addEventListener('dblclick', (e) => {
+      e.preventDefault();
+      //console.log("你在電路區雙擊了！");
+      const gen = parseInt(document.getElementById('genSlider').value);
+      const d = data.find(item => item.gen === gen);
+      const d0 = data0.find(item => item.gen === 1);
+      if (d0_gen !== gen)
+      {
+        d0.circuit = JSON.parse(JSON.stringify(d.circuit));
+        d0.fitness = JSON.parse(JSON.stringify(d.fitness));
+        d0_gen = gen;
+      }
+
+      if (!d) return;
+      
+      const x = e.offsetX;
+      const y = e.offsetY;
+
+      const col = Math.round((x - 60) / 60);
+      if (col < 0 || col >= d0.circuit[0].length) return;
+      
+      const row = Math.round((y - 50) / 50);
+      if (row < 0 || row >= d0.circuit.length) return;
+
+      //console.log(`雙擊位置：c[${row}][${col}]`);
+      if (d0.circuit[row][col] === 4 || d0.circuit[row][col] === 5)
+      {
+        for (let i = 0; i < d0.circuit.length; i++) 
+        {
+            if ((d0.circuit[i][col] === 4 || d0.circuit[i][col] === 5) && (i !== row))
+            {
+              d0.circuit[i][col] = 0;
+            }
+        }
+      }
+      d0.circuit[row][col] = 0;
+
+      renderCircuit(0);
+      updateFitness(d0); // 即時更新 fitness
+    });
+
     // 可以拖拉的程式碼
     canvas.addEventListener('drop', (e) => {
       e.preventDefault();
@@ -801,6 +1112,102 @@
 
       renderCircuit(0);
       updateFitness(d0); // 即時更新 fitness
+    });
+
+    // 宣告變數來記錄滑鼠位置
+    let mouseDownPos = null;
+    let mouseUpPos = null;
+
+    // 監聽 mousedown 事件
+    canvas.addEventListener("mousedown", (e) => {
+      e.preventDefault();
+
+      mouseDownPos = {
+        x: e.offsetX,
+        y: e.offsetY
+      };
+      //console.log("Mouse Down at:", mouseDownPos);
+      //console.log("Mouse Up at:", mouseUpPos.x);
+      //console.log("Mouse Up at:", mouseUpPos.y);
+    });
+
+    // 監聽 mouseup 事件
+    canvas.addEventListener("mouseup", (e) => {
+      e.preventDefault();
+      const gen = parseInt(document.getElementById('genSlider').value);
+      const d = data.find(item => item.gen === gen);
+      const d0 = data0.find(item => item.gen === 1);
+      if (d0_gen !== gen)
+      {
+        d0.circuit = JSON.parse(JSON.stringify(d.circuit));
+        d0.fitness = JSON.parse(JSON.stringify(d.fitness));
+        d0_gen = gen;
+      }
+
+      if (!d) return;
+
+      mouseUpPos = {
+        x: e.offsetX,
+        y: e.offsetY
+      };
+      //console.log("Mouse Up at:", mouseUpPos);
+      //console.log("Mouse Up at:", mouseUpPos.x);
+      //console.log("Mouse Up at:", mouseUpPos.y);
+      
+      const col_start = Math.round((mouseDownPos.x - 60) / 60);
+      if (col_start < 0 || col_start >= d0.circuit[0].length) return;
+      
+      const row_start = Math.round((mouseDownPos.y - 50) / 50);
+      if (row_start < 0 || row_start >= d0.circuit.length) return;
+
+      const col_end = Math.round((mouseUpPos.x - 60) / 60);
+      if (col_end < 0 || col_end >= d0.circuit[0].length) return;
+      
+      const row_end = Math.round((mouseUpPos.y - 50) / 50);
+      if (row_end < 0 || row_end >= d0.circuit.length) return;
+
+      //console.log("start :", row_start, col_start);
+      //console.log("end :", row_end, col_end);
+
+      if (col_start !== col_end || row_start !== row_end)
+      {
+        //console.log("do");
+        if (d0.circuit[row_end][col_end] === 4 || d0.circuit[row_end][col_end] === 5)
+        {
+          for (let i = 0; i < d0.circuit.length; i++)
+          {
+            if (d0.circuit[i][col_end] === 4 || d0.circuit[i][col_end] === 5)
+            {
+              d0.circuit[i][col_end] = 0;
+            }
+          }
+        }
+        let row_start_ = -1;
+        if (d0.circuit[row_start][col_start] === 4 || d0.circuit[row_start][col_start] === 5)
+        {
+          for (let i = 0; i < d0.circuit.length; i++)
+          {
+            if ((d0.circuit[i][col_start] === 4 || d0.circuit[i][col_start] === 5) && i !== row_start)
+            {
+              row_start_ = i;
+            }
+          }
+        }
+        if (row_start_ !== -1 && (row_start_ + (row_end - row_start)) >= 0 && (row_start_ + (row_end - row_start)) <= d0.circuit.length - 1)
+        {
+          d0.circuit[row_start_ + (row_end - row_start)][col_end] = d0.circuit[row_start_][col_start];
+          d0.circuit[row_start_][col_start] = 0;
+          d0.circuit[row_end][col_end] = d0.circuit[row_start][col_start];
+          d0.circuit[row_start][col_start] = 0;
+        }
+        else
+        {
+          d0.circuit[row_end][col_end] = d0.circuit[row_start][col_start];
+          d0.circuit[row_start][col_start] = 0;
+        }
+        renderCircuit(0);
+        updateFitness(d0); // 即時更新 fitness
+      }
     });
 
     function drawGate(x, y, label, type) {
@@ -979,6 +1386,24 @@
       const gen_ = parseInt(document.getElementById('genSlider').value);
       const d_ = data.find(item => item.gen === gen_);
       updateArray(d_);
+      
+      let str_ = "";
+      for (let i = 0; i < d.circuit.length; i++)
+      {
+        for (let j = 0; j < d.circuit[i].length; j++)
+        {
+          str_ += d.circuit[i][j];
+          if (j !== d.circuit[i].length - 1)
+          {
+            str_ += " ";
+          }
+        }
+        if (i !== d.circuit.length - 1)
+        {
+          str_ += "\n";
+        }
+      }
+      document.getElementById("manualCircuitInput").value = str_;
     }
 
     function updateFitnessChart() {
