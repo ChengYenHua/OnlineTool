@@ -583,8 +583,14 @@
       const gen = parseInt(document.getElementById('genSlider').value);
       const d = data.find(item => item.gen === gen);
       const d0 = data0.find(item => item.gen === 1);
-      d0.circuit = JSON.parse(JSON.stringify(d.circuit));
-      d0.fitness = JSON.parse(JSON.stringify(d.fitness));
+      //d0.circuit = JSON.parse(JSON.stringify(d.circuit));
+      //d0.fitness = JSON.parse(JSON.stringify(d.fitness));
+      if (d0_gen !== gen)
+      {
+        d0.circuit = JSON.parse(JSON.stringify(d.circuit));
+        d0.fitness = JSON.parse(JSON.stringify(d.fitness));
+        d0_gen = gen;
+      }
       for (let i = 0; i < d.circuit.length; i++)
       {
         for (let j = 0; j < d.circuit[i].length; j++)
@@ -1096,18 +1102,78 @@
       //    if (d.q0[col] === 4 || d.q0[col] === 5) d.q0[col] = 0;
       //  }
       //}
-      if (d0.circuit[row][col] === 4 || d0.circuit[row][col] === 5)
-      {
-        d0.circuit[row][col] = 0;
+      if (d0.circuit[row][col] === 4 || d0.circuit[row][col] === 5 || g === 4 || g === 5)
+      { 
+        let ctrl_ = -1;
+        let not_ = -1;
         for (let i = 0; i < d0.circuit.length; i++)
         {
-          if (d0.circuit[i][col] === 4 || d0.circuit[i][col] === 5)
+          if (d0.circuit[i][col] === 5)
           {
-            d0.circuit[i][col] = 0;
+            ctrl_ = i;
           }
+          else if (d0.circuit[i][col] === 4)
+          {
+            not_ = i;
+          }
+        }
+        if (ctrl_ !== -1 && not_ !== -1)
+        {
+          d0.circuit[ctrl_][col] = 0;
+          d0.circuit[not_][col] = 0;
         }
       }
       d0.circuit[row][col] = g;
+
+      let had_ctrl_not = 0;
+      if (g === 4 || g === 5)
+      {
+        for (let i = 0; i < d0.circuit.length; i++)
+        {
+          if ((d0.circuit[i][col] === 4 || d0.circuit[i][col] === 5) && i !== row)
+          {
+            had_ctrl_not = 1;
+          }
+        }
+        //console.log(had_ctrl_not);
+      }
+
+      if (g === 4 && had_ctrl_not === 0)
+      {
+        //console.log("not");
+        if (row !== (d0.circuit.length - 1))
+        {
+          if (d0.circuit[row + 1][col] === 0)
+          {
+            d0.circuit[row + 1][col] = 5;
+          }
+        }
+        else
+        {
+          if (d0.circuit[row - 1][col] === 0)
+          {
+            d0.circuit[row - 1][col] = 5;
+          }
+        }
+      }
+      else if (g === 5 && had_ctrl_not === 0)
+      {
+        //console.log("ctrl");
+        if (row !== (d0.circuit.length - 1))
+        {
+          if (d0.circuit[row + 1][col] === 0)
+          {
+            d0.circuit[row + 1][col] = 4;
+          }
+        }
+        else
+        {
+          if (d0.circuit[row - 1][col] === 0)
+          {
+            d0.circuit[row - 1][col] = 4;
+          }
+        }
+      }
       //console.log(d0.circuit);
 
       renderCircuit(0);
@@ -1172,7 +1238,7 @@
       if (col_start !== col_end || row_start !== row_end)
       {
         //console.log("do");
-        if (d0.circuit[row_end][col_end] === 4 || d0.circuit[row_end][col_end] === 5)
+        if ((d0.circuit[row_start][col_start] === 4 || d0.circuit[row_start][col_start] === 5) && col_start !== col_end)
         {
           for (let i = 0; i < d0.circuit.length; i++)
           {
@@ -1193,12 +1259,18 @@
             }
           }
         }
-        if (row_start_ !== -1 && (row_start_ + (row_end - row_start)) >= 0 && (row_start_ + (row_end - row_start)) <= d0.circuit.length - 1)
+        if (row_start_ !== -1 && (row_start_ + (row_end - row_start)) >= 0 && (row_start_ + (row_end - row_start)) <= (d0.circuit.length - 1)  && col_start !== col_end)
         {
           d0.circuit[row_start_ + (row_end - row_start)][col_end] = d0.circuit[row_start_][col_start];
           d0.circuit[row_start_][col_start] = 0;
           d0.circuit[row_end][col_end] = d0.circuit[row_start][col_start];
           d0.circuit[row_start][col_start] = 0;
+        }
+        else if (col_start === col_end && (d0.circuit[row_start][col_start] === 4 || d0.circuit[row_start][col_start] === 5) && (d0.circuit[row_end][col_end] === 4 || d0.circuit[row_end][col_end] === 5))
+        {
+          let flash = d0.circuit[row_start][col_start];
+          d0.circuit[row_start][col_start] = d0.circuit[row_end][col_end];
+          d0.circuit[row_end][col_end] = flash;
         }
         else
         {
@@ -1321,6 +1393,9 @@
       else
       {
         d = data.find(item => item.gen === gen);
+        // ⭐ 動態更新 canvas 寬度（每個 gate 寬度 60px，加上起始邊界）
+        const newWidth = 60 + 60 * d.circuit[0].length;  // startX + stepX * depth
+        canvas.width = newWidth;
       }
 
       if (!d) return;
