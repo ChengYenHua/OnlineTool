@@ -5,8 +5,8 @@
     body { font-family: Arial, sans-serif; padding: 20px; }
     #canvasContainer { margin-top: 20px; }
     canvas { border: 1px solid #ccc; }
-    #fitnessChartContainer { margin-top: 40px; width: 100%; overflow-x: auto; }
-    #fitnessChart { min-width: 1200px; height: 500px; }
+    #fitnessChartContainer {width: 100%; height: auto; overflow-x: auto; }
+    #fitnessChart { min-width: 1000px; max-width: 100%; height: 300px; /* 明確設定高度 */ }
     .gate-palette {
       display: flex;
       gap: 10px;
@@ -42,103 +42,167 @@
       height: 50px;
       width: 100px;
     }
+    .feature-button {
+    display: inline-block;
+    padding: 10px 18px;
+    margin: 0 10px;
+    border-radius: 10px;
+    background-color: #007BFF;
+    color: white;
+    font-size: 15px;
+    font-weight: bold;
+    cursor: pointer;
+    box-shadow: 0 2px 6px rgba(0, 0, 0, 0.2);
+    transition: all 0.25s ease-in-out;
+  }
+
+  .feature-button:hover {
+    background-color: #0056b3;
+    transform: scale(1.05);
+  }
+
+  .feature-button-container {
+    display: flex;
+    justify-content: left;
+    margin-top: 20px;
+    gap: 20px;
+  }
   </style>
   <script src="https://cdn.jsdelivr.net/npm/chart.js"></script>
   <script src="https://cdnjs.cloudflare.com/ajax/libs/mathjs/11.8.0/math.min.js"></script>
   <script src="https://cdn.jsdelivr.net/npm/html2canvas@1.4.1/dist/html2canvas.min.js"></script>
+  <script src="https://cdn.plot.ly/plotly-2.30.0.min.js"></script>
 </head>
 <body>
   <h2>Quantum Circuit Viewer</h2>
 
+  <div class="feature-button-container">
+    <div id="FunctionView_mod" class="feature-button">查看不同 Function 的解</div>
+    <div id="DrogCircuit" class="feature-button">使用者拖拉電路</div>
+    <div id="DynFitTrack" class="feature-button">動態視覺化分析</div>
+  </div>
   <!-- 下拉式選單 -->
-  <label for="FunctionName">Function Name：</label>
-  <select id="FunctionName">
-      <option value="sqrt(SWAP)">sqrt(SWAP)</option>
-      <option value="ctrlS">ctrl-S</option>
-      <option value="HHL">HHL</option>
-      <option value="HHL_global_phase">HHL_global phase(-1)</option>
-      <option value="Toffoli">Toffoli</option>
-      <option value="Peres">Peres</option>
-      <option value="TOFPN">TOF-PN</option>
-      <option value="OR">OR</option>
-      <option value="Fredkin">Fredkin</option>
-      <option value="Permutation">Permutation</option>
-  </select>
+  <div style="margin-top: 20px;">
+    <label for="FunctionName">Target Function:</label>
+    <select id="FunctionName">
+        <option value="sqrt(SWAP)">sqrt(SWAP)</option>
+        <option value="ctrlS">ctrl-S</option>
+        <option value="HHL">HHL</option>
+        <option value="HHL_global_phase">HHL_global phase(-1)</option>
+        <option value="Toffoli">Toffoli</option>
+        <option value="Peres">Peres</option>
+        <option value="TOFPN">TOF-PN</option>
+        <option value="OR">OR</option>
+        <option value="Fredkin">Fredkin</option>
+        <option value="Permutation">Permutation</option>
+    </select>
+  
+    <label for="circuitDepth">Depth 數：</label>
+    <input type="number" id="circuitDepth" value="7" min="1" max="100" style="width: 50px;">
+    <button onclick="setCircuitDepth()">套用</button>
+  </div>
 
-  <label for="circuitDepth">depth 數：</label>
-  <input type="number" id="circuitDepth" value="7" min="1" max="100" style="width: 50px;">
-  <button onclick="setCircuitDepth()">套用</button>
+  <div id="input_file" style="margin-top: 10px;">
+    <input type="file" id="fileInput">
+    <label for="genInput">Go to Generation:</label>
+      <input type="number" id="genInput" min="1" style="width: 80px;">
+      <button onclick="jumpToGeneration()">Go</button>
 
-  <div>
-    <div style="display: inline-block; vertical-align: top;">
-      <input type="file" id="fileInput">
-      <div>
-        <label for="genInput">Go to Generation:</label>
-        <input type="number" id="genInput" min="1" style="width: 80px;">
-        <button onclick="jumpToGeneration()">Go</button>
-      </div>
-      <div style="margin-top: 10px;">
-        Gen.: 
-        <input type="range" id="genSlider" min="1" max="10000" value="1" style="width: 450px;">
-        <span id="genLabel">1</span>
-      </div>
-      <div>
-        Fit.: <span id="fitnessValue">0.20943058495790511930323418710031546652317047119140625</span>
-      </div>
-      <div style="margin-top: 10px;">
-        <label for="manualCircuitInput"><strong>輸入電路：</strong></label><br>
-        <span style="font-size: 14px;">
-          支援以下兩種格式，按「套用電路」以直接修改目前 generation 的電路：
-          <ul style="margin-top: 4px; margin-bottom: 6px; padding-left: 20px;">
-            <li><strong>格式 A</strong>：每行代表一個 qubit，gate 用空格分隔</li>
-            <pre style="background:#f9f9f9; padding:4px;">
+    <div style="margin-top: 10px;">
+      Gen.: 
+      <input type="range" id="genSlider" min="1" max="10000" value="1" style="width: 450px;">
+      <span id="genLabel">1</span>
+    </div>
+  </div>
+
+  <div id="input_circuit_n" style="margin-top: 10px;">
+    <label for="manualCircuitInput"><strong>輸入電路：</strong></label><br>
+    <span style="font-size: 14px;">
+      支援以下兩種格式，按「套用電路」以直接修改目前 generation 的電路：
+      <ul style="margin-top: 4px; margin-bottom: 6px; padding-left: 20px;">
+        <li><strong>格式 A</strong>：每行代表一個 qubit，gate 用空格分隔</li>
+        <pre id="circuit_n">
 3 3 5 1 0 1 5 3 0 3 0 3
 5 1 2 5 0 5 3 0 2 4 1 5
 4 3 4 4 3 4 4 3 3 5 2 4</pre>
 
-            <li><strong>格式 B</strong>：每個 qubit 放在一個 <code>[ ... ]</code> 括號中</li>
-            <pre style="background:#f9f9f9; padding:4px;">[3 3 5 1 0 1 5 3 0 3 0 3] [5 1 2 5 0 5 3 0 2 4 1 5] [4 3 4 4 3 4 4 3 3 5 2 4]</pre>
-          </ul>
-        </span>
-        <textarea id="manualCircuitInput" rows="4" cols="80" placeholder="請貼上格式 A 或 B 的電路 gate 編碼..."></textarea>
-        <button onclick="applyManualCircuit()">套用電路</button>
+        <li><strong>格式 B</strong>：每個 qubit 放在一個 <code>[ ... ]</code> 括號中</li>
+        <pre>[3 3 5 1 0 1 5 3 0 3 0 3] [5 1 2 5 0 5 3 0 2 4 1 5] [4 3 4 4 3 4 4 3 3 5 2 4]</pre>
+      </ul>
+    </span>
+    <textarea id="manualCircuitInput" rows="4" cols="80" placeholder="請貼上格式 A 或 B 的電路 gate 編碼..."></textarea>
+    <button onclick="applyManualCircuit()">套用電路</button>
+  </div>
+
+  <div style="display: inline-block; vertical-align: top; margin-top: 10px;">
+    <div id="canvasContainer" style="margin-top: 10px;">
+      <div  style="display: inline-block; vertical-align: top;">
+        <canvas id="circuitCanvas"></canvas>
       </div>
-      <!-- ✅ Gate Palette -->
-      <label><strong>拖曳電路：</strong></label><br>
-      <div class="gate-palette">
-        <div class="draggable-gate gate-wire" draggable="true" data-gate="0">W</div>
-        <div class="draggable-gate gate-H" draggable="true" data-gate="1">H</div>
-        <div class="draggable-gate gate-T" draggable="true" data-gate="2">T</div>
-        <div class="draggable-gate gate-Td" draggable="true" data-gate="3">T†</div>
-        <div class="draggable-gate gate-X" draggable="true" data-gate="4">⊕</div>
-        <div class="draggable-gate gate-C" draggable="true" data-gate="5">●</div>
-      </div>
+      <button onclick="clear_circuit()">清空</button>
+      <button onclick="screenshot_onoff()">截圖</button>
     </div>
-    <div style="display: inline-block; vertical-align: top; width: 50px;"></div>
+  </div>
+
+  <div style="margin-top: 10px;">
+    上方電路與Target Function的 Fitness: <span id="fitnessValue">0.20943058495790511930323418710031546652317047119140625</span>
+  </div>
+
+  <div style="margin-top: 10px;">
+    <!-- ✅ Gate Palette -->
+    <label><strong>電路gate變更，請拖曳下方gate到上面的電路：</strong></label><br>
+    <div id="put_gate" class="gate-palette" style="margin-top: 10px;">
+      <div class="draggable-gate gate-wire" draggable="true" data-gate="0">W</div>
+      <div class="draggable-gate gate-H" draggable="true" data-gate="1">H</div>
+      <div class="draggable-gate gate-T" draggable="true" data-gate="2">T</div>
+      <div class="draggable-gate gate-Td" draggable="true" data-gate="3">T†</div>
+      <div class="draggable-gate gate-X" draggable="true" data-gate="4">⊕</div>
+      <div class="draggable-gate gate-C" draggable="true" data-gate="5">●</div>
+    </div>
+  </div>
+
+  <div id="matrix_show" style="margin-top: 10px;">
+    <label><strong>電路矩陣：</strong></label><br>
     <div style="display: inline-block; vertical-align: top;">
-        <div id="result"></div>
-    </div>
-  </div>
-  <div>
-    <div id="canvasContainer" style="display: inline-block; vertical-align: top;">
-      <canvas id="circuitCanvas"></canvas>
-    </div>
-    <button onclick="clear_circuit()">清空</button>
-    <button onclick="screenshot_onoff()">截圖</button>
-  </div>
-  <div>
-    <div style="display: inline-block; vertical-align: top; margin-top: 20px;">
       <table id="matrix" class="matrix"></table>
     </div>
     <button onclick="captureMatrix()">擷取矩陣</button>
   </div>
 
   <div id="fitnessChartContainer">
-    <canvas id="fitnessChart" style="box-sizing: border-box; display: block; height: 530px; width: 1246px;" width="1246" height="530"></canvas>
+    <div id="fitnessChart" style="width: 100%; height: 100%;"></div>
+
+    <div id="hot-key"><br><br>a:last gen, d:next gen, w:last change, s:next change, double click:remove gate</div>
   </div>
-  <div><br><br>a:last gen, d:next gen, w:last change, s:next change, double click:remove gate</div>
 
   <script>
+    document.getElementById("input_file").style.display = "none";
+    document.getElementById("fitnessChart").style.display = "none";
+    document.getElementById("input_circuit_n").style.display = "none";
+    document.getElementById("hot-key").style.display = "none";
+
+    document.getElementById("FunctionView_mod").addEventListener("click", function() {
+      document.getElementById("input_file").style.display = "none";
+      document.getElementById("fitnessChart").style.display = "none";
+      document.getElementById("input_circuit_n").style.display = "none";
+      document.getElementById("matrix_show").style.display = "block";
+      document.getElementById("hot-key").style.display = "none";
+    });
+    document.getElementById("DrogCircuit").addEventListener("click", function() {
+      document.getElementById("input_file").style.display = "none";
+      document.getElementById("fitnessChart").style.display = "none";
+      document.getElementById("input_circuit_n").style.display = "block";
+      document.getElementById("matrix_show").style.display = "block";
+      document.getElementById("hot-key").style.display = "none";
+    });
+    document.getElementById("DynFitTrack").addEventListener("click", function() {
+      document.getElementById("input_file").style.display = "block";
+      document.getElementById("fitnessChart").style.display = "block";
+      document.getElementById("input_circuit_n").style.display = "none";
+      document.getElementById("matrix_show").style.display = "none";
+      document.getElementById("hot-key").style.display = "block";
+    });
+
     let M = document.getElementById("circuitDepth").value;
     let N = 2;
 
@@ -798,6 +862,7 @@
                 [4, 2, 4, 3, 4, 0, 4]],
       fitness: 0
     }];
+    document.getElementById('genSlider').max = data.length;
 
     //let data = [{
     //  gen: 1,
@@ -964,6 +1029,7 @@
         document.getElementById('genSlider').max = data.length;
         updateFitnessChart();
         renderCircuit(1);
+        document.getElementById("fitnessChart").style.display = "block";
       };
       reader.readAsText(file);
     });
@@ -975,26 +1041,26 @@
       d0_gen = 0;
     });
 
-    document.addEventListener('keydown', function (event) {
-      const slider = document.getElementById('genSlider');
-      let current = parseInt(slider.value);
-      const max = parseInt(slider.max);
-      const min = parseInt(slider.min);
+    //document.addEventListener('keydown', function (event) {
+    //  const slider = document.getElementById('genSlider');
+    //  let current = parseInt(slider.value);
+    //  const max = parseInt(slider.max);
+    //  const min = parseInt(slider.min);
 
-      if (event.key === 'ArrowLeft') {
-        if (current > min) {
-          slider.value = current - 1;
-          slider.dispatchEvent(new Event('input'));
-          d0_gen = 0;
-        }
-      } else if (event.key === 'ArrowRight') {
-        if (current < max) {
-          slider.value = current + 1;
-          slider.dispatchEvent(new Event('input'));
-          d0_gen = 0;
-        }
-      }
-    });
+    //  if (event.key === 'ArrowLeft') {
+    //    if (current > min) {
+    //      slider.value = current - 1;
+    //      slider.dispatchEvent(new Event('input'));
+    //      d0_gen = 0;
+    //    }
+    //  } else if (event.key === 'ArrowRight') {
+    //    if (current < max) {
+    //      slider.value = current + 1;
+    //      slider.dispatchEvent(new Event('input'));
+    //      d0_gen = 0;
+    //    }
+    //  }
+    //});
 
     // Allow dragging
     document.querySelectorAll('.draggable-gate').forEach(gate => {
@@ -1478,74 +1544,47 @@
           str_ += "\n";
         }
       }
-      document.getElementById("manualCircuitInput").value = str_;
+      document.getElementById("circuit_n").textContent = str_;
     }
 
     function updateFitnessChart() {
-      const ctxChart = document.getElementById('fitnessChart').getContext('2d');
-      const labels = data.map(d => d.gen);
-      const values = data.map(d => d.fitness);
+      const genValues = data.map(d => d.gen);
+      const fitnessValues = data.map(d => d.fitness);
+      const maxGen = Math.max(...genValues);
 
-      if (fitnessChart) fitnessChart.destroy();
-      fitnessChart = new Chart(ctxChart, {
-        type: 'line',
-        data: {
-          labels: labels,
-          datasets: [{
-            label: 'Fitness over Generations',
-            data: values,
-            borderColor: 'rgba(0, 123, 255, 1)',
-            backgroundColor: 'rgba(0, 123, 255, 0.1)',
-            pointRadius: 3,
-            pointHoverRadius: 5,
-            borderWidth: 2,
-            fill: true,
-            tension: 0.2
-          }]
+      const trace = {
+        x: genValues,
+        y: fitnessValues,
+        mode: 'lines+markers',
+        type: 'scatter',
+        line: { color: 'rgb(0,123,255)', width: 2 },
+        marker: { size: 4, color: 'rgb(0,123,255)' },
+        name: 'Fitness',
+        hovertemplate: 'Generation %{x:.0f}<br>Fitness %{y:.53f}<extra></extra>'
+      };
+
+      const layout = {
+        title: 'Fitness over Generations',
+        xaxis: {
+          title: 'Generation',
+          tickfont: { size: 10 },
+          titlefont: { size: 12 },
+          range: [0, maxGen],            // 初始顯示範圍
+          rangemode: 'nonnegative',       // 禁止負軸
+          tickformat: 'd',       // <-- 這行禁用 k/M 縮寫
         },
-        options: {
-          responsive: true,
-          maintainAspectRatio: false,
-          scales: {
-            x: {
-              title: {
-                display: true,
-                text: 'Generation'
-              },
-              ticks: {
-                maxTicksLimit: 20,
-                callback: function(value, index, ticks) {
-                  if (index === 0 || index === ticks.length - 1 || index % Math.ceil(ticks.length / 20) === 0) {
-                    return this.getLabelForValue(value);
-                  }
-                  return '';
-                }
-              }
-            },
-            y: {
-              title: {
-                display: true,
-                text: 'Fitness'
-              },
-              beginAtZero: true
-            }
-          },
-          plugins: {
-            legend: {
-              display: true,
-              labels: {
-                font: { size: 14 }
-              }
-            },
-            tooltip: {
-              animation: false,
-              callbacks: {
-                label: ctx => `Fitness: ${ctx.parsed.y.toFixed(53)}`
-              }
-            }
-          }
-        }
-      });
+        yaxis: {
+          title: 'Fitness',
+          tickfont: { size: 10 },
+          titlefont: { size: 12 },
+          range: [0, 1],          // <-- 固定 y 軸為 0 ~ 1
+        },
+        margin: { l: 50, r: 30, t: 40, b: 50 },
+        height: 300, // 可自行調整
+        dragmode: 'zoom' // 滑鼠框選縮放，右上角按鈕支援 pan/zoom
+      };
+
+      Plotly.newPlot('fitnessChart', [trace], layout, { responsive: true });
     }
 
     function jumpToGeneration() {
