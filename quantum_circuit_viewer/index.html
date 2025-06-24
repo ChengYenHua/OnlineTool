@@ -250,7 +250,7 @@
     <button onclick="captureMatrix()" style="margin-top: 10px;">Capture Matrix</button>
   </div>
 
-  <div id="fitnessChartContainer">
+  <div id="fitnessChartContainer" style= "margin-top: 10px;">
     <label><strong>Line Scatter Plot:</strong></label><br>
 
     <div id="fitnessChart" style= "margin-top: 10px; width: 98%;"></div>
@@ -1059,27 +1059,6 @@
       d0_gen = 0;
     });
 
-    //document.addEventListener('keydown', function (event) {
-    //  const slider = document.getElementById('genSlider');
-    //  let current = parseInt(slider.value);
-    //  const max = parseInt(slider.max);
-    //  const min = parseInt(slider.min);
-
-    //  if (event.key === 'ArrowLeft') {
-    //    if (current > min) {
-    //      slider.value = current - 1;
-    //      slider.dispatchEvent(new Event('input'));
-    //      d0_gen = 0;
-    //    }
-    //  } else if (event.key === 'ArrowRight') {
-    //    if (current < max) {
-    //      slider.value = current + 1;
-    //      slider.dispatchEvent(new Event('input'));
-    //      d0_gen = 0;
-    //    }
-    //  }
-    //});
-
     // Allow dragging
     document.querySelectorAll('.draggable-gate').forEach(gate => {
       gate.addEventListener('dragstart', (e) => {
@@ -1097,10 +1076,9 @@
         // 切換對應區塊
         const tab = this.dataset.tab;
         document.getElementById("input_file").style.display = (tab === "analyzer") ? "block" : "none";
-        document.getElementById("fitnessChart").style.display = (tab === "analyzer") ? "block" : "none";
+        document.getElementById("fitnessChartContainer").style.display = (tab === "analyzer") ? "block" : "none";
         document.getElementById("input_circuit_n").style.display = (tab === "editor") ? "block" : "none";
         document.getElementById("matrix_show").style.display = (tab !== "analyzer") ? "block" : "none";
-        document.getElementById("hot-key").style.display = (tab === "analyzer") ? "block" : "none";
       });
     });
     
@@ -1784,9 +1762,8 @@
       document.querySelector('.feature-button[data-tab="function"]').classList.add('active');
 
       document.getElementById("input_file").style.display = "none";
-      document.getElementById("fitnessChart").style.display = "none";
+      document.getElementById("fitnessChartContainer").style.display = "none";
       document.getElementById("input_circuit_n").style.display = "none";
-      document.getElementById("hot-key").style.display = "none";
       document.getElementById("matrix_show").style.display = "block";
     });
   </script>
