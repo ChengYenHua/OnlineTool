@@ -2,10 +2,11 @@
   <meta charset="UTF-8">
   <title>Quantum Circuit Viewer</title>
   <style>
-    body { font-family: Arial, sans-serif; padding: 20px; }
-    #canvasContainer { margin-top: 20px; }
+    html { overflow-y: scroll; /* 始終保留垂直捲軸空間 */}
+    body { font-family: 'Segoe UI', sans-serif; padding: 30px; max-width: 1000px; margin: auto; background: #f8f9fa; color: #333;}
+    #canvasContainer { margin-top: 20px; background-color: white; padding: 20px; border-radius: 10px; box-shadow: 0 0 12px rgba(0,0,0,0.1);}
     canvas { border: 1px solid #ccc; }
-    #fitnessChartContainer {width: 100%; height: auto; overflow-x: auto;}
+    #fitnessChartContainer {width: 98%; height: auto; overflow-x: auto;}
     #fitnessChart { width: 100%;}
     .gate-palette {
       display: flex;
@@ -43,30 +44,87 @@
       width: 100px;
     }
     .feature-button {
-    display: inline-block;
-    padding: 10px 18px;
-    margin: 0 10px;
-    border-radius: 10px;
-    background-color: #007BFF;
-    color: white;
-    font-size: 15px;
-    font-weight: bold;
-    cursor: pointer;
-    box-shadow: 0 2px 6px rgba(0, 0, 0, 0.2);
-    transition: all 0.25s ease-in-out;
-  }
+      display: inline-block;
+      padding: 10px 20px;
+      margin: 0 8px;
+      border-radius: 6px;
+      background-color: #BFC2CB;
+      color: white;
+      font-size: 14px;
+      font-weight: 600;
+      font-family: "Segoe UI", sans-serif;
+      cursor: pointer;
+      border: 1px solid #8E9BAE;
+      transition: background-color 0.3s, transform 0.2s;
+    }
 
-  .feature-button:hover {
-    background-color: #0056b3;
-    transform: scale(1.05);
-  }
+    .feature-button:hover {
+      background-color: #DCDDDF; /* hover 為較淺藍 */
+      transform: translateY(-1px);
+    }
 
-  .feature-button-container {
-    display: flex;
-    justify-content: left;
-    margin-top: 20px;
-    gap: 20px;
-  }
+    .feature-button.active {
+      background-color: #F4BAAF; /* active 為墨黑藍 */
+      border-color: #CA774B;
+    }
+    select, input[type="number"], textarea {
+      padding: 6px 10px;
+      border-radius: 6px;
+      border: 1px solid #ccc;
+      font-size: 14px;
+      margin-right: 10px;
+    }
+    button {
+      padding: 6px 12px;
+      border-radius: 6px;
+      background-color: #28a745;
+      color: white;
+      font-weight: bold;
+      border: none;
+      cursor: pointer;
+    }
+    button:hover {
+      background-color: #218838;
+    }
+
+    .tooltip-container {
+      position: relative;
+      display: inline-block;
+      margin-left: 10px;
+    }
+
+    .tooltip-button {
+      background-color: #6c757d;
+      color: white;
+      border: none;
+      border-radius: 6px;
+      padding: 4px 10px;
+      font-size: 12px;
+      cursor: pointer;
+    }
+
+    .tooltip-box {
+      visibility: hidden;
+      width: 450px;
+      background-color: white;
+      color: black;
+      text-align: left;
+      padding: 10px;
+      border-radius: 8px;
+      box-shadow: 0px 4px 8px rgba(0,0,0,0.2);
+      position: absolute;
+      z-index: 10;
+      top: 30px;
+      left: 0;
+      font-family: monospace;
+      font-size: 13px;
+      line-height: 1.4;
+      white-space: pre;
+    }
+
+    .tooltip-container:hover .tooltip-box {
+      visibility: visible;
+    }
   </style>
   <script src="https://cdn.jsdelivr.net/npm/chart.js"></script>
   <script src="https://cdnjs.cloudflare.com/ajax/libs/mathjs/11.8.0/math.min.js"></script>
@@ -77,13 +135,13 @@
   <h2>Quantum Circuit Viewer</h2>
 
   <div class="feature-button-container">
-    <div id="FunctionView_mod" class="feature-button">查看不同 Function 的解</div>
-    <div id="DrogCircuit" class="feature-button">使用者拖拉電路</div>
-    <div id="DynFitTrack" class="feature-button">動態視覺化分析</div>
+    <div class="feature-button active" data-tab="function">Function Viewer</div>
+    <div class="feature-button" data-tab="editor">Circuit Editor</div>
+    <div class="feature-button" data-tab="analyzer">Dynamic Analysis</div>
   </div>
   <!-- 下拉式選單 -->
   <div style="margin-top: 20px;">
-    <label for="FunctionName">Target Function:</label>
+    <label for="FunctionName"><strong>Target Function:</strong></label>
     <select id="FunctionName">
         <option value="sqrt(SWAP)">sqrt(SWAP)</option>
         <option value="ctrlS">ctrl-S</option>
@@ -97,16 +155,20 @@
         <option value="Permutation">Permutation</option>
     </select>
   
-    <label for="circuitDepth">Depth 數：</label>
-    <input type="number" id="circuitDepth" value="7" min="1" max="100" style="width: 50px;">
-    <button onclick="setCircuitDepth()">套用</button>
+    <label for="circuitDepth"><strong>Depth Number：</strong></label>
+    <input type="number" id="circuitDepth" value="7" min="1" max="100" style="width: 70px;">
+    <button onclick="setCircuitDepth()">Apply</button>
   </div>
 
   <div id="input_file" style="margin-top: 10px;">
-    <input type="file" id="fileInput">
-    <label for="genInput">Go to Generation:</label>
-      <input type="number" id="genInput" min="1" style="width: 80px;">
-      <button onclick="jumpToGeneration()">Go</button>
+    <label><strong>Input File：</strong></label>
+
+    <div style="margin-top: 10px;">
+      <input type="file" id="fileInput">
+      <label for="genInput">Go to Generation:</label>
+        <input type="number" id="genInput" min="1" style="width: 80px;">
+        <button onclick="jumpToGeneration()">Go</button>
+    </div>
 
     <div style="margin-top: 10px;">
       Gen.: 
@@ -116,41 +178,58 @@
   </div>
 
   <div id="input_circuit_n" style="margin-top: 10px;">
-    <label for="manualCircuitInput"><strong>輸入電路：</strong></label><br>
-    <span style="font-size: 14px;">
-      支援以下兩種格式，按「套用電路」以直接修改目前 generation 的電路：
-      <ul style="margin-top: 4px; margin-bottom: 6px; padding-left: 20px;">
-        <li><strong>格式 A</strong>：每行代表一個 qubit，gate 用空格分隔</li>
-        <pre id="circuit_n">
-3 3 5 1 0 1 5 3 0 3 0 3
-5 1 2 5 0 5 3 0 2 4 1 5
-4 3 4 4 3 4 4 3 3 5 2 4</pre>
+    <div style="display: flex; align-items: center;">
+      <label for="manualCircuitInput"><strong>Manual Circuit Input:</strong></label>
+      <div class="tooltip-container">
+        <button class="tooltip-button" style="margin-top: 10px;">Help</button>
+        <div class="tooltip-box">
+  Supported formats: (0:wire, 1:H, 2:T, 3:Tdg, 4:not, 5:ctrl)
+  Format A: One row per qubit, gates separated by spaces.
+  Example:
+  0 0 5 2 2 2 0 0 0
+  2 5 4 1 2 2 2 4 5
+  2 4 3 0 0 0 0 5 4
 
-        <li><strong>格式 B</strong>：每個 qubit 放在一個 <code>[ ... ]</code> 括號中</li>
-        <pre>[3 3 5 1 0 1 5 3 0 3 0 3] [5 1 2 5 0 5 3 0 2 4 1 5] [4 3 4 4 3 4 4 3 3 5 2 4]</pre>
-      </ul>
-    </span>
-    <textarea id="manualCircuitInput" rows="4" cols="80" placeholder="請貼上格式 A 或 B 的電路 gate 編碼..."></textarea>
-    <button onclick="applyManualCircuit()">套用電路</button>
+  Format B: Each qubit enclosed in [ ... ].
+  Example:
+  [0 0 5 2 2 2 0 0 0] [2 5 4 1 2 2 2 4 5] [2 4 3 0 0 0 0 5 4]
+        </div>
+      </div>
+    </div>
+    <br>
+    <div style="display: flex;">
+      <textarea id="manualCircuitInput" rows="4" cols="55" placeholder="Paste circuit gate encoding in Format A or B..."></textarea>
+      <button onclick="applyManualCircuit()">Apply</button>
+    </div>
   </div>
 
   <div style="display: inline-block; vertical-align: top; margin-top: 10px;">
+    <label><strong>Circuit Diagram:</strong></label><br>
+
     <div id="canvasContainer" style="margin-top: 10px;">
       <div  style="display: inline-block; vertical-align: top;">
         <canvas id="circuitCanvas"></canvas>
       </div>
-      <button onclick="clear_circuit()">清空</button>
-      <button onclick="screenshot_onoff()">截圖</button>
+
+      <button onclick="clear_circuit()">Clear</button>
     </div>
   </div>
 
   <div style="margin-top: 10px;">
-    上方電路與Target Function的 Fitness: <span id="fitnessValue">0.20943058495790511930323418710031546652317047119140625</span>
+    <div>
+      <strong>Circuit Fitness:</strong>
+      <span style="font-size: 12px; color: #777;">(1 − ⟨U, V⟩<sub>HS</sub>)</span>
+    </div>
+    <div style="margin-top: 10px;">
+      <span title="Full value: 0.00000000000000000000000000000000000000000000000000000">
+        <span id="fitnessValueShort">0.000000</span>
+      </span>
+    </div>
   </div>
 
   <div style="margin-top: 10px;">
     <!-- ✅ Gate Palette -->
-    <label><strong>電路gate變更，請拖曳下方gate到上面的電路：</strong></label><br>
+    <label><strong>Modify circuit: (drag a gate below to the circuit area above)</strong></label><br>
     <div id="put_gate" class="gate-palette" style="margin-top: 10px;">
       <div class="draggable-gate gate-wire" draggable="true" data-gate="0">W</div>
       <div class="draggable-gate gate-H" draggable="true" data-gate="1">H</div>
@@ -162,54 +241,42 @@
   </div>
 
   <div id="matrix_show" style="margin-top: 10px;">
-    <label><strong>電路矩陣：</strong></label><br>
-    <div style="display: inline-block; vertical-align: top;">
+    <label><strong>Circuit Matrix:</strong></label><br>
+
+    <div style="display: inline-block; vertical-align: top; margin-top: 10px;">
       <table id="matrix" class="matrix"></table>
     </div>
-    <button onclick="captureMatrix()">擷取矩陣</button>
+
+    <button onclick="captureMatrix()" style="margin-top: 10px;">Capture Matrix</button>
   </div>
 
   <div id="fitnessChartContainer">
-    <div id="fitnessChart" style="width: 100%;"></div>
+    <label><strong>Line Scatter Plot:</strong></label><br>
+
+    <div id="fitnessChart" style= "margin-top: 10px; width: 98%;"></div>
 
     <div id="hot-key"><br><br>a:last gen, d:next gen, w:last change, s:next change, double click:remove gate</div>
   </div>
 
   <script>
-    document.getElementById("input_file").style.display = "none";
-    document.getElementById("fitnessChart").style.display = "none";
-    document.getElementById("input_circuit_n").style.display = "none";
-    document.getElementById("hot-key").style.display = "none";
 
-    document.getElementById("FunctionView_mod").addEventListener("click", function() {
-      document.getElementById("input_file").style.display = "none";
-      document.getElementById("fitnessChart").style.display = "none";
-      document.getElementById("input_circuit_n").style.display = "none";
-      document.getElementById("matrix_show").style.display = "block";
-      document.getElementById("hot-key").style.display = "none";
-    });
-    document.getElementById("DrogCircuit").addEventListener("click", function() {
-      document.getElementById("input_file").style.display = "none";
-      document.getElementById("fitnessChart").style.display = "none";
-      document.getElementById("input_circuit_n").style.display = "block";
-      document.getElementById("matrix_show").style.display = "block";
-      document.getElementById("hot-key").style.display = "none";
-    });
-    document.getElementById("DynFitTrack").addEventListener("click", function() {
-      document.getElementById("input_file").style.display = "block";
-      document.getElementById("fitnessChart").style.display = "block";
-      document.getElementById("input_circuit_n").style.display = "none";
-      document.getElementById("matrix_show").style.display = "none";
-      document.getElementById("hot-key").style.display = "block";
-    });
 
     let M = document.getElementById("circuitDepth").value;
     let N = 2;
 
     M = parseInt(M);  // 確保轉成整數
     const canvas = document.getElementById("circuitCanvas");
-    canvas.width = 60 + 60 * M;
-    canvas.height = 50 * N + 50;
+    // 定義 padding 與 spacing
+    const leftPadding = 50;
+    const rightPadding = 50;
+    const topPadding = 20;
+    const bottomPadding = 20;
+    const gateWidth = 50;
+    const qubitSpacing = 50;
+
+    // 設定 canvas 尺寸（左右對稱，上下空白合適）
+    canvas.width = leftPadding + M * gateWidth + rightPadding;
+    canvas.height = topPadding + (N - 1) * qubitSpacing + bottomPadding;
 
     let TargetArrat = [
         [1, 0, 0, 0],
@@ -320,8 +387,8 @@
         gates_arrays = {};
         setGatesArray();
         const canvas = document.getElementById("circuitCanvas");
-        canvas.width = 60 + 60 * M;      // 更新寬度（startX + stepX * depth）
-        canvas.height = 50 * N + 50;     // 更新高度（每條線50px + 上下邊界）
+        canvas.width = leftPadding + M * gateWidth + rightPadding;
+        canvas.height = topPadding + (N - 1) * qubitSpacing + bottomPadding;
         renderCircuit(1);
       }
       else if (this.value === "sqrt(SWAP)")
@@ -347,8 +414,8 @@
         gates_arrays = {};
         setGatesArray();
         const canvas = document.getElementById("circuitCanvas");
-        canvas.width = 60 + 60 * M;      // 更新寬度（startX + stepX * depth）
-        canvas.height = 50 * N + 50;     // 更新高度（每條線50px + 上下邊界）
+        canvas.width = leftPadding + M * gateWidth + rightPadding;
+        canvas.height = topPadding + (N - 1) * qubitSpacing + bottomPadding;
         renderCircuit(1);
       }
       else if (this.value === "HHL")
@@ -379,8 +446,8 @@
         gates_arrays = {};
         setGatesArray();
         const canvas = document.getElementById("circuitCanvas");
-        canvas.width = 60 + 60 * M;
-        canvas.height = 50 * N + 50;
+        canvas.width = leftPadding + M * gateWidth + rightPadding;
+        canvas.height = topPadding + (N - 1) * qubitSpacing + bottomPadding;
         renderCircuit(1);
       }
       else if (this.value === "HHL_global_phase")
@@ -411,8 +478,8 @@
         gates_arrays = {};
         setGatesArray();
         const canvas = document.getElementById("circuitCanvas");
-        canvas.width = 60 + 60 * M;
-        canvas.height = 50 * N + 50;
+        canvas.width = leftPadding + M * gateWidth + rightPadding;
+        canvas.height = topPadding + (N - 1) * qubitSpacing + bottomPadding;
         renderCircuit(1);
       }
       else if (this.value === "Toffoli")
@@ -443,8 +510,8 @@
         gates_arrays = {};
         setGatesArray();
         const canvas = document.getElementById("circuitCanvas");
-        canvas.width = 60 + 60 * M;
-        canvas.height = 50 * N + 50;
+        canvas.width = leftPadding + M * gateWidth + rightPadding;
+        canvas.height = topPadding + (N - 1) * qubitSpacing + bottomPadding;
         renderCircuit(1);
       }
       else if (this.value === "Peres")
@@ -475,8 +542,8 @@
         gates_arrays = {};
         setGatesArray();
         const canvas = document.getElementById("circuitCanvas");
-        canvas.width = 60 + 60 * M;
-        canvas.height = 50 * N + 50;
+        canvas.width = leftPadding + M * gateWidth + rightPadding;
+        canvas.height = topPadding + (N - 1) * qubitSpacing + bottomPadding;
         renderCircuit(1);
       }
       else if (this.value === "TOFPN")
@@ -507,8 +574,8 @@
         gates_arrays = {};
         setGatesArray();
         const canvas = document.getElementById("circuitCanvas");
-        canvas.width = 60 + 60 * M;
-        canvas.height = 50 * N + 50;
+        canvas.width = leftPadding + M * gateWidth + rightPadding;
+        canvas.height = topPadding + (N - 1) * qubitSpacing + bottomPadding;
         renderCircuit(1);
       }
       else if (this.value === "OR")
@@ -539,8 +606,8 @@
         gates_arrays = {};
         setGatesArray();
         const canvas = document.getElementById("circuitCanvas");
-        canvas.width = 60 + 60 * M;
-        canvas.height = 50 * N + 50;
+        canvas.width = leftPadding + M * gateWidth + rightPadding;
+        canvas.height = topPadding + (N - 1) * qubitSpacing + bottomPadding;
         renderCircuit(1);
       }
       else if (this.value === "Fredkin")
@@ -571,8 +638,8 @@
         gates_arrays = {};
         setGatesArray();
         const canvas = document.getElementById("circuitCanvas");
-        canvas.width = 60 + 60 * M;
-        canvas.height = 50 * N + 50;
+        canvas.width = leftPadding + M * gateWidth + rightPadding;
+        canvas.height = topPadding + (N - 1) * qubitSpacing + bottomPadding;
         renderCircuit(1);
       }
       else if (this.value === "Permutation")
@@ -603,8 +670,8 @@
         gates_arrays = {};
         setGatesArray();
         const canvas = document.getElementById("circuitCanvas");
-        canvas.width = 60 + 60 * M;
-        canvas.height = 50 * N + 50;
+        canvas.width = leftPadding + M * gateWidth + rightPadding;
+        canvas.height = topPadding + (N - 1) * qubitSpacing + bottomPadding;
         renderCircuit(1);
       }
 
@@ -635,7 +702,7 @@
 
       // ⭐ 動態更新 canvas 寬度（每個 gate 寬度 60px，加上起始邊界）
       const canvas = document.getElementById("circuitCanvas");
-      const newWidth = 60 + 60 * m_;  // startX + stepX * depth
+      const newWidth = leftPadding + m_ * gateWidth + rightPadding;
       canvas.width = newWidth;
 
       renderCircuit(0);
@@ -879,55 +946,6 @@
     updateFitnessChart();
     renderCircuit(1);
 
-    function screenshot_onoff() {
-      let result_div = document.getElementById('result');
-      result_div.innerHTML = "";
-      if(screenshot_ === true)
-      {
-        screenshot_ = false;
-      }
-      else
-      {
-        screenshot_ = true;
-        captureAndCrop();
-      }
-    }
-    
-    function captureAndCrop() {
-      const target = document.getElementById("circuitCanvas");
-      const canvasWidth = target.width;
-      const canvasHeight = target.height;
-      
-      html2canvas(target).then(originalCanvas => {
-        // 建立新 canvas 來存放裁切的內容
-        const cropCanvas = document.createElement("canvas");
-        const cropCtx = cropCanvas.getContext("2d");
-
-        // 這裡設定你要裁切的區域
-        const cropX = 15;   // 從左邊裁切 15px
-        const cropY = 30;   // 從上方裁切 33px
-        const cropWidth = canvasWidth - 30;
-        const cropHeight = canvasHeight - 40;
-
-        cropCanvas.width = cropWidth;
-        cropCanvas.height = cropHeight;
-
-        // 將原始 canvas 的部分內容畫到新 canvas 上
-        cropCtx.drawImage(
-          originalCanvas,
-          cropX, cropY,          // 原圖要開始裁切的位置
-          cropWidth, cropHeight, // 裁切的寬高
-          0, 0,                   // 貼到新 canvas 的位置
-          cropWidth, cropHeight  // 新 canvas 寬高
-        );
-
-        // 加到畫面上
-        const result = document.getElementById("result");
-        result.innerHTML = ''; // 清除舊圖
-        result.appendChild(cropCanvas);
-      });
-    }
-
     // 更新矩陣顯示
     function updateMatrixDisplay(m) {
       const table = document.getElementById('matrix');
@@ -1068,7 +1086,24 @@
         draggedGate = e.target.dataset.gate;
       });
     });
+    
+    document.querySelectorAll('.feature-button').forEach(btn => {
+      btn.addEventListener('click', function () {
+        // 移除其他按鈕的 active
+        document.querySelectorAll('.feature-button').forEach(b => b.classList.remove('active'));
+        // 設定目前按鈕為 active
+        this.classList.add('active');
 
+        // 切換對應區塊
+        const tab = this.dataset.tab;
+        document.getElementById("input_file").style.display = (tab === "analyzer") ? "block" : "none";
+        document.getElementById("fitnessChart").style.display = (tab === "analyzer") ? "block" : "none";
+        document.getElementById("input_circuit_n").style.display = (tab === "editor") ? "block" : "none";
+        document.getElementById("matrix_show").style.display = (tab !== "analyzer") ? "block" : "none";
+        document.getElementById("hot-key").style.display = (tab === "analyzer") ? "block" : "none";
+      });
+    });
+    
     // Setup for future drop logic
     canvas.addEventListener('dragover', (e) => {
       e.preventDefault();
@@ -1094,10 +1129,10 @@
       const x = e.offsetX;
       const y = e.offsetY;
 
-      const col = Math.round((x - 60) / 60);
+      const col = Math.round((x - leftPadding) / gateWidth);
       if (col < 0 || col >= d0.circuit[0].length) return;
       
-      const row = Math.round((y - 50) / 50);
+      const row = Math.round((y - bottomPadding) / qubitSpacing);
       if (row < 0 || row >= d0.circuit.length) return;
 
       //console.log(`雙擊位置：c[${row}][${col}]`);
@@ -1135,10 +1170,10 @@
       const x = e.offsetX;
       const y = e.offsetY;
 
-      const col = Math.round((x - 60) / 60);
+      const col = Math.round((x - leftPadding) / gateWidth);
       if (col < 0 || col >= d0.circuit[0].length) return;
       
-      const row = Math.round((y - 50) / 50);
+      const row = Math.round((y - topPadding) / qubitSpacing);
       if (row < 0 || row >= d0.circuit.length) return;
 
       const g = parseInt(draggedGate);
@@ -1253,14 +1288,10 @@
     // 監聽 mousedown 事件
     canvas.addEventListener("mousedown", (e) => {
       e.preventDefault();
-
       mouseDownPos = {
         x: e.offsetX,
         y: e.offsetY
       };
-      //console.log("Mouse Down at:", mouseDownPos);
-      //console.log("Mouse Up at:", mouseUpPos.x);
-      //console.log("Mouse Up at:", mouseUpPos.y);
     });
 
     // 監聽 mouseup 事件
@@ -1282,28 +1313,21 @@
         x: e.offsetX,
         y: e.offsetY
       };
-      //console.log("Mouse Up at:", mouseUpPos);
-      //console.log("Mouse Up at:", mouseUpPos.x);
-      //console.log("Mouse Up at:", mouseUpPos.y);
       
-      const col_start = Math.round((mouseDownPos.x - 60) / 60);
+      const col_start = Math.round((mouseDownPos.x - leftPadding) / gateWidth);
       if (col_start < 0 || col_start >= d0.circuit[0].length) return;
       
-      const row_start = Math.round((mouseDownPos.y - 50) / 50);
+      const row_start = Math.round((mouseDownPos.y - topPadding) / qubitSpacing);
       if (row_start < 0 || row_start >= d0.circuit.length) return;
 
-      const col_end = Math.round((mouseUpPos.x - 60) / 60);
+      const col_end = Math.round((mouseUpPos.x - leftPadding) / gateWidth);
       if (col_end < 0 || col_end >= d0.circuit[0].length) return;
       
-      const row_end = Math.round((mouseUpPos.y - 50) / 50);
+      const row_end = Math.round((mouseUpPos.y - topPadding) / qubitSpacing);
       if (row_end < 0 || row_end >= d0.circuit.length) return;
-
-      //console.log("start :", row_start, col_start);
-      //console.log("end :", row_end, col_end);
 
       if (col_start !== col_end || row_start !== row_end)
       {
-        //console.log("do");
         if ((d0.circuit[row_start][col_start] === 4 || d0.circuit[row_start][col_start] === 5) && col_start !== col_end)
         {
           for (let i = 0; i < d0.circuit.length; i++)
@@ -1431,7 +1455,8 @@
       const num = math.abs(math.trace(prod));
       const dem = prod.size()[0];
       const fitness = 1 - num / dem;
-      document.getElementById('fitnessValue').innerText = fitness.toFixed(53);
+      document.getElementById('fitnessValueShort').innerText = fitness.toFixed(53);
+      document.getElementById('fitnessValueShort').setAttribute('title', `Full value: ${fitness.toFixed(53)}`);
     }
 
     function updateArray(d) {
@@ -1450,7 +1475,6 @@
     }
 
     function renderCircuit(gen) {
-      //const d = data.find(item => item.gen === gen);
       let d;
       if (gen === 0)
       {
@@ -1459,60 +1483,57 @@
       else
       {
         d = data.find(item => item.gen === gen);
-        // ⭐ 動態更新 canvas 寬度（每個 gate 寬度 60px，加上起始邊界）
-        const newWidth = 60 + 60 * d.circuit[0].length;  // startX + stepX * depth
-        canvas.width = newWidth;
       }
 
       if (!d) return;
 
-      document.getElementById('fitnessValue').innerText = d.fitness.toFixed(53);
+      const maxDepth = Math.max(...d.circuit.map(row => row.length));
+      canvas.width = leftPadding + maxDepth * gateWidth;
+
+      //document.getElementById('fitnessValue').innerText = d.fitness.toFixed(53);
+      document.getElementById('fitnessValueShort').innerText = d.fitness.toFixed(53);
+      document.getElementById('fitnessValueShort').setAttribute('title', `Full value: ${d.fitness.toFixed(53)}`);
 
       ctx.clearRect(0, 0, canvas.width, canvas.height);
 
-      const startX = 60;
-      const stepX = 60;
-      //const q0Y = 50;
-      //const q1Y = 100;
       let qY = [];
 
       ctx.strokeStyle = '#bbb';
       ctx.lineWidth = 2;
       ctx.beginPath();
 
-      //ctx.moveTo(startX - 40, q0Y);
-      //ctx.lineTo(startX + d.q0.length * stepX, q0Y);
-      //ctx.moveTo(startX - 40, q1Y);
-      //ctx.lineTo(startX + d.q1.length * stepX, q1Y);
       for (let i = 0; i < d.circuit.length; i++)
       {
-        qY.push((i + 1) * 50);
-        ctx.moveTo(startX - 40, qY[i]);
-        ctx.lineTo(startX + d.circuit[0].length * stepX, qY[i]);
+        qY.push(topPadding + i * qubitSpacing);
+        ctx.moveTo(0, qY[i]);
+        ctx.lineTo(canvas.width, qY[i]);
       };
 
       ctx.stroke();
 
-      for (let i = 0; i < d.circuit[0].length; i++) {
-        const x = startX + i * stepX;
+      // 畫 gate
+      for (let i = 0; i < maxDepth; i++) {
+        const x = leftPadding + i * gateWidth;
         let ctrl_ = -1;
         let not_ = -1;
+
         for (let j = 0; j < d.circuit.length; j++) {
-          if(gateMap[d.circuit[j][i]] === "C")
-          {
+          const gate = d.circuit[j][i];
+          if (gate === undefined) continue;
+
+          const gateName = gateMap[gate];
+          if (gateName === "C") {
             ctrl_ = j;
             drawGate(x, qY[ctrl_], '', 'C_');
-          }
-          else if(gateMap[d.circuit[j][i]] === "X")
-          {
+          } else if (gateName === "X") {
             not_ = j;
             drawGate(x, qY[not_], '', 'X_');
-          }
-          else if(gateMap[d.circuit[j][i]] !== 'empty')
-          {
-            drawGate(x, qY[j], gateMap[d.circuit[j][i]], gateMap[d.circuit[j][i]]);
+          } else if (gateName !== 'empty') {
+            drawGate(x, qY[j], gateName, gateName);
           }
         }
+
+        // 畫CNOT連線
         if(ctrl_ !== -1 && not_ !== -1)
         {
           drawGate(x, qY[not_], '', 'X');
@@ -1524,27 +1545,31 @@
         }
       }
 
+      // 更新 Input 顯示區
       const gen_ = parseInt(document.getElementById('genSlider').value);
       const d_ = data.find(item => item.gen === gen_);
       updateArray(d_);
       
-      let str_ = "";
-      for (let i = 0; i < d.circuit.length; i++)
-      {
-        for (let j = 0; j < d.circuit[i].length; j++)
-        {
-          str_ += d.circuit[i][j];
-          if (j !== d.circuit[i].length - 1)
-          {
-            str_ += " ";
+      let str_A = "";
+      let str_B = "[";
+
+      for (let i = 0; i < d.circuit.length; i++) {
+        for (let j = 0; j < d.circuit[i].length; j++) {
+          str_A += d.circuit[i][j];
+          str_B += d.circuit[i][j];
+          if (j !== d.circuit[i].length - 1) {
+            str_A += " ";
+            str_B += " ";
           }
         }
-        if (i !== d.circuit.length - 1)
-        {
-          str_ += "\n";
+        str_B += "]";
+        if (i !== d.circuit.length - 1) {
+          str_A += "\n";
+          str_B += " [";
         }
       }
-      document.getElementById("circuit_n").textContent = str_;
+      //document.getElementById("InputTypeA").textContent = str_A;
+      //document.getElementById("InputTypeB").textContent = str_B;
     }
 
     function updateFitnessChart() {
@@ -1737,8 +1762,8 @@
       // ✅ 套用電路並重新 render
       document.getElementById("circuitDepth").value = newDepth;
       const canvas = document.getElementById("circuitCanvas");
-      canvas.width = 60 + 60 * newDepth;
-      canvas.height = 50 * newQubitCount + 50;
+      canvas.width = leftPadding + newDepth * gateWidth + rightPadding;
+      canvas.height = topPadding + (newQubitCount - 1) * qubitSpacing + bottomPadding;
 
       renderCircuit(0);
       updateFitness(d0);
@@ -1753,6 +1778,17 @@
         link.click();
       });
     }
+  
+    // 初始化：顯示 Function Viewer，隱藏其他
+    window.addEventListener('DOMContentLoaded', () => {
+      document.querySelector('.feature-button[data-tab="function"]').classList.add('active');
+
+      document.getElementById("input_file").style.display = "none";
+      document.getElementById("fitnessChart").style.display = "none";
+      document.getElementById("input_circuit_n").style.display = "none";
+      document.getElementById("hot-key").style.display = "none";
+      document.getElementById("matrix_show").style.display = "block";
+    });
   </script>
 
 
