@@ -6,7 +6,7 @@
     body { font-family: 'Segoe UI', sans-serif; padding: 30px; max-width: 1000px; margin: auto; background: #f8f9fa; color: #333;}
     #canvasContainer { margin-top: 20px; background-color: white; padding: 20px; border-radius: 10px; box-shadow: 0 0 12px rgba(0,0,0,0.1);}
     canvas { border: 1px solid #ccc; }
-    #fitnessChartContainer {width: 98%; height: auto; overflow-x: auto;}
+    #fitnessChartContainer {width: 98%; height: 98%; overflow-x: auto;}
     #fitnessChart { width: 100%;}
     .gate-palette {
       display: flex;
@@ -114,7 +114,7 @@
       box-shadow: 0px 4px 8px rgba(0,0,0,0.2);
       position: absolute;
       z-index: 10;
-      top: 30px;
+      top: 35px;
       left: 0;
       font-family: monospace;
       font-size: 13px;
@@ -124,6 +124,9 @@
 
     .tooltip-container:hover .tooltip-box {
       visibility: visible;
+    }
+    .tooltip-button:hover {
+    background-color: #eb504b;
     }
   </style>
   <script src="https://cdn.jsdelivr.net/npm/chart.js"></script>
@@ -161,7 +164,32 @@
   </div>
 
   <div id="input_file" style="margin-top: 10px;">
-    <label><strong>Input File：</strong></label>
+    <label><strong>Input File:</strong></label>
+    <div class="tooltip-container">
+      <button class="tooltip-button">Help</button>
+      <div class="tooltip-box">
+  <b>Supported format:</b> (0:wire, 1:H, 2:T, 3:Tdg, 4:not, 5:ctrl)
+  <b>Format for each generation:</b>
+  - The first line is the generation number (gen)
+  - The second line contains:
+    • Each qubit enclosed in [ ... ]
+    • Followed by the fitness value
+
+  ✔️ You can input multiple generations.
+  ✔️ Repeat the same format block for each generation.
+
+  <b>Example:</b>
+  1
+  [5 1 5 2 5 1 5] [4 2 4 3 4 0 4] 0.000000...
+  2
+  [5 1 5 2 5 1 5] [4 0 4 3 4 0 4] 0.076120...
+  3
+  [5 1 5 2 5 1 5] [4 0 4 0 4 0 4] 0.146446...
+
+  <b>Keyboard shortcut:</b>
+  <b>A</b>:last gen, <b>D</b>:next gen, <b>W</b>:last change, <b>S</b>:next change
+      </div>
+    </div>
 
     <div style="margin-top: 10px;">
       <input type="file" id="fileInput">
@@ -180,42 +208,60 @@
   <div id="input_circuit_n" style="margin-top: 10px;">
     <div style="display: flex; align-items: center;">
       <label for="manualCircuitInput"><strong>Manual Circuit Input:</strong></label>
-      <div class="tooltip-container">
-        <button class="tooltip-button" style="margin-top: 10px;">Help</button>
-        <div class="tooltip-box">
-  Supported formats: (0:wire, 1:H, 2:T, 3:Tdg, 4:not, 5:ctrl)
-  Format A: One row per qubit, gates separated by spaces.
-  Example:
-  0 0 5 2 2 2 0 0 0
-  2 5 4 1 2 2 2 4 5
-  2 4 3 0 0 0 0 5 4
-
-  Format B: Each qubit enclosed in [ ... ].
-  Example:
-  [0 0 5 2 2 2 0 0 0] [2 5 4 1 2 2 2 4 5] [2 4 3 0 0 0 0 5 4]
+    <div class="tooltip-container">
+      <button id="input_circuit_n_" class="tooltip-button" style="margin-top: 5px;">Help</button>
+      <div class="tooltip-box">
+  <b>Supported formats:</b> (0:wire, 1:H, 2:T, 3:Tdg, 4:not, 5:ctrl)
+  <b>Format A:</b> One row per qubit, gates separated by spaces.
+  <b>Example:</b><div id="InputTypeA" style="margin-left: 14px; white-space: pre-wrap; word-break: break-word;">5 1 5 2 5 1 5
+4 2 4 3 4 0 4</div>
+  <b>Format B:</b> Each qubit enclosed in [ ... ].
+  <b>Example:</b><div id="InputTypeB" style="margin-left: 14px; white-space: pre-wrap; word-break: break-word;">[5 1 5 2 5 1 5] [4 2 4 3 4 0 4]</div>
         </div>
       </div>
     </div>
-    <br>
-    <div style="display: flex;">
+
+    <div style="display: flex; margin-top: 10px;">
       <textarea id="manualCircuitInput" rows="4" cols="55" placeholder="Paste circuit gate encoding in Format A or B..."></textarea>
       <button onclick="applyManualCircuit()">Apply</button>
     </div>
   </div>
 
   <div style="display: inline-block; vertical-align: top; margin-top: 10px;">
-    <label><strong>Circuit Diagram:</strong></label><br>
+    <label><strong>Circuit Diagram:</strong></label>
+    <div class="tooltip-container">
+      <button id="input_circuit_n_" class="tooltip-button" style="margin-top: 5px;">Help</button>
+      <div class="tooltip-box">
+  <b>How to change circuit:?</b><br>
+  <b>drag gate:</b> Move gate to other place.
+  <b>mouse wheel:</b> Change gate.
+  <b>double click:</b> Remove one gate.
+  <b>click << button:</b> Push the circuit left.
+  <b>click >> button:</b> Push the circuit right.
+  <b>click Clear button:</b> Remove all gate.
+  <b>click Copy:</b> Copy circuit to clipboard. 
+      </div>
+    </div>
 
     <div id="canvasContainer" style="margin-top: 10px;">
       <div  style="display: inline-block; vertical-align: top;">
         <canvas id="circuitCanvas"></canvas>
       </div>
-
-      <button onclick="clear_circuit()">Clear</button>
+      <div style="display: inline-flex; flex-direction: column; gap: 8px; margin-left: 10px; vertical-align: top;">
+        <div style="display: flex; gap: 8px;">
+          <button style="width: 60px;" onclick="push_left()"><<</button>
+          <button style="width: 60px;" onclick="push_right()">>></button>
+        </div>
+        
+        <div style="display: flex; gap: 8px;">
+          <button style="width: 60px;" onclick="clear_circuit()">Clear</button>
+          <button style="width: 60px;" onclick="copy_circuit()">Copy</button>
+        </div>
+      </div>
     </div>
   </div>
 
-  <div style="margin-top: 10px;">
+  <div id="HS_fitness" style="margin-top: 10px;">
     <div>
       <strong>Circuit Fitness:</strong>
       <span style="font-size: 12px; color: #777;">(1 − ⟨U, V⟩<sub>HS</sub>)</span>
@@ -227,7 +273,7 @@
     </div>
   </div>
 
-  <div style="margin-top: 10px;">
+  <div id="modify_mode" style="margin-top: 10px;">
     <!-- ✅ Gate Palette -->
     <label><strong>Modify circuit: (drag a gate below to the circuit area above)</strong></label><br>
     <div id="put_gate" class="gate-palette" style="margin-top: 10px;">
@@ -241,21 +287,19 @@
   </div>
 
   <div id="matrix_show" style="margin-top: 10px;">
-    <label><strong>Circuit Matrix:</strong></label><br>
+       <label><strong>Circuit Matrix:</strong></label>
+
+    <button onclick="captureMatrix()" style="margin-top: 10px; margin-left: 10px;">Download Matrix</button><br>
 
     <div style="display: inline-block; vertical-align: top; margin-top: 10px;">
       <table id="matrix" class="matrix"></table>
     </div>
-
-    <button onclick="captureMatrix()" style="margin-top: 10px;">Capture Matrix</button>
   </div>
 
   <div id="fitnessChartContainer" style= "margin-top: 10px;">
     <label><strong>Line Scatter Plot:</strong></label><br>
 
-    <div id="fitnessChart" style= "margin-top: 10px; width: 98%;"></div>
-
-    <div id="hot-key"><br><br>a:last gen, d:next gen, w:last change, s:next change, double click:remove gate</div>
+    <div id="fitnessChart" style= "margin-top: 10px; width: 95%;"></div>
   </div>
 
   <script>
@@ -274,9 +318,16 @@
     const gateWidth = 50;
     const qubitSpacing = 50;
 
+          let gates = [ "─","H","t","T","⊕","●" ];
+          let gates_arrays = {};
+
     // 設定 canvas 尺寸（左右對稱，上下空白合適）
     canvas.width = leftPadding + M * gateWidth + rightPadding;
     canvas.height = topPadding + (N - 1) * qubitSpacing + bottomPadding;
+
+          // 宣告變數來記錄滑鼠位置
+          let mouseDownPos = null;
+          let mouseUpPos = null;
 
     let TargetArrat = [
         [1, 0, 0, 0],
@@ -359,325 +410,7 @@
         );
       }
     }
- 
-    // 監聽下拉選單改變事件
-    document.getElementById("FunctionName").addEventListener("change", function() {
-      const depthInput = document.getElementById("circuitDepth");
-
-      if (this.value === "ctrlS")
-      {
-        d0_gen = 0;
-        N = 2;
-        M = 4;
-        depthInput.value = M;
-
-        TargetArrat = [
-            [1, 0, 0, 0],
-            [0, 1, 0, 0],
-            [0, 0, 1, 0],
-            [0, 0, 0, math.complex(0, 1)],
-        ];
-        data = [{
-          gen: 1,
-          circuit: [[5, 2, 5, 0],
-                    [4, 3, 4, 2]],
-          fitness: 0
-        }];
-
-        gates_arrays = {};
-        setGatesArray();
-        const canvas = document.getElementById("circuitCanvas");
-        canvas.width = leftPadding + M * gateWidth + rightPadding;
-        canvas.height = topPadding + (N - 1) * qubitSpacing + bottomPadding;
-        renderCircuit(1);
-      }
-      else if (this.value === "sqrt(SWAP)")
-      {
-        d0_gen = 0;
-        N = 2;
-        M = 7;
-        depthInput.value = M;
-
-        TargetArrat = [
-            [1, 0,                       0,                       0],
-            [0, math.complex(0.5, 0.5),  math.complex(0.5, -0.5), 0],
-            [0, math.complex(0.5, -0.5), math.complex(0.5, 0.5),  0],
-            [0, 0,                       0,                       1],
-        ];
-        data = [{
-          gen: 1,
-          circuit: [[5, 1, 5, 2, 5, 1, 5],
-                    [4, 2, 4, 3, 4, 0, 4]],
-          fitness: 0
-        }];
-
-        gates_arrays = {};
-        setGatesArray();
-        const canvas = document.getElementById("circuitCanvas");
-        canvas.width = leftPadding + M * gateWidth + rightPadding;
-        canvas.height = topPadding + (N - 1) * qubitSpacing + bottomPadding;
-        renderCircuit(1);
-      }
-      else if (this.value === "HHL")
-      {
-        d0_gen = 0;
-        N = 3;
-        M = 12;
-        depthInput.value = M;
-
-        TargetArrat = [
-            [ 0, 0,  0, math.complex(0, -1), 0, 0,  0, 0],
-            [ 0, 0, -1, 0,                   0, 0,  0, 0],
-            [ 0, 1,  0, 0,                   0, 0,  0, 0],
-            [-1, 0,  0, 0,                   0, 0,  0, 0],
-            [ 0, 0,  0, 0,                   1, 0,  0, 0],
-            [ 0, 0,  0, 0,                   0, 1,  0, 0],
-            [ 0, 0,  0, 0,                   0, 0, -1, 0],
-            [ 0, 0,  0, 0,                   0, 0,  0, math.complex(0, 1)]
-        ];
-        data = [{
-          gen: 1,
-          circuit: [[0, 0, 0, 0, 0, 0, 0, 0, 5, 0, 0, 0],
-                    [3, 5, 1, 5, 3, 3, 4, 0, 0, 4, 2, 2],
-                    [3, 4, 2, 4, 3, 3, 5, 1, 4, 5, 2, 2]],
-          fitness: 0
-        }];
-
-        gates_arrays = {};
-        setGatesArray();
-        const canvas = document.getElementById("circuitCanvas");
-        canvas.width = leftPadding + M * gateWidth + rightPadding;
-        canvas.height = topPadding + (N - 1) * qubitSpacing + bottomPadding;
-        renderCircuit(1);
-      }
-      else if (this.value === "HHL_global_phase")
-      {
-        d0_gen = 0;
-        N = 3;
-        M = 11;
-        depthInput.value = M;
-
-        TargetArrat = [
-            [0,  0, 0, math.complex(0, 1), 0,  0, 0, 0],
-            [0,  0, 1, 0,                  0,  0, 0, 0],
-            [0, -1, 0, 0,                  0,  0, 0, 0],
-            [1,  0, 0, 0,                  0,  0, 0, 0],
-            [0,  0, 0, 0,                 -1,  0, 0, 0],
-            [0,  0, 0, 0,                  0, -1, 0, 0],
-            [0,  0, 0, 0,                  0,  0, 1, 0],
-            [0,  0, 0, 0,                  0,  0, 0, math.complex(0, -1)]
-        ];
-        data = [{
-          gen: 1,
-          circuit: [[0, 0, 5, 2, 2, 2, 2, 0, 0, 0, 0],
-                    [2, 5, 4, 1, 2, 2, 2, 2, 4, 1, 5],
-                    [2, 4, 3, 0, 0, 0, 0, 0, 5, 0, 4]],
-          fitness: 0
-        }];
-
-        gates_arrays = {};
-        setGatesArray();
-        const canvas = document.getElementById("circuitCanvas");
-        canvas.width = leftPadding + M * gateWidth + rightPadding;
-        canvas.height = topPadding + (N - 1) * qubitSpacing + bottomPadding;
-        renderCircuit(1);
-      }
-      else if (this.value === "Toffoli")
-      {
-        d0_gen = 0;
-        N = 3;
-        M = 9;
-        depthInput.value = M;
-
-        TargetArrat = [
-            [1, 0, 0, 0, 0, 0, 0, 0],
-            [0, 1, 0, 0, 0, 0, 0, 0],
-            [0, 0, 1, 0, 0, 0, 0, 0],
-            [0, 0, 0, 1, 0, 0, 0, 0],
-            [0, 0, 0, 0, 1, 0, 0, 0],
-            [0, 0, 0, 0, 0, 1, 0, 0],
-            [0, 0, 0, 0, 0, 0, 0, 1],
-            [0, 0, 0, 0, 0, 0, 1, 0]
-        ];
-        data = [{
-          gen: 1,
-          circuit: [[3, 0, 4, 2, 4, 3, 4, 2, 4],
-                    [0, 4, 2, 4, 5, 3, 0, 0, 5],
-                    [1, 5, 5, 5, 0, 0, 5, 3, 1]],
-          fitness: 0
-        }];
-
-        gates_arrays = {};
-        setGatesArray();
-        const canvas = document.getElementById("circuitCanvas");
-        canvas.width = leftPadding + M * gateWidth + rightPadding;
-        canvas.height = topPadding + (N - 1) * qubitSpacing + bottomPadding;
-        renderCircuit(1);
-      }
-      else if (this.value === "Peres")
-      {
-        d0_gen = 0;
-        N = 3;
-        M = 8;
-        depthInput.value = M;
-
-        TargetArrat = [
-            [1, 0, 0, 0, 0, 0, 0, 0],
-            [0, 1, 0, 0, 0, 0, 0, 0],
-            [0, 0, 1, 0, 0, 0, 0, 0],
-            [0, 0, 0, 1, 0, 0, 0, 0],
-            [0, 0, 0, 0, 0, 0, 0, 1],
-            [0, 0, 0, 0, 0, 0, 1, 0],
-            [0, 0, 0, 0, 1, 0, 0, 0],
-            [0, 0, 0, 0, 0, 1, 0, 0]
-        ];
-        data = [{
-          gen: 1,
-          circuit: [[2, 0, 0, 5, 5, 5, 0, 0],
-                    [2, 4, 3, 0, 4, 2, 4, 3],
-                    [1, 5, 2, 4, 3, 4, 5, 1]],
-          fitness: 0
-        }];
-
-        gates_arrays = {};
-        setGatesArray();
-        const canvas = document.getElementById("circuitCanvas");
-        canvas.width = leftPadding + M * gateWidth + rightPadding;
-        canvas.height = topPadding + (N - 1) * qubitSpacing + bottomPadding;
-        renderCircuit(1);
-      }
-      else if (this.value === "TOFPN")
-      {
-        d0_gen = 0;
-        N = 3;
-        M = 9;
-        depthInput.value = M;
-
-        TargetArrat = [
-            [1, 0, 0, 0, 0, 0, 0, 0],
-            [0, 1, 0, 0, 0, 0, 0, 0],
-            [0, 0, 1, 0, 0, 0, 0, 0],
-            [0, 0, 0, 1, 0, 0, 0, 0],
-            [0, 0, 0, 0, 0, 1, 0, 0],
-            [0, 0, 0, 0, 1, 0, 0, 0],
-            [0, 0, 0, 0, 0, 0, 1, 0],
-            [0, 0, 0, 0, 0, 0, 0, 1]
-        ];
-        data = [{
-          gen: 1,
-          circuit: [[2, 0, 0, 5, 4, 3, 0, 4, 5],
-                    [3, 4, 2, 4, 0, 3, 4, 2, 4],
-                    [1, 5, 2, 0, 5, 0, 5, 5, 1]],
-          fitness: 0
-        }];
-
-        gates_arrays = {};
-        setGatesArray();
-        const canvas = document.getElementById("circuitCanvas");
-        canvas.width = leftPadding + M * gateWidth + rightPadding;
-        canvas.height = topPadding + (N - 1) * qubitSpacing + bottomPadding;
-        renderCircuit(1);
-      }
-      else if (this.value === "OR")
-      {
-        d0_gen = 0;
-        N = 3;
-        M = 9;
-        depthInput.value = M;
-
-        TargetArrat = [
-            [1, 0, 0, 0, 0, 0, 0, 0],
-            [0, 1, 0, 0, 0, 0, 0, 0],
-            [0, 0, 0, 1, 0, 0, 0, 0],
-            [0, 0, 1, 0, 0, 0, 0, 0],
-            [0, 0, 0, 0, 0, 1, 0, 0],
-            [0, 0, 0, 0, 1, 0, 0, 0],
-            [0, 0, 0, 0, 0, 0, 0, 1],
-            [0, 0, 0, 0, 0, 0, 1, 0]
-        ];
-        data = [{
-          gen: 1,
-          circuit: [[0, 4, 3, 4, 3, 4, 2, 4, 2],
-                    [0, 0, 3, 5, 4, 2, 4, 5, 5],
-                    [1, 5, 2, 0, 5, 5, 5, 1, 4]],
-          fitness: 0
-        }];
-
-        gates_arrays = {};
-        setGatesArray();
-        const canvas = document.getElementById("circuitCanvas");
-        canvas.width = leftPadding + M * gateWidth + rightPadding;
-        canvas.height = topPadding + (N - 1) * qubitSpacing + bottomPadding;
-        renderCircuit(1);
-      }
-      else if (this.value === "Fredkin")
-      {
-        d0_gen = 0;
-        N = 3;
-        M = 11;
-        depthInput.value = M;
-
-        TargetArrat = [
-            [1, 0, 0, 0, 0, 0, 0, 0],
-            [0, 1, 0, 0, 0, 0, 0, 0],
-            [0, 0, 1, 0, 0, 0, 0, 0],
-            [0, 0, 0, 1, 0, 0, 0, 0],
-            [0, 0, 0, 0, 1, 0, 0, 0],
-            [0, 0, 0, 0, 0, 0, 1, 0],
-            [0, 0, 0, 0, 0, 1, 0, 0],
-            [0, 0, 0, 0, 0, 0, 0, 1]
-        ];
-        data = [{
-          gen: 1,
-          circuit: [[0, 2, 4, 3, 4, 2, 4, 3, 0, 4, 0],
-                    [4, 2, 0, 0, 5, 4, 0, 3, 4, 5, 4],
-                    [5, 1, 5, 2, 0, 5, 5, 0, 5, 1, 5]],
-          fitness: 0
-        }];
-
-        gates_arrays = {};
-        setGatesArray();
-        const canvas = document.getElementById("circuitCanvas");
-        canvas.width = leftPadding + M * gateWidth + rightPadding;
-        canvas.height = topPadding + (N - 1) * qubitSpacing + bottomPadding;
-        renderCircuit(1);
-      }
-      else if (this.value === "Permutation")
-      {
-        d0_gen = 0;
-        N = 3;
-        M = 11;
-        depthInput.value = M;
-
-        TargetArrat = [
-            [0, 0, 0, 0, 0, 0, 1, 0],
-            [0, 1, 0, 0, 0, 0, 0, 0],
-            [0, 0, 1, 0, 0, 0, 0, 0],
-            [0, 0, 0, 1, 0, 0, 0, 0],
-            [0, 0, 0, 0, 1, 0, 0, 0],
-            [0, 0, 0, 0, 0, 1, 0, 0],
-            [1, 0, 0, 0, 0, 0, 0, 0],
-            [0, 0, 0, 0, 0, 0, 0, 1]
-        ];
-        data = [{
-          gen: 1,
-          circuit: [[4, 3, 4, 2, 4, 4, 2, 4, 3, 4, 4],
-                    [5, 1, 5, 5, 5, 0, 5, 5, 2, 1, 5],
-                    [0, 3, 0, 4, 2, 5, 4, 0, 0, 5, 0]],
-          fitness: 0
-        }];
-
-        gates_arrays = {};
-        setGatesArray();
-        const canvas = document.getElementById("circuitCanvas");
-        canvas.width = leftPadding + M * gateWidth + rightPadding;
-        canvas.height = topPadding + (N - 1) * qubitSpacing + bottomPadding;
-        renderCircuit(1);
-      }
-
         
-    });
-    
     function setCircuitDepth(){
       const gen = parseInt(document.getElementById('genSlider').value);
       const d = data.find(item => item.gen === gen);
@@ -722,9 +455,9 @@
         d0.fitness = JSON.parse(JSON.stringify(d.fitness));
         d0_gen = gen;
       }
-      for (let i = 0; i < d.circuit.length; i++)
+      for (let i = 0; i < d0.circuit.length; i++)
       {
-        for (let j = 0; j < d.circuit[i].length; j++)
+        for (let j = 0; j < d0.circuit[i].length; j++)
         {
           d0.circuit[i][j] = 0;
         }
@@ -733,9 +466,164 @@
       updateFitness(d0); // 即時更新 fitness
       d0_gen = gen;
     }
-    
-    let gates = [ "─","H","t","T","⊕","●" ];
-    let gates_arrays = {};
+
+    function push_left()
+    {
+      const gen = parseInt(document.getElementById('genSlider').value);
+      const d = data.find(item => item.gen === gen);
+      const d0 = data0.find(item => item.gen === 1);
+      //d0.circuit = JSON.parse(JSON.stringify(d.circuit));
+      //d0.fitness = JSON.parse(JSON.stringify(d.fitness));
+      if (d0_gen !== gen)
+      {
+        d0.circuit = JSON.parse(JSON.stringify(d.circuit));
+        d0.fitness = JSON.parse(JSON.stringify(d.fitness));
+        d0_gen = gen;
+      }
+      
+      for (let j = 0; j < d0.circuit[0].length; j++)
+      {
+        for (let i = 0; i < d0.circuit.length; i++)
+        {
+          if (d0.circuit[i][j] === 0)
+          {
+            for (let k = j; k < d0.circuit[i].length; k++)
+            {
+              if (d0.circuit[i][k] !== 0 && k !== j)
+              {
+                if (d0.circuit[i][k] !== 4 && d0.circuit[i][k] !== 5)
+                {
+                  d0.circuit[i][j] = d0.circuit[i][k];
+                  d0.circuit[i][k] = 0;
+                  //console.log(j,k);
+                  //console.log(d0.circuit[i][j], d0.circuit[i][k]);
+                  break;
+                }
+                else
+                {
+                  let ctrl_not = -1
+                  for (let l = 0; l < d0.circuit.length; l++)
+                  {
+                    if ((d0.circuit[l][k] === 4 || d0.circuit[l][k] === 5) && l !== i)
+                    {
+                      ctrl_not = l;
+                      break;
+                    }
+                  }
+                  let can_push = 1;
+                  for (let l = j; l < k; l++)
+                  {
+                    if (d0.circuit[ctrl_not][l] !== 0)
+                    {
+                      can_push = 0;
+                      break;
+                    }
+                  }
+                  if (can_push === 1)
+                  {
+                    d0.circuit[i][j] = d0.circuit[i][k];
+                    d0.circuit[i][k] = 0;
+                    d0.circuit[ctrl_not][j] = d0.circuit[ctrl_not][k];
+                    d0.circuit[ctrl_not][k] = 0;
+                    //console.log(j,k);
+                    //console.log(d0.circuit[i][j], d0.circuit[i][k]);
+                    break;
+                  }
+                  else
+                  {
+                    break;
+                  }
+                }
+              }
+            }
+          }
+          //console.log("-----");
+        }
+      }
+      
+      renderCircuit(0);
+      updateFitness(d0); // 即時更新 fitness
+      d0_gen = gen;
+    }
+
+    function push_right()
+    {
+      const gen = parseInt(document.getElementById('genSlider').value);
+      const d = data.find(item => item.gen === gen);
+      const d0 = data0.find(item => item.gen === 1);
+      //d0.circuit = JSON.parse(JSON.stringify(d.circuit));
+      //d0.fitness = JSON.parse(JSON.stringify(d.fitness));
+      if (d0_gen !== gen)
+      {
+        d0.circuit = JSON.parse(JSON.stringify(d.circuit));
+        d0.fitness = JSON.parse(JSON.stringify(d.fitness));
+        d0_gen = gen;
+      }
+      
+      for (let j = d0.circuit[0].length - 1; j > -1; j--)
+      {
+        for (let i = 0; i < d0.circuit.length; i++)
+        {
+          if (d0.circuit[i][j] === 0)
+          {
+            for (let k = j; k > -1; k--)
+            {
+              if (d0.circuit[i][k] !== 0 && k !== j)
+              {
+                if (d0.circuit[i][k] !== 4 && d0.circuit[i][k] !== 5)
+                {
+                  d0.circuit[i][j] = d0.circuit[i][k];
+                  d0.circuit[i][k] = 0;
+                  //console.log(j,k);
+                  //console.log(d0.circuit[i][j], d0.circuit[i][k]);
+                  break;
+                }
+                else
+                {
+                  let ctrl_not = -1
+                  for (let l = 0; l < d0.circuit.length; l++)
+                  {
+                    if ((d0.circuit[l][k] === 4 || d0.circuit[l][k] === 5) && l !== i)
+                    {
+                      ctrl_not = l;
+                      break;
+                    }
+                  }
+                  let can_push = 1;
+                  for (let l = j; l > k; l--)
+                  {
+                    if (d0.circuit[ctrl_not][l] !== 0)
+                    {
+                      can_push = 0;
+                      break;
+                    }
+                  }
+                  if (can_push === 1)
+                  {
+                    d0.circuit[i][j] = d0.circuit[i][k];
+                    d0.circuit[i][k] = 0;
+                    d0.circuit[ctrl_not][j] = d0.circuit[ctrl_not][k];
+                    d0.circuit[ctrl_not][k] = 0;
+                    //console.log(j,k);
+                    //console.log(d0.circuit[i][j], d0.circuit[i][k]);
+                    break;
+                  }
+                  else
+                  {
+                    break;
+                  }
+                }
+              }
+            }
+          }
+          //console.log("-----");
+        }
+      }
+      
+      renderCircuit(0);
+      updateFitness(d0); // 即時更新 fitness
+      d0_gen = gen;
+    }
     
     function setCnotArray() {
         let I = [[1,0],
@@ -931,17 +819,12 @@
     }];
     document.getElementById('genSlider').max = data.length;
 
-    //let data = [{
-    //  gen: 1,
-    //  q0: [5, 1, 5, 2, 5, 1, 5],
-    //  q1: [4, 2, 4, 3, 4, 0, 4],
-    //  fitness: 0
-    //}];
-
     const gateMap = ['empty', 'H', 'T', 'T†', 'X', 'C'];
 
     const ctx = canvas.getContext('2d');
     let fitnessChart;
+    // 存入當前fitnessChart顯示的電路
+    let circuitData = null;
 
     updateFitnessChart();
     renderCircuit(1);
@@ -992,6 +875,265 @@
       }
       return currentIndex;
     }
+
+    // 監聽下拉選單改變事件
+    document.getElementById("FunctionName").addEventListener("change", function() {
+    const depthInput = document.getElementById("circuitDepth");
+
+    // ✔️ 重設 generation bar 和 label
+    const slider = document.getElementById('genSlider');
+    const label = document.getElementById('genLabel');
+    slider.value = 1;
+    label.innerText = 1;
+
+    if (this.value === "ctrlS")
+    {
+      d0_gen = 0;
+      N = 2;
+      M = 4;
+      depthInput.value = M;
+
+      TargetArrat = [
+          [1, 0, 0, 0],
+          [0, 1, 0, 0],
+          [0, 0, 1, 0],
+          [0, 0, 0, math.complex(0, 1)],
+      ];
+      data = [{
+      gen: 1,
+      circuit: [[5, 2, 5, 0],
+              [4, 3, 4, 2]],
+      fitness: 0
+      }];
+    }
+    else if (this.value === "sqrt(SWAP)")
+    {
+      d0_gen = 0;
+      N = 2;
+      M = 7;
+      depthInput.value = M;
+
+      TargetArrat = [
+          [1, 0,                       0,                       0],
+          [0, math.complex(0.5, 0.5),  math.complex(0.5, -0.5), 0],
+          [0, math.complex(0.5, -0.5), math.complex(0.5, 0.5),  0],
+          [0, 0,                       0,                       1],
+      ];
+      data = [{
+        gen: 1,
+        circuit: [[5, 1, 5, 2, 5, 1, 5],
+                  [4, 2, 4, 3, 4, 0, 4]],
+        fitness: 0
+      }];
+
+      }
+      else if (this.value === "HHL")
+      {
+      d0_gen = 0;
+      N = 3;
+      M = 12;
+      depthInput.value = M;
+
+      TargetArrat = [
+          [ 0, 0,  0, math.complex(0, -1), 0, 0,  0, 0],
+          [ 0, 0, -1, 0,                   0, 0,  0, 0],
+          [ 0, 1,  0, 0,                   0, 0,  0, 0],
+          [-1, 0,  0, 0,                   0, 0,  0, 0],
+          [ 0, 0,  0, 0,                   1, 0,  0, 0],
+          [ 0, 0,  0, 0,                   0, 1,  0, 0],
+          [ 0, 0,  0, 0,                   0, 0, -1, 0],
+          [ 0, 0,  0, 0,                   0, 0,  0, math.complex(0, 1)]
+      ];
+      data = [{
+        gen: 1,
+        circuit: [[0, 0, 0, 0, 0, 0, 0, 0, 5, 0, 0, 0],
+                  [3, 5, 1, 5, 3, 3, 4, 0, 0, 4, 2, 2],
+                  [3, 4, 2, 4, 3, 3, 5, 1, 4, 5, 2, 2]],
+        fitness: 0
+      }];
+      }
+      else if (this.value === "HHL_global_phase")
+      {
+        d0_gen = 0;
+        N = 3;
+        M = 11;
+        depthInput.value = M;
+
+        TargetArrat = [
+            [0,  0, 0, math.complex(0, 1), 0,  0, 0, 0],
+            [0,  0, 1, 0,                  0,  0, 0, 0],
+            [0, -1, 0, 0,                  0,  0, 0, 0],
+            [1,  0, 0, 0,                  0,  0, 0, 0],
+            [0,  0, 0, 0,                 -1,  0, 0, 0],
+            [0,  0, 0, 0,                  0, -1, 0, 0],
+            [0,  0, 0, 0,                  0,  0, 1, 0],
+            [0,  0, 0, 0,                  0,  0, 0, math.complex(0, -1)]
+        ];
+        data = [{
+          gen: 1,
+          circuit: [[0, 0, 5, 2, 2, 2, 2, 0, 0, 0, 0],
+                    [2, 5, 4, 1, 2, 2, 2, 2, 4, 1, 5],
+                    [2, 4, 3, 0, 0, 0, 0, 0, 5, 0, 4]],
+          fitness: 0
+        }];
+      }
+      else if (this.value === "Toffoli")
+      {
+        d0_gen = 0;
+        N = 3;
+        M = 9;
+        depthInput.value = M;
+
+        TargetArrat = [
+            [1, 0, 0, 0, 0, 0, 0, 0],
+            [0, 1, 0, 0, 0, 0, 0, 0],
+            [0, 0, 1, 0, 0, 0, 0, 0],
+            [0, 0, 0, 1, 0, 0, 0, 0],
+            [0, 0, 0, 0, 1, 0, 0, 0],
+            [0, 0, 0, 0, 0, 1, 0, 0],
+            [0, 0, 0, 0, 0, 0, 0, 1],
+            [0, 0, 0, 0, 0, 0, 1, 0]
+        ];
+        data = [{
+          gen: 1,
+          circuit: [[3, 0, 4, 2, 4, 3, 4, 2, 4],
+                    [0, 4, 2, 4, 5, 3, 0, 0, 5],
+                    [1, 5, 5, 5, 0, 0, 5, 3, 1]],
+          fitness: 0
+        }];
+      }
+      else if (this.value === "Peres")
+      {
+        d0_gen = 0;
+        N = 3;
+        M = 8;
+        depthInput.value = M;
+
+        TargetArrat = [
+            [1, 0, 0, 0, 0, 0, 0, 0],
+            [0, 1, 0, 0, 0, 0, 0, 0],
+            [0, 0, 1, 0, 0, 0, 0, 0],
+            [0, 0, 0, 1, 0, 0, 0, 0],
+            [0, 0, 0, 0, 0, 0, 0, 1],
+            [0, 0, 0, 0, 0, 0, 1, 0],
+            [0, 0, 0, 0, 1, 0, 0, 0],
+            [0, 0, 0, 0, 0, 1, 0, 0]
+        ];
+        data = [{
+          gen: 1,
+          circuit: [[2, 0, 0, 5, 5, 5, 0, 0],
+                    [2, 4, 3, 0, 4, 2, 4, 3],
+                    [1, 5, 2, 4, 3, 4, 5, 1]],
+          fitness: 0
+        }];
+      }
+      else if (this.value === "TOFPN")
+      {
+        d0_gen = 0;
+        N = 3;
+        M = 9;
+        depthInput.value = M;
+
+        TargetArrat = [
+            [1, 0, 0, 0, 0, 0, 0, 0],
+            [0, 1, 0, 0, 0, 0, 0, 0],
+            [0, 0, 1, 0, 0, 0, 0, 0],
+            [0, 0, 0, 1, 0, 0, 0, 0],
+            [0, 0, 0, 0, 0, 1, 0, 0],
+            [0, 0, 0, 0, 1, 0, 0, 0],
+            [0, 0, 0, 0, 0, 0, 1, 0],
+            [0, 0, 0, 0, 0, 0, 0, 1]
+        ];
+        data = [{
+          gen: 1,
+          circuit: [[2, 0, 0, 5, 4, 3, 0, 4, 5],
+                    [3, 4, 2, 4, 0, 3, 4, 2, 4],
+                    [1, 5, 2, 0, 5, 0, 5, 5, 1]],
+          fitness: 0
+        }];
+      }
+      else if (this.value === "OR")
+      {
+        d0_gen = 0;
+        N = 3;
+        M = 9;
+        depthInput.value = M;
+
+        TargetArrat = [
+            [1, 0, 0, 0, 0, 0, 0, 0],
+            [0, 1, 0, 0, 0, 0, 0, 0],
+            [0, 0, 0, 1, 0, 0, 0, 0],
+            [0, 0, 1, 0, 0, 0, 0, 0],
+            [0, 0, 0, 0, 0, 1, 0, 0],
+            [0, 0, 0, 0, 1, 0, 0, 0],
+            [0, 0, 0, 0, 0, 0, 0, 1],
+            [0, 0, 0, 0, 0, 0, 1, 0]
+        ];
+        data = [{
+          gen: 1,
+          circuit: [[0, 4, 3, 4, 3, 4, 2, 4, 2],
+                    [0, 0, 3, 5, 4, 2, 4, 5, 5],
+                    [1, 5, 2, 0, 5, 5, 5, 1, 4]],
+          fitness: 0
+        }];
+      }
+      else if (this.value === "Fredkin")
+      {
+        d0_gen = 0;
+        N = 3;
+        M = 11;
+        depthInput.value = M;
+        TargetArrat = [
+            [1, 0, 0, 0, 0, 0, 0, 0],
+            [0, 1, 0, 0, 0, 0, 0, 0],
+            [0, 0, 1, 0, 0, 0, 0, 0],
+            [0, 0, 0, 1, 0, 0, 0, 0],
+            [0, 0, 0, 0, 1, 0, 0, 0],
+            [0, 0, 0, 0, 0, 0, 1, 0],
+            [0, 0, 0, 0, 0, 1, 0, 0],
+            [0, 0, 0, 0, 0, 0, 0, 1]
+        ];
+        data = [{
+          gen: 1,
+          circuit: [[0, 2, 4, 3, 4, 2, 4, 3, 0, 4, 0],
+                    [4, 2, 0, 0, 5, 4, 0, 3, 4, 5, 4],
+                    [5, 1, 5, 2, 0, 5, 5, 0, 5, 1, 5]],
+          fitness: 0
+        }];
+      }
+      else if (this.value === "Permutation")
+      {
+        d0_gen = 0;
+        N = 3;
+        M = 11;
+        depthInput.value = M;
+
+        TargetArrat = [
+            [0, 0, 0, 0, 0, 0, 1, 0],
+            [0, 1, 0, 0, 0, 0, 0, 0],
+            [0, 0, 1, 0, 0, 0, 0, 0],
+            [0, 0, 0, 1, 0, 0, 0, 0],
+            [0, 0, 0, 0, 1, 0, 0, 0],
+            [0, 0, 0, 0, 0, 1, 0, 0],
+            [1, 0, 0, 0, 0, 0, 0, 0],
+            [0, 0, 0, 0, 0, 0, 0, 1]
+        ];
+        data = [{
+          gen: 1,
+          circuit: [[4, 3, 4, 2, 4, 4, 2, 4, 3, 4, 4],
+                    [5, 1, 5, 5, 5, 0, 5, 5, 2, 1, 5],
+                    [0, 3, 0, 4, 2, 5, 4, 0, 0, 5, 0]],
+          fitness: 0
+        }];
+      }
+
+      gates_arrays = {};
+      setGatesArray();
+      const canvas = document.getElementById("circuitCanvas");
+      canvas.width = leftPadding + M * gateWidth + rightPadding;
+      canvas.height = topPadding + (N - 1) * qubitSpacing + bottomPadding;
+      renderCircuit(1);
+    });
 
     document.addEventListener('keydown', function (event) {
       const slider = document.getElementById('genSlider');
@@ -1078,7 +1220,9 @@
         document.getElementById("input_file").style.display = (tab === "analyzer") ? "block" : "none";
         document.getElementById("fitnessChartContainer").style.display = (tab === "analyzer") ? "block" : "none";
         document.getElementById("input_circuit_n").style.display = (tab === "editor") ? "block" : "none";
+        document.getElementById("modify_mode").style.display = (tab === "editor") ? "block" : "none";
         document.getElementById("matrix_show").style.display = (tab !== "analyzer") ? "block" : "none";
+        document.getElementById("HS_fitness").style.display = (tab !== "function") ? "block" : "none";
       });
     });
     
@@ -1156,31 +1300,6 @@
 
       const g = parseInt(draggedGate);
 
-      // 清除原有 CNOT 結構（若存在）
-      //if ((d.q0[col] === 5 && d.q1[col] === 4) || (d.q0[col] === 4 && d.q1[col] === 5)) {
-      //  d.q0[col] = 0;
-      //  d.q1[col] = 0;
-      //}
-
-      //if (g === 5) {
-        // CNOT: determine control and target
-      //  if (y < 75) {
-      //    d.q0[col] = 4; // control
-      //    d.q1[col] = 5; // target
-      //  } else {
-      //    d.q0[col] = 5; // target
-      //    d.q1[col] = 4; // control
-      //  }
-      //} else {
-      //  if (y < 75) {
-      //    d.q0[col] = g;
-          // 若另一 qubit 是 CNOT 的一部分，清除
-      //    if (d.q1[col] === 4 || d.q1[col] === 5) d.q1[col] = 0;
-      //  } else {
-      //    d.q1[col] = g;
-      //    if (d.q0[col] === 4 || d.q0[col] === 5) d.q0[col] = 0;
-      //  }
-      //}
       if (d0.circuit[row][col] === 4 || d0.circuit[row][col] === 5 || g === 4 || g === 5)
       { 
         let ctrl_ = -1;
@@ -1259,9 +1378,62 @@
       updateFitness(d0); // 即時更新 fitness
     });
 
-    // 宣告變數來記錄滑鼠位置
-    let mouseDownPos = null;
-    let mouseUpPos = null;
+    let isScrolling = false;
+    canvas.addEventListener('wheel', (e) => {
+      event.preventDefault();
+      if (isScrolling) return;
+                isScrolling = true;
+                
+      e.preventDefault();
+      const gen = parseInt(document.getElementById('genSlider').value);
+      const d = data.find(item => item.gen === gen);
+      const d0 = data0.find(item => item.gen === 1);
+      if (d0_gen !== gen)
+      {
+        d0.circuit = JSON.parse(JSON.stringify(d.circuit));
+        d0.fitness = JSON.parse(JSON.stringify(d.fitness));
+        d0_gen = gen;
+      }
+
+      if (!d) return;
+
+      const x = e.offsetX;
+      const y = e.offsetY;
+
+      const col = Math.round((x - leftPadding) / gateWidth);
+      if (col < 0 || col >= d0.circuit[0].length) return;
+      
+      const row = Math.round((y - topPadding) / qubitSpacing);
+      if (row < 0 || row >= d0.circuit.length) return;
+      
+      //console.log(e);
+
+      const wheel_ = e.deltaY;
+      if (wheel_ < 0)
+      {
+        d0.circuit[row][col] += 1;
+        if (d0.circuit[row][col] > 5)
+        {
+          d0.circuit[row][col] = 0;
+        }
+      }
+      else if (wheel_ > 0)
+      {
+        d0.circuit[row][col] -= 1;
+        if (d0.circuit[row][col] < 0)
+        {
+          d0.circuit[row][col] = 5;
+        }
+      }
+      
+      renderCircuit(0);
+      updateFitness(d0); // 即時更新 fitness
+
+      // 0.025秒後解除節流
+      setTimeout(() => {
+        isScrolling = false;
+      }, 25);
+    });
 
     // 監聽 mousedown 事件
     canvas.addEventListener("mousedown", (e) => {
@@ -1465,6 +1637,9 @@
 
       if (!d) return;
 
+      // 把目前電路存入 circuitData
+      circuitData = d.circuit;
+
       const maxDepth = Math.max(...d.circuit.map(row => row.length));
       canvas.width = leftPadding + maxDepth * gateWidth;
 
@@ -1546,8 +1721,6 @@
           str_B += " [";
         }
       }
-      //document.getElementById("InputTypeA").textContent = str_A;
-      //document.getElementById("InputTypeB").textContent = str_B;
     }
 
     function updateFitnessChart() {
@@ -1757,6 +1930,23 @@
       });
     }
   
+    function copy_circuit() {
+      if (!circuitData) {
+        alert('No circuit to copy!');
+        return;
+      }
+
+      // 把二維陣列轉成每行用空格分隔，行與行之間用換行
+      const text = circuitData.map(r => r.join(' ')).join('\n');
+
+      navigator.clipboard.writeText(text).then(() => {
+        
+      }).catch(err => {
+        console.error('Failed to copy: ', err);
+        alert('Failed to copy circuit');
+      });
+    }
+
     // 初始化：顯示 Function Viewer，隱藏其他
     window.addEventListener('DOMContentLoaded', () => {
       document.querySelector('.feature-button[data-tab="function"]').classList.add('active');
@@ -1765,7 +1955,10 @@
       document.getElementById("fitnessChartContainer").style.display = "none";
       document.getElementById("input_circuit_n").style.display = "none";
       document.getElementById("matrix_show").style.display = "block";
+      document.getElementById("modify_mode").style.display = "none";
+      document.getElementById("HS_fitness").style.display = "none";
     });
+
   </script>
 
 
