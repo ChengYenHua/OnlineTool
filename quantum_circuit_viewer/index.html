@@ -274,35 +274,36 @@
   }
 
   .gate-wire { 
-    background: linear-gradient(135deg, #f1f5f9 0%, #e2e8f0 100%); 
-    color: #64748b; 
+    background: white;
+    color: black;
+    border: 2px solid black;
   }
   
   .gate-H { 
-    background: linear-gradient(135deg, #fef3c7 0%, #fbbf24 100%); 
-    color: #92400e; 
+    background: #f87171; /* 紅色 */
+    color: black;
   }
   
   .gate-T { 
-    background: linear-gradient(135deg, #dbeafe 0%, #3b82f6 100%); 
-    color: white; 
+    background: #818cf8; /* 藍色 */
+    color: black;
   }
   
   .gate-Td { 
-    background: linear-gradient(135deg, #a7f3d0 0%, #10b981 100%); 
-    color: white; 
+    background: #22d3ee; /* 青色 */
+    color: black; 
   }
   
   .gate-X { 
-    background: linear-gradient(135deg, #fce7f3 0%, #ec4899 100%); 
-    color: white; 
-    border-color: #be185d;
+    background: white;
+    color: black;
+    border: 2px solid black;
   }
   
   .gate-C { 
-    background: linear-gradient(135deg, #ede9fe 0%, #8b5cf6 100%); 
-    color: white; 
-    border-color: #7c3aed;
+    background: white;
+    color: black;
+    border: 2px solid black;
   }
 
   .matrix-container {
@@ -350,7 +351,8 @@
 
   .tooltip-container {
     position: relative;
-    display: inline-block;
+    display: inline-flex;
+    align-items: center;
   }
 
   .tooltip-button {
@@ -618,6 +620,12 @@
 <b>A</b>: last gen, <b>D</b>: next gen, <b>W</b>: last change, <b>S</b>: next change
             </div>
           </div>
+          <div class="tooltip-container">
+            <button class="tooltip-button">Example</button>
+            <div class="tooltip-box" style="padding: 5px; width: 600px;">
+              <img src="2bit_swap_example.png" alt="Example" style="max-width: 1000px; width: 100%; border-radius: 8px;">
+            </div>
+          </div>
         </div>
 
         <div class="file-input-wrapper">
@@ -684,9 +692,20 @@
 <b>Copy button:</b> Copy circuit to clipboard
             </div>
           </div>
+
+          <button onclick="downloadCanvas()" class="btn-secondary btn-small">📷 Download Circuit</button>
         </div>
 
-        <div id="canvasContainer">
+        <div class="gate-palette">
+          <div class="draggable-gate gate-wire" draggable="true" data-gate="0">W</div>
+          <div class="draggable-gate gate-H" draggable="true" data-gate="1">H</div>
+          <div class="draggable-gate gate-T" draggable="true" data-gate="2">T</div>
+          <div class="draggable-gate gate-Td" draggable="true" data-gate="3">T†</div>
+          <div class="draggable-gate gate-X" draggable="true" data-gate="4">⊕</div>
+          <div class="draggable-gate gate-C" draggable="true" data-gate="5">●</div>
+        </div>
+
+        <div id="canvasContainer" style="margin-top: 10px;">
           <canvas id="circuitCanvas"></canvas>
           <div class="canvas-controls">
             <div class="control-row">
@@ -717,23 +736,10 @@
         </div>
       </div>
 
-      <div id="modify_mode" class="section" style="display: none;">
-        <div class="section-title">🎨 Gate Palette</div>
-        <p style="margin-bottom: 15px; color: #64748b;">Drag gates from the palette below to the circuit diagram above:</p>
-        <div class="gate-palette">
-          <div class="draggable-gate gate-wire" draggable="true" data-gate="0">W</div>
-          <div class="draggable-gate gate-H" draggable="true" data-gate="1">H</div>
-          <div class="draggable-gate gate-T" draggable="true" data-gate="2">T</div>
-          <div class="draggable-gate gate-Td" draggable="true" data-gate="3">T†</div>
-          <div class="draggable-gate gate-X" draggable="true" data-gate="4">⊕</div>
-          <div class="draggable-gate gate-C" draggable="true" data-gate="5">●</div>
-        </div>
-      </div>
-
       <div id="matrix_show" class="section">
         <div class="section-title">
           🔢 Unitary Matrix
-          <button onclick="captureMatrix()" class="btn-secondary btn-small">Download PNG</button>
+          <button onclick="captureMatrix()" class="btn-secondary btn-small">📷 Download Matrix</button>
         </div>
         <div class="matrix-container">
           <table id="matrix" class="matrix"></table>
@@ -1547,7 +1553,7 @@
     {
       d0_gen = 0;
       N = 3;
-      M = 9;
+      M = 8;
       depthInput.value = M;
 
       TargetArrat = [
@@ -1562,9 +1568,9 @@
       ];
       data = [{
         gen: 1,
-        circuit: [[3, 0, 4, 2, 4, 3, 4, 2, 4],
-                  [0, 4, 2, 4, 5, 3, 0, 0, 5],
-                  [1, 5, 5, 5, 0, 0, 5, 3, 1]],
+        circuit: [[3, 4, 2, 4, 3, 4, 2, 4],
+                  [3, 0, 5, 5, 5, 0, 0, 5],
+                  [1, 5, 4, 2, 4, 5, 3, 1]],
         fitness: 0
       }];
     }
@@ -1781,7 +1787,6 @@
       document.getElementById("input_file").style.display = (tab === "analyzer") ? "block" : "none";
       document.getElementById("fitnessChartContainer").style.display = (tab === "analyzer") ? "block" : "none";
       document.getElementById("input_circuit_n").style.display = (tab === "editor") ? "block" : "none";
-      document.getElementById("modify_mode").style.display = (tab === "editor") ? "block" : "none";
       document.getElementById("matrix_show").style.display = (tab !== "analyzer") ? "block" : "none";
       document.getElementById("HS_fitness").style.display = (tab !== "function") ? "block" : "none";
       
@@ -2280,8 +2285,8 @@
         y: fitnessValues,
         mode: 'lines+markers',
         type: 'scatter', // Changed from scattergl to scatter for broader compatibility
-        line: { color: '#FF0000', width: 2 }, // Bright red for high visibility
-        marker: { size: 5, color: '#FF0000' }, // Bright red for high visibility
+        line: { color: '#1f77b4', width: 2 }, // Bright red for high visibility
+        marker: { size: 5, color: '#1f77b4' }, // Bright red for high visibility
         name: 'Fitness',
         hovertemplate: 'Generation %{x:.0f}<br>Fitness %{y:.53f}<extra></extra>'
     };
@@ -2485,6 +2490,18 @@
     });
   }
 
+  function downloadCanvas() {
+    const canvas = document.getElementById('circuitCanvas');
+    html2canvas(canvas, {
+      backgroundColor: '#ffffff'
+    }).then(canvasImg => {
+      const link = document.createElement('a');
+      link.download = 'circuit-diagram.png';
+      link.href = canvasImg.toDataURL('image/png');
+      link.click();
+    });
+  }
+
   function copy_circuit() {
     if (!circuitData) {
       alert('No circuit to copy!');
@@ -2508,7 +2525,6 @@
     document.getElementById("fitnessChartContainer").style.display = "none";
     document.getElementById("input_circuit_n").style.display = "none";
     document.getElementById("matrix_show").style.display = "block";
-    document.getElementById("modify_mode").style.display = "none";
     document.getElementById("HS_fitness").style.display = "none";
   });
 
