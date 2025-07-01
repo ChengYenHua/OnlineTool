@@ -717,9 +717,12 @@
           <div class="draggable-gate gate-C" draggable="true" data-gate="5">●</div>
         </div>
 
-        <div id="canvasContainer" style="margin-top: 10px;">
-          <div style="display: flex; gap: 20px; align-items: center; flex-wrap: wrap;"></div>
+        <div id="canvasContainer" style="margin-top: 10px; display: flex; flex-direction: column; gap: 10px;">
+          <!-- 上半部：Canvas + 控制按鈕 -->
+          <div style="display: flex; gap: 20px; align-items: center; flex-wrap: wrap;">
+            <!-- 電路圖 -->
             <canvas id="circuitCanvas"></canvas>
+
             <!-- 控制按鈕 -->
             <div class="canvas-controls">
               <div class="control-row">
@@ -745,7 +748,6 @@
             <div class="stats-box">TD (T Depth): <span id="statTD">0</span></div>
           </div>
         </div>
-
 
       </div>
 
@@ -3020,30 +3022,40 @@
 
     let GC = 0;  // Gate Count
     let GD = 0;  // Gate Depth
-    let TC = 0;  // T Count (T + T†)
+    let TC = 0;  // T Count
     let TD = 0;  // T Depth
 
     for (let d = 0; d < depth; d++) {
       let hasGate = false;
       let hasTGate = false;
+      let cnotPairs = [];  // 紀錄 CNOT 是否已經配對過
 
       for (let q = 0; q < qubits; q++) {
         const gate = circuit[q][d];
 
-        if (gate !== 0) {
+        // 判斷是單一 gate
+        if (gate === 1 || gate === 2 || gate === 3) {
           hasGate = true;
           GC++;
 
-          // 判斷是不是 T 或 T†
           if (gate === 2 || gate === 3) {
             TC++;
             hasTGate = true;
           }
+        }
 
-          // 判斷是不是 CNOT
-          if (gate === 4 || gate === 5) {
-            // CNOT 要避免 double counting
-            // 在這裡不處理，交由主流程
+        // 判斷是否是 CNOT
+        if (gate === 4) { // not
+          // 找對應的 control
+          const ctrlIndex = circuit.findIndex(row => row[d] === 5); // 找control
+
+          if (ctrlIndex !== -1) {
+            const pairKey = `${Math.min(q, ctrlIndex)}-${Math.max(q, ctrlIndex)}-${d}`;
+            if (!cnotPairs.includes(pairKey)) {
+              GC++; // 計算一個 CNOT
+              hasGate = true;
+              cnotPairs.push(pairKey);
+            }
           }
         }
       }
