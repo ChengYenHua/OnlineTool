@@ -546,6 +546,17 @@
     0% { background-color: #dcfce7; }
     100% { background-color: transparent; }
   }
+
+  .stats-box {
+    background: #ffffff;
+    border: 2px solid #cbd5e1;
+    border-radius: 8px;
+    padding: 8px 16px;
+    font-family: 'JetBrains Mono', monospace;
+    font-size: 14px;
+    color: #0f172a;
+    box-shadow: 0 2px 6px rgba(0,0,0,0.05);
+  }
 </style>
 <script src="https://cdn.jsdelivr.net/npm/chart.js"></script>
 <script src="https://cdnjs.cloudflare.com/ajax/libs/mathjs/11.8.0/math.min.js"></script>
@@ -707,22 +718,35 @@
         </div>
 
         <div id="canvasContainer" style="margin-top: 10px;">
-          <canvas id="circuitCanvas"></canvas>
-          <div class="canvas-controls">
-            <div class="control-row">
-              <button onclick="push_left1()" class="btn-secondary btn-small" style="width: 60px;"><</button>
-              <button onclick="push_right1()" class="btn-secondary btn-small" style="width: 60px;">></button>
-            </div>
-            <div class="control-row">
-              <button onclick="push_left()" class="btn-secondary btn-small" style="width: 60px;"><<</button>
-              <button onclick="push_right()" class="btn-secondary btn-small" style="width: 60px;">>></button>
-            </div>
-            <div class="control-row">
-              <button onclick="clear_circuit()" class="btn-secondary btn-small" style="width: 60px;">Clear</button>
-              <button onclick="copy_circuit()" class="btn-success btn-small" style="width: 60px;">Copy</button>
+          <div style="display: flex; gap: 20px; align-items: center; flex-wrap: wrap;"></div>
+            <canvas id="circuitCanvas"></canvas>
+            <!-- 控制按鈕 -->
+            <div class="canvas-controls">
+              <div class="control-row">
+                <button onclick="push_left1()" class="btn-secondary btn-small" style="width: 60px;"><</button>
+                <button onclick="push_right1()" class="btn-secondary btn-small" style="width: 60px;">></button>
+              </div>
+              <div class="control-row">
+                <button onclick="push_left()" class="btn-secondary btn-small" style="width: 60px;"><<</button>
+                <button onclick="push_right()" class="btn-secondary btn-small" style="width: 60px;">>></button>
+              </div>
+              <div class="control-row">
+                <button onclick="clear_circuit()" class="btn-secondary btn-small" style="width: 60px;">Clear</button>
+                <button onclick="copy_circuit()" class="btn-success btn-small" style="width: 60px;">Copy</button>
+              </div>
             </div>
           </div>
+
+          <!-- ✨ 統計資訊在下方 -->
+          <div style="margin-top: 12px; display: flex; gap: 20px; flex-wrap: wrap;">
+            <div class="stats-box">GC (Gate Count): <span id="statGC">0</span></div>
+            <div class="stats-box">GD (Gate Depth): <span id="statGD">0</span></div>
+            <div class="stats-box">TC (T Count): <span id="statTC">0</span></div>
+            <div class="stats-box">TD (T Depth): <span id="statTD">0</span></div>
+          </div>
         </div>
+
+
       </div>
 
       <div id="HS_fitness" class="section" style="display: none;">
@@ -1411,8 +1435,10 @@
     const table = document.getElementById('matrix');
     table.innerHTML = '';
     const size = m.size()[0];
+
     for (let i = 0; i < size; i++) {
       const row = document.createElement('tr');
+
       for (let j = 0; j < size; j++) {
         const cell = document.createElement('td');
         const v = m.get([i, j]);
@@ -1422,9 +1448,13 @@
         const imColor = (im === 0) ? '#cbd5e1' : '#1e293b';
 
         cell.innerHTML = `
-          <div style="font-size:12px; line-height:1.3; text-align:center;">
-            <div style="color:${reColor}; font-weight: 500;">${re.toFixed(7)}</div>
-            <div style="color:${imColor}; font-weight: 500;">${im >= 0 ? '+' : ''}${im.toFixed(7)}i</div>
+          <div style="font-size:16px; line-height:1.4; text-align:center;">
+            <div style="color:${reColor}; font-weight: 600;">
+              ${re.toFixed(7)}
+            </div>
+            <div style="color:${imColor}; font-weight: 600;">
+              ${im >= 0 ? '+' : ''}${im.toFixed(7)}<span style="color:#2563eb; font-weight:700;">i</span>
+            </div>
           </div>
         `;
 
@@ -2666,7 +2696,18 @@
     circuitData = d.circuit;
 
     const maxDepth = Math.max(...d.circuit.map(row => row.length));
-    canvas.width = leftPadding + maxDepth * gateWidth;
+    
+    // ==== ⭐ 加入高清渲染邏輯 ⭐ ====
+    const dpr = window.devicePixelRatio || 1;
+    const canvasWidthCSS = leftPadding + maxDepth * gateWidth;
+    const canvasHeightCSS = topPadding + (d.circuit.length - 1) * qubitSpacing + bottomPadding;
+
+    canvas.width = canvasWidthCSS * dpr;
+    canvas.height = canvasHeightCSS * dpr;
+    canvas.style.width = canvasWidthCSS + 'px';
+    canvas.style.height = canvasHeightCSS + 'px';
+
+    ctx.setTransform(dpr, 0, 0, dpr, 0, 0);
 
     document.getElementById('fitnessValueShort').innerText = d.fitness.toFixed(53);
     document.getElementById('fitnessValueShort').setAttribute('title', `Full value: ${d.fitness.toFixed(53)}`);
@@ -2679,11 +2720,10 @@
     ctx.lineWidth = 2;
     ctx.beginPath();
 
-    for (let i = 0; i < d.circuit.length; i++)
-    {
+    for (let i = 0; i < d.circuit.length; i++) {
       qY.push(topPadding + i * qubitSpacing);
       ctx.moveTo(0, qY[i]);
-      ctx.lineTo(canvas.width, qY[i]);
+      ctx.lineTo(canvasWidthCSS, qY[i]);
     };
 
     ctx.stroke();
@@ -2723,25 +2763,8 @@
     const gen_ = parseInt(document.getElementById('genSlider').value);
     const d_ = data.find(item => item.gen === gen_);
     updateArray(d_);
-    
-    let str_A = "";
-    let str_B = "[";
 
-    for (let i = 0; i < d.circuit.length; i++) {
-      for (let j = 0; j < d.circuit[i].length; j++) {
-        str_A += d.circuit[i][j];
-        str_B += d.circuit[i][j];
-        if (j !== d.circuit[i].length - 1) {
-          str_A += " ";
-          str_B += " ";
-        }
-      }
-      str_B += "]";
-      if (i !== d.circuit.length - 1) {
-        str_A += "\n";
-        str_B += " [";
-      }
-    }
+    updateCircuitStats(d.circuit);
   }
 
   function updateFitnessChart() {
@@ -2991,6 +3014,51 @@
     });
   }
 
+  function updateCircuitStats(circuit) {
+    const depth = circuit[0].length;
+    const qubits = circuit.length;
+
+    let GC = 0;  // Gate Count
+    let GD = 0;  // Gate Depth
+    let TC = 0;  // T Count (T + T†)
+    let TD = 0;  // T Depth
+
+    for (let d = 0; d < depth; d++) {
+      let hasGate = false;
+      let hasTGate = false;
+
+      for (let q = 0; q < qubits; q++) {
+        const gate = circuit[q][d];
+
+        if (gate !== 0) {
+          hasGate = true;
+          GC++;
+
+          // 判斷是不是 T 或 T†
+          if (gate === 2 || gate === 3) {
+            TC++;
+            hasTGate = true;
+          }
+
+          // 判斷是不是 CNOT
+          if (gate === 4 || gate === 5) {
+            // CNOT 要避免 double counting
+            // 在這裡不處理，交由主流程
+          }
+        }
+      }
+
+      if (hasGate) GD++;
+      if (hasTGate) TD++;
+    }
+
+    // 更新到畫面
+    document.getElementById('statGC').innerText = GC;
+    document.getElementById('statGD').innerText = GD;
+    document.getElementById('statTC').innerText = TC;
+    document.getElementById('statTD').innerText = TD;
+  }
+  
   window.addEventListener('DOMContentLoaded', () => {
     document.querySelector('.feature-button[data-tab="function"]').classList.add('active');
 
