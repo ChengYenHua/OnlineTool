@@ -124,14 +124,14 @@
             <div class="header-authors">
               <h2>Authors</h2>
               <ul>
-                <li>XXX</li>
+                <li>Cheng-Yen Hua</li>
                 <li>OOO</li>
               </ul>
             </div>
             <!-- Published info section -->
             <div class="header-published">
               <h2>Published</h2>
-              <p>Nov. 26, 2021</p>
+              <p>Oct. 30, 2025</p>
             </div>
           </div>
           <!-- Header legend section -->
@@ -179,14 +179,14 @@
         </p>
 
         <div style="display: flex; justify-content: center; gap: 20px;">
-          <figure id="DJIA_stock_example" class="text-center" style="text-align: center;">
+          <figure id="DJIA_stock_example" style="text-align: center;">
             <img src="img/Stock_example.svg" style="max-width: 90%; height: auto;">
-            <figcaption><strong>Figure 1:</strong> Illustration of combination complexity in stock selection problem.</figcaption>
+            <figcaption style="text-align: left;"><strong>Figure 1:</strong> Exponential growth of combinatorial possibilities in stock selection. The figure illustrates how the number of combinations expands rapidly with the number of available stocks. Even a moderate increase from three to fifty stocks results in an astronomical growth in possible selections, highlighting the phenomenon of combinatorial explosion. </figcaption>
           </figure>
         </div>
 
         <p>
-          Take the problem of stock selection and timing as an example. When considering three stocks, each stock can either be selected or not, resulting in $2^3 = 8$ possible combinations—ranging from selecting none (000) to selecting all (111). With four stocks, the number of combinations increases to $2^4 = 16$. However, as the number of stocks increases to fifty, the number of possible combinations explodes to $2^50$, which exceeds one quadrillion. This exponential growth in complexity renders exhaustive search computationally infeasible within a reasonable timeframe. This makes such problems ideal candidates for advanced optimization techniques, such as metaheuristic algorithms, which are specifically designed to efficiently explore large and complex solution spaces.
+          Take the problem of stock selection as an example, as show in Figure 1. When considering three stocks, each stock can either be selected or not selected, resulting in $2^3 = 8$ possible combinations which ranging from selecting none (000) to selecting all (111). With four stocks, the number of combinations increases to $2^4 = 16$. However, as the number of stocks increases to fifty, the number of possible combinations explodes to $2^{50}$, which exceeds one quadrillion. This exponential growth in complexity renders exhaustive search computationally infeasible within a reasonable timeframe. This makes such problems ideal candidates for advanced optimization techniques, such as metaheuristic algorithms, which are specifically designed to efficiently explore large and complex solution spaces.
         </p>
 
         <p>
@@ -208,36 +208,36 @@
               <p>(c) Ackley</p>
             </div>
           </div>
-          <figcaption><strong>Figure 2:</strong> Visualization of numerical optimization benchmark functions: (a) Schwefel, (b) Michalewicz, and (c) Ackley. </figcaption>
+          <figcaption style="text-align: left;"><strong>Figure 2:</strong> 3D landscape plots of benchmark functions, (a) Schwefel, (b) Michalewicz, and (c) Ackley, commonly used in numerical optimization. These functions exhibit highly complex, multi-modal surfaces that are challenging to optimize and difficult to interpret intuitively from their mathematical formulations. </figcaption>
         </figure>
         
         <p>
-          In numerical optimization problems, researchers often evaluate the performance of metaheuristic algorithms using challenging and highly complex mathematical functions. These benchmark functions—such as Schwefel, Michalewicz, and Ackley—are intentionally designed to be deceptive, multi-modal, and difficult to optimize. In many cases, the mathematical expressions of these functions are so complex and unintuitive that it is difficult to form any mental image of their landscape. Moreover, in business and industrial contexts, the objective functions are often entirely unknown and treated as black boxes, making it virtually impossible to predict their mathematical form or landscape.
+          In numerical optimization problems, researchers often evaluate the performance of metaheuristic algorithms using challenging and highly complex mathematical functions. As illustrated in Figure 2, benchmark functions, such as Schwefel, Michalewicz, and Ackley, are intentionally designed to be deceptive, multi-modal, and difficult to optimize. In many cases, the mathematical expressions of these functions are so complex and unintuitive that forming a mental image of their landscapes is difficult. Moreover, in business and industrial contexts, the objective functions are often entirely unknown and treated as black boxes, making it virtually impossible to predict their mathematical form or landscape.
         </p>
 
         <figure id="Cmd_text_log_file" class="text-center" style="text-align: center;">
           <div style="display: flex; justify-content: center; gap: 80px;">
             <div style="text-align: center;">
               <img src="img/Introduction/cmd.svg" style="height: 270px; width: auto;">
-              <p>(a) text log file</p>
+              <p>(a) Text-based log files</p>
             </div>
             <div style="text-align: center;">
               <img src="img/Introduction/excel.svg" style="height: 270px; width: auto;">
-              <p>(b) excel</p>
+              <p>(b)</p>
             </div>
           </div>
-          <figcaption><strong>Figure 3:</strong> Using text log file or Excel analyze the algorithm.</figcaption>
+          <figcaption style="text-align: left;"><strong>Figure 3:</strong> Traditional methods for analyzing optimization algorithms using (a) text-based log and (b) Excel files. These approaches are commonly employed to track algorithmic performance, but they are often difficult to interpret and inefficient for large-scale or long-term analyses. </figcaption>
         </figure>
 
         <p>
-          In earlier studies, researchers commonly analyzed the behavior and performance of optimization algorithms through text-based interfaces such as command-line environments, terminal consoles, or the traditional DOS interface—often referred to as the "black window." These environments would display the optimization process step by step in real time. Alternatively, results were frequently exported to Excel files or other spreadsheet software, where further analysis could be conducted using log files and manual interpretation.
+          Traditional approaches for analyzing algorithmic performance are illustrated in Figure 3. In earlier studies, researchers typically analyzed the behavior and performance of optimization algorithms through text-based interfaces such as command-line environments, terminal consoles, or the traditional DOS interface, often referred to as the "black window". These environments displayed the optimization process step by step in real time. Alternatively, results were frequently exported to Excel files or other spreadsheet software, where additional analysis could be conducted using log files and manual interpretation.
         </p>
 
         <div class="framed">
           <div class="inside">
             <!-- 上方標題 -->
             <div class="eyebrow">
-              You can interact with the map by clicking...
+              Click the video to observe how particle information is densely displayed across generations. This interactive clip demonstrates the difficulty of manually analyzing optimization processes using traditional text-based outputs.
             </div>
             <!-- 主內容區塊 -->
             <div style="display: flex; justify-content: center;">
@@ -249,17 +249,17 @@
             </div>
             <!-- 圖說 -->
             <div class="caption"><b>Figure 4:</b> 
-              Using text log file analyze the algorithm.
+              A video frame showing the text-based output of an optimization algorithm, where each generation includes the coordinates and fitness values of multiple particles. As the number of generations and particles increases, interpreting such outputs becomes visually overwhelming and analytically inefficient, emphasizing the need for more intuitive visualization tools.
             </div>
           </div>
         </div>
 
         <p>
-          However, analyzing particle movement through command-line outputs often requires manually checking and comparing particle coordinates across iterations. Even with a relatively small setup—for example, 100 generations with 20 particles each—this results in 2,000 data points to examine. Determining the direction of movement for each particle becomes time-consuming, unintuitive, and practically infeasible.
+          However, analyzing particle movement through command-line outputs often requires manually checking and comparing particle coordinates across iterations.Even with a relatively small setup, such as 100 generations with 20 particles each, this results in 2,000 data points quickly become difficult to analyze, as shown in Figure 4. Determining the direction of movement for each particle becomes time-consuming, unintuitive, and practically infeasible.
         </p>
 
         <p>
-          To address this challenge, this paper developed a dynamic visualization system that graphically presents the optimization process in real time. This system aims to enhance analytical efficiency, improve user intuitiveness, and significantly reduce the cognitive load involved in understanding algorithm behavior.
+          To address this challenge, this paper developed a dynamic visualization system that graphically presents the optimization process in real time. While the previous example illustrates the issue in numerical optimization, similar challenges also occur in combinatorial optimization problems, where the solution space is discrete and exponentially large, making the analysis of search behavior even more difficult. Therefore, this study focuses on developing an interactive visualization interface specifically designed for combinatorial optimization, enabling users to observe and interpret the algorithm’s decision process more intuitively. By facilitating a clearer understanding of how candidate solutions evolve and interact, the interface not only enhances analytical insight but also supports more effective algorithm evaluation, comparison, and improvement.
         </p>
         
       </section>
@@ -285,7 +285,7 @@
           <div class="inside">
             <!-- 上方標題 -->
             <div class="eyebrow">
-              You can interact with the map by clicking...
+              You can interact with the visualization by using the control panel below the grid. The Play/Pause button allows you to start or stop the animation, while the speed controls let you adjust the playback rate. You can also drag the progress bar to navigate to a specific generation of interest. To support deeper analysis, the interface provides additional tools: clicking “View Particles” shows all individuals in the selected generation, with the local best solution highlighted in red and the local worst in blue; clicking “Show Information” reveals detailed attributes for each particle, offering further insights into the algorithm’s behavior.
             </div>
             <!-- 主內容區塊 -->
             <div class="interactive-panel-Binary">
@@ -343,7 +343,7 @@
             <div id="fitness-color-legend" class="axis-label">□ :0  ■ :1</div>
 
             <div class="caption"><b>Figure 5:</b> 
-              someword to explain.
+              Combinatorial optimization visualization interface applied to the 0/1 knapsack problem using a genetic algorithm. This interface enables users to trace solution evolution across generations.
             </div>
           </div>
 
@@ -351,29 +351,29 @@
         </div>
 
         <p>
-          In the combinatorial optimization visualization mode, black cells represent selected items, while white cells represent unselected items. Each horizontal row corresponds to a single generation, with the generation index displayed on the left and the corresponding fitness value on the right. The bottom-most red row indicates the global best solution found throughout the evolutionary process.
+          In the combinatorial optimization visualization mode, black grids represent selected items, while white grids represent unselected items. Each horizontal row corresponds to a single generation, with the generation index displayed on the left and the corresponding fitness value on the right. The bottom-most red row indicates the global best solution found throughout the evolutionary process.
         </p>
 
         <p>
-          In this example, the visualization demonstrates the application of a genetic algorithm to solve the 0/1 knapsack problem. Initially, item selections are made randomly, resulting in a mixed pattern of black and white cells. As the algorithm evolves, it performs selection, crossover, and mutation based on the fitness values of the parents, gradually guiding the population toward higher-quality solutions.
+          In this example, the visualization demonstrates the application of a genetic algorithm to solve the 0/1 knapsack problem. Initially, item selections are made randomly, resulting in a mixed pattern of black and white grids. As the algorithm evolves, it performs selection, crossover, and mutation based on the fitness values of the parents, gradually guiding the population toward higher-quality solutions.
         </p>
 
         <div style="display: flex; justify-content: center; gap: 20px;">
           <figure id="DJIA_stock_example" class="text-center" style="text-align: center;">
             <img src="img/01knapsack.svg" style="max-width: 70%; height: auto;">
-            <figcaption><strong>Figure 6:</strong> Illustration of combination complexity in stock selection problem.</figcaption>
+            <figcaption style="text-align: left;"><strong>Figure 6:</strong> Item configuration for the 0/1 knapsack problem, where items are arranged in descending order of cost-performance (C/P) ratio from left to right. Each type consists of 10 items with increasing weight and value, resulting in a decreasing C/P ratio from 6.00 to 1.50.</figcaption>
           </figure>
         </div>
 
         <p>
-          To facilitate the demonstration, we configured the items’ cost-performance (C/P) ratios such that items on the left have higher values while those on the right have lower values. As the algorithm progresses into later generations, we can observe that the black cells—representing selected items—gradually concentrate on the left side, indicating that the algorithm is effectively learning to favor items with higher cost-efficiency.
+          To facilitate the demonstration, we configured the items’ cost-performance (C/P) ratios such that items on the left have higher values while those on the right have lower values. As the algorithm progresses into later generations, we can observe that the black grids—representing selected items—gradually concentrate on the left side, indicating that the algorithm is effectively learning to favor items with higher cost-efficiency.
         </p>
 
         <div class="framed">
           <div class="inside">
             <!-- 上方標題 -->
             <div class="eyebrow">
-              You can interact with the map by clicking...
+              You can interact with the visualization by clicking the "Probability / General Model" button to display selection probabilities for each bit. The color gradient reflects how likely an item is to be selected: red for high probability, blue for low, and green for uncertain (around 0.5). As the algorithm evolves, watch how these colors shift—revealing how the model learns to favor or avoid certain items to satisfy constraints and improve fitness.
             </div>
             <!-- 主內容區塊 -->
             <div class="interactive-panel-Binary-stock">
@@ -431,7 +431,7 @@
             <div id="fitness-color-legend-stock" class="axis-label">□ :0  ■ :1</div>
 
             <div class="caption"><b>Figure 7:</b> 
-              someword to explain.
+              Visualization of selection probabilities in a probabilistic optimization model. A color gradient from red to blue represents the likelihood of item selection, enabling users to track how the algorithm gradually shifts from randomness to confident selection decisions across generations.
             </div>
           </div>
 
@@ -448,17 +448,17 @@
 
         <p>
           A notable observation is the presence of distinct vertical blue stripes within red-dominated regions, indicating that the algorithm has learned to consistently exclude certain high C/P items on the left. This behavior occurs in order to satisfy the knapsack's capacity constraint, choosing instead lower C/P items from the right to construct a feasible yet optimal combination. This phenomenon exemplifies the inherent complexity of the 0/1 knapsack problem, highlighting its NP-complete nature and the nuanced trade-offs involved in combinatorial decision-making—which are precisely what make the problem both extremely challenging and intellectually intriguing.
-        </P>
+        </p>
         
         <div style="display: flex; justify-content: center; gap: 20px;">
-          <figure id="xxx" class="text-center" style="text-align: center;">
-            <img src="img/Proposed Tool/convergence.png" style="width: 500px; height: auto; object-fit: contain;">
-            <figcaption><strong>Figure 8:</strong> QTS和GA的比較收斂圖</figcaption>
+          <figure id="Prob_reversal" class="text-center" style="text-align: center; max-width: 90%;">
+            <img src="img/Proposed Tool/Probability Reversal.png" style="max-width: 90%; height: auto;">
+            <figcaption style="text-align: left;"><strong>Figure 8:</strong> An observed shift in the probability model from 0.276 to 0.724, visualized as a color transition from blue to orange. This highlights the algorithm's ability to reverse its decision tendency, potentially escaping a local optimum. The interface enables intuitive detection of such behavioral shifts during the optimization process. </figcaption>
           </figure>
         </div>
 
         <p>
-          若點選斂散圖按鈕，可以觀察演算法的變動情形。x軸代表世代數，y軸代表適應值。在圖中，我們發現基因演算法的適應值不斷上升，但還沒找到最佳解，因此我們發明了量子傑利鼠演算法。比較兩種演算法的演變過程後，我們在圖中看到量子傑利鼠演算法在第53代就找到了最佳解620。
+          One key advantage of the probability model is its ability to expose non-obvious behavioral shifts during the algorithm’s progression. <a href="#Prob_reversal">Figure 8</a> presents a case observed through the interface, where a bit's probability flips from below 0.3 to above 0.7, marking a decisive change in the algorithm’s behavior. This reversal may indicate that the algorithm has escaped a local optimum, shifting toward a new search region. Such turning points, which are difficult to capture from numerical data alone, become immediately apparent through color transitions in the probability matrix.
         </p>
 
         <!-- 排列最佳化的介面 -->
@@ -468,7 +468,7 @@
           <div class="inside">
             <!-- 上方標題 -->
             <div class="eyebrow">
-              You can interact with the map by clicking...
+              You can interact with the path visualization by playing the animation, which shows how the algorithm iteratively explores and refines routes over generations. Each color-coded line represents a candidate solution at a specific stage, with color intensity indicating path length—from red (longest) to blue (shortest). As the animation progresses, observe how the paths gradually stabilize as the algorithm converges toward the shortest tour.
             </div>
             <!-- 主內容區塊 -->
             <div style="display: flex; justify-content: center; gap: 20px;">
@@ -480,7 +480,7 @@
             </div>
             <!-- 圖說 -->
             <div class="caption"><b>Figure 9:</b> 
-              Ant colony optimization on TSP problem: visualizing burma14 optimal path.
+              Visualization of the optimization process for the burma14 instance in the Traveling Salesman Problem (TSP), using ant colony optimization. The interface dynamically displays evolving routes across generations, with color gradients representing path lengths—red for longer paths, and blue for shorter paths—allowing users to observe convergence toward the optimal solution.
             </div>
           </div>
         </div>
@@ -494,7 +494,7 @@
         </p>
 
         <p>
-          However, as the number of cities increases, the solution space grows factorially, significantly increasing the complexity of the problem. To further engage users and provide an intuitive understanding of the algorithm’s behavior in such complex cases, we have also developed an interactive game interface in addition to the analysis mode.
+          However, as the number of cities increases, the solution space grows factorially, significantly increasing the complexity of the problem. To further engage users and provide an intuitive understanding of the algorithm’s behavior in such complex cases, we have also developed an interactive game mode interface in addition to the analysis mode.
         </p>
 
         <figure id="Permutation_game_mod" class="text-center" style="text-align: left;">
@@ -504,7 +504,7 @@
             </div>
           </div>
           <figcaption>
-            <strong>Figure 10:</strong> game model.
+            <strong>Figure 10:</strong> The interface presents a map of Taiwan where users connect cities by selecting routes. Travel costs are shown on the right, and path colors provide visual cues, with blue indicating efficient routes and red representing less favorable ones. Certain paths may be blocked due to constraints, encouraging users to revise their choices to complete all required connections.
           </figcaption>
         </figure>
 
@@ -513,10 +513,10 @@
         </p>
 
         <p>
-          In addition, the system simulates real-world traffic constraints. For instance, a landslide between Nantou and Hualien may prevent direct travel, mirroring real-life industrial scenarios involving constraint-based optimization. These features not only enhance the realism of the problem but also increase the game's engagement and educational value. Once the user successfully completes all the connections within the given constraints, the system displays a "Good Job" message.
+          In addition, the system simulates real-world traffic constraints. For instance, a landslide between Nantou and Hualien may prevent direct travel, mirroring real-life industrial scenarios involving constraint-based optimization. These features not only enhance the realism of the problem but also increase the game's engagement and educational value. Once the user successfully completes all the connections within the given constraints, the system displays a "Good job" message.
         </p>
         
-        <figure id="Cmd_text_log_file" class="text-center" style="text-align: center;">
+        <figure id="USA_EUR_game_mods" class="text-center" style="text-align: center;">
           <div style="display: flex; justify-content: center; gap: 20px;">
             <div style="text-align: center;">
               <img src="img/Proposed Tool/USA permutation.svg" width="500" height="220">
@@ -527,7 +527,7 @@
               <p>(b)</p>
             </div>
           </div>
-          <figcaption><strong>Figure 11:</strong> USA and Europe game mods</figcaption>
+          <figcaption><strong>Figure 11:</strong> Interactive game modes for (a) the United States and (b) Europe, allowing users to explore and solve routing problems. </figcaption>
         </figure>
 
         <p>
@@ -537,7 +537,7 @@
         <!-- 擺放最佳化的介面 -->
         <h3>Deployment Optimization Interface</h3>
 
-        <div class="framed">
+        <div id="sensor-deployment-panel" class="framed">
           <div class="inside">
             <!-- 上方標題 -->
             <div class="eyebrow">
@@ -588,7 +588,7 @@
         </div>
 
         <p>
-          The last interface focuses on deployment-based optimization, commonly encountered in scenarios involving large-scale public events, such as New Year’s Eve concerts or political rallies. In such situations, a critical question arises: How many mobile base stations are needed, and where should they be placed to ensure adequate communication quality for all attendees? In this interface, black squares indicate the positions of deployed base stations (or sensors), while the color gradient from red to blue represents varying levels of detection or signal coverage probability.
+          The last interface focuses on deployment-based optimization, commonly encountered in scenarios involving large-scale public events, such as New Year’s Eve concerts or political rallies. In such situations, a critical question arises: How many mobile base stations are needed, and where should they be placed to ensure adequate communication quality for all attendees? In <a href="#sensor-deployment-panel">Figure 12</a>, black squares indicate the positions of deployed base stations (or sensors), while the color gradient from red to blue represents varying levels of detection or signal coverage probability.
         </p>
 
         <p>
@@ -606,11 +606,11 @@
           where $\mathcal{P}_p$ represents the overall detection probability of grid $p$, $P_p^s$ denotes the probability that sensor $s$ detects grid $p$, and $V_p$ is the set of all sensors capable of detecting grid $p$. For instance, when a grid is monitored by two or more sensors, its detection probability increases—visually transitioning from blue to green on the map. As a result, only 12 sensors are required to satisfy the coverage conditions for the entire grid.
         </p>
 
-        <div class="framed">
+        <div id="sensor-deployment-50x50panel" class="framed">
           <div class="inside">
             <!-- 上方標題 -->
             <div class="eyebrow">
-              You can interact with the map by clicking...
+              You can interact with the map by clicking on grid points to add or remove sensors and toggle between the "Threshold" and "Detection Probability" views using the corresponding button. The goal is to place the minimum number of sensors required to ensure all grid points meet the minimum threshold 0.3.
             </div>
             <!-- 主內容區塊 -->
             <div class="interactive-panel-5050">
@@ -669,6 +669,7 @@
               someword to explain.
             </div>
           </div>
+=
 
           <script src="./panel/map_model_5050.js"></script>
         </div>
