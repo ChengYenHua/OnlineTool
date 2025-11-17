@@ -259,7 +259,7 @@
         </p>
 
         <p>
-          To address this challenge, this paper developed a dynamic visualization system that graphically presents the optimization process in real time. While the previous example illustrates the issue in numerical optimization, similar challenges also occur in combinatorial optimization problems, where the solution space is discrete and exponentially large, making the analysis of search behavior even more difficult. Therefore, this study focuses on developing an interactive visualization interface specifically designed for combinatorial optimization, enabling users to observe and interpret the algorithm’s decision process more intuitively. By facilitating a clearer understanding of how candidate solutions evolve and interact, the interface not only enhances analytical insight but also supports more effective algorithm evaluation, comparison, and improvement.
+          To address this challenge, this paper developed a dynamic visualization tool, Evo-Panel2.0, that graphically presents the optimization process in real time. While the previous example illustrates the issue in numerical optimization, similar challenges also occur in combinatorial optimization problems, where the solution space is discrete and exponentially large, making the analysis of search behavior even more difficult. Therefore, this study focuses on developing an interactive visualization interface specifically designed for combinatorial optimization, enabling users to observe and interpret the algorithm’s decision process more intuitively. By facilitating a clearer understanding of how candidate solutions evolve and interact, the interface not only enhances analytical insight but also supports more effective algorithm evaluation, comparison, and improvement.
         </p>
         
       </section>
@@ -269,23 +269,17 @@
         <!-- 組合最佳化的介面 -->
         <h2>III. Proposed Visualization Tool</h2>
         <p>
-          Within the domain of business, there are a multitude of optimization challenges that require resolution. Prior to resolving optimization challenges specific to the industry, researchers typically evaluate optimization algorithms using benchmark functions. Enhancing the efficacy of an optimization algorithm on benchmark functions increases the probability that it will successfully tackle optimization functions that are specific to a given industry. In this section, we use three benchmark problems to introduce how the system works on the three interfaces, including GA and QTS solving the 0/1 knapsack problem in the general combinatorial optimization interface, Entanglement-QTS [<a href="#ref_35">35</a>] solving the deployment optimization problem in the deployment combinatorial optimization interface, and ACO solving TSP in the permutation/linear combinatorial optimization interface.
+          This section presents Evo-Panel 2.0, a unified visualization tool designed to make the behavior of metaheuristic algorithms more interpretable and interactive. The tool provides real-time graphical feedback that transforms complex numerical results into intuitive visual representations, allowing users to observe how candidate solutions evolve and interact during the search process. The visualization tool integrates three interfaces, each targeting a specific type of combinatorial optimization problem. The following subsections describe these interfaces in detail, highlighting their functions and visualization benefits.
         </p>
 
         <h3>General Combinatorial Optimization Interface</h3>
-
-        <p>
-          In the general combinatorial optimization interface (general interface), all kinds of chosen or not combinatorial optimization problems can be displayed through this interface. Evo-Panel 2.0 can show the fitness, all item combinations in each generation, and items' detailed information so that users can check if the metaheuristic matches their thoughts or problems' constraints.
-        </p>
-
-        <h3>1.General Model</h3>
 
         <!--第一張evo-panel互動圖片-->
         <div class="framed">
           <div class="inside">
             <!-- 上方標題 -->
             <div class="eyebrow">
-              You can interact with the visualization by using the control panel below the grid. The Play/Pause button allows you to start or stop the animation, while the speed controls let you adjust the playback rate. You can also drag the progress bar to navigate to a specific generation of interest. To support deeper analysis, the interface provides additional tools: clicking “View Particles” shows all individuals in the selected generation, with the local best solution highlighted in red and the local worst in blue; clicking “Show Information” reveals detailed attributes for each particle, offering further insights into the algorithm’s behavior.
+              You can interact with the visualization by using the control panel below the interface. The Play/Pause button allows you to start or stop the animation, while the speed controls let you adjust the playback rate. You can also drag the progress bar to navigate to a specific generation of interest. To support deeper analysis, the interface provides additional tools: clicking “View Particles” shows all individuals in the selected generation, with the local best solution highlighted in red and the local worst in blue; clicking “Show Information” reveals detailed attributes for each particle, offering further insights into the algorithm’s behavior.
             </div>
             <!-- 主內容區塊 -->
             <div class="interactive-panel-Binary">
@@ -325,8 +319,8 @@
             </div>
             <div class="button-panel">
               <!-- 機率模式 -->
-              <button id="toggle-status-bar">Probability Model</button>
-              <!-- 機率模式 -->
+              <!-- <button id="toggle-status-bar">Probability Model</button> -->
+              <!-- 查看粒子 -->
               <button id="toggle-view-particles">View Particles</button>
               <!-- 顯示資訊模式 -->
               <button id="toggle-particle-info">Show Information</button>
@@ -351,7 +345,7 @@
         </div>
 
         <p>
-          In the combinatorial optimization visualization mode, black grids represent selected items, while white grids represent unselected items. Each horizontal row corresponds to a single generation, with the generation index displayed on the left and the corresponding fitness value on the right. The bottom-most red row indicates the global best solution found throughout the evolutionary process.
+          As illustrated in Figure 5, in the combinatorial optimization visualization mode, black grids represent selected items, while white grids represent unselected items. Each horizontal row corresponds to a single generation, with the generation index displayed on the left and the corresponding fitness value on the right. The bottom-most red row indicates the global best solution found throughout the evolutionary process.
         </p>
 
         <p>
@@ -366,14 +360,14 @@
         </div>
 
         <p>
-          To facilitate the demonstration, we configured the items’ cost-performance (C/P) ratios such that items on the left have higher values while those on the right have lower values. As the algorithm progresses into later generations, we can observe that the black grids—representing selected items—gradually concentrate on the left side, indicating that the algorithm is effectively learning to favor items with higher cost-efficiency.
+          As shown in Figure 6, to facilitate the demonstration, we configured the items' cost-performance (C/P) ratios such that items on the left have higher values while those on the right have lower values. As the algorithm progresses into later generations, we can observe that the black grids, representing selected items, gradually concentrate on the left side, indicating that the algorithm is effectively learning to favor items with higher cost-efficiency.
         </p>
 
         <div class="framed">
           <div class="inside">
             <!-- 上方標題 -->
             <div class="eyebrow">
-              You can interact with the visualization by clicking the "Probability / General Model" button to display selection probabilities for each bit. The color gradient reflects how likely an item is to be selected: red for high probability, blue for low, and green for uncertain (around 0.5). As the algorithm evolves, watch how these colors shift—revealing how the model learns to favor or avoid certain items to satisfy constraints and improve fitness.
+              You can interact with the visualization by clicking the "Probability / General Model" button to display selection probabilities for each bit. The color gradient reflects how likely an item is to be selected: red indicates high probability, blue indicates low probability, and green indicates uncertainty (around 0.5). As the algorithm evolves, observe how these colors shift, revealing how the algorithm learns to favor or avoid certain items to satisfy constraints and improve fitness.
             </div>
             <!-- 主內容區塊 -->
             <div class="interactive-panel-Binary-stock">
@@ -443,11 +437,11 @@
         </p>
 
         <p>
-          In the early stages of evolution, the grid appears predominantly green, indicating a probability of 0.5, where the likelihood of selecting or not selecting an item is equal. As the generations progress, the colors gradually shift—probabilities increase toward 1 (red) or decrease toward 0 (blue), reflecting the algorithm's increasing certainty in its selections. Redder grids indicate stronger selection preference, while bluer grids suggest a stronger tendency to exclude.
+          In the early stages of the evolutionary process shown in Figure 7, the grid appears predominantly green, indicating a probability of 0.5, where the likelihood of selecting or not selecting an item is equal. As the generations progress, the colors gradually shiftl, with probabilities increase toward 1 (red) or decrease toward 0 (blue), reflecting the algorithm's growing certainty in its selections. Redder grids indicate a stronger selection preference, whereas bluer grids suggest a stronger tendency to exclude.
         </p>
 
         <p>
-          A notable observation is the presence of distinct vertical blue stripes within red-dominated regions, indicating that the algorithm has learned to consistently exclude certain high C/P items on the left. This behavior occurs in order to satisfy the knapsack's capacity constraint, choosing instead lower C/P items from the right to construct a feasible yet optimal combination. This phenomenon exemplifies the inherent complexity of the 0/1 knapsack problem, highlighting its NP-complete nature and the nuanced trade-offs involved in combinatorial decision-making—which are precisely what make the problem both extremely challenging and intellectually intriguing.
+          In the later stages of the algorithm, a notable observation is the presence of distinct vertical blue stripes within red-dominated regions, indicating that the algorithm has learned to consistently exclude certain high C/P items on the left. This behavior occurs in order to satisfy the knapsack's capacity constraint, choosing instead lower C/P items from the right to construct a feasible yet optimal combination. This phenomenon exemplifies the inherent complexity of the 0/1 knapsack problem, highlighting its NP-complete nature and the nuanced trade-offs involved in combinatorial decision-making, which are precisely what make the problem both extremely challenging and intellectually intriguing.
         </p>
         
         <div style="display: flex; justify-content: center; gap: 20px;">
@@ -458,7 +452,7 @@
         </div>
 
         <p>
-          One key advantage of the probability model is its ability to expose non-obvious behavioral shifts during the algorithm’s progression. <a href="#Prob_reversal">Figure 8</a> presents a case observed through the interface, where a bit's probability flips from below 0.3 to above 0.7, marking a decisive change in the algorithm’s behavior. This reversal may indicate that the algorithm has escaped a local optimum, shifting toward a new search region. Such turning points, which are difficult to capture from numerical data alone, become immediately apparent through color transitions in the probability matrix.
+          To further demonstrate the interpretive strength of the probability model, Figure 8 presents a representative case that reveals behavioral changes not easily captured from numerical outputs. In this example, a bit's probability flips from below 0.3 to above 0.7, marking a decisive change in the algorithm's behavior. This reversal may indicate that the algorithm has escaped a local optimum and shifted toward a new search region. Such turning points, which are difficult to capture from numerical data alone, become immediately apparent through color transitions in the probability matrix.
         </p>
 
         <!-- 排列最佳化的介面 -->
@@ -468,7 +462,7 @@
           <div class="inside">
             <!-- 上方標題 -->
             <div class="eyebrow">
-              You can interact with the path visualization by playing the animation, which shows how the algorithm iteratively explores and refines routes over generations. Each color-coded line represents a candidate solution at a specific stage, with color intensity indicating path length—from red (longest) to blue (shortest). As the animation progresses, observe how the paths gradually stabilize as the algorithm converges toward the shortest tour.
+              You can interact with the path visualization by playing the animation, which shows how the algorithm iteratively explores and refines routes over generations. Each color-coded line represents a candidate solution at a specific stage, with color intensity indicating path length, where red represents the longest paths and blue represents the shortest ones. As the animation progresses, observe how the paths gradually stabilize as the algorithm converges toward the optimal tour.
             </div>
             <!-- 主內容區塊 -->
             <div style="display: flex; justify-content: center; gap: 20px;">
@@ -480,7 +474,7 @@
             </div>
             <!-- 圖說 -->
             <div class="caption"><b>Figure 9:</b> 
-              Visualization of the optimization process for the burma14 instance in the Traveling Salesman Problem (TSP), using ant colony optimization. The interface dynamically displays evolving routes across generations, with color gradients representing path lengths—red for longer paths, and blue for shorter paths—allowing users to observe convergence toward the optimal solution.
+              Visualization of the optimization process for the burma14 instance in the Traveling Salesman Problem (TSP), using the ant colony optimization algorithm. The interface dynamically displays evolving routes across generations, with color gradients representing path lengths, where red indicates longer paths and blue indicates shorter paths. This enables users to observe the algorithm's convergence toward the optimal solution.
             </div>
           </div>
         </div>
