@@ -171,11 +171,11 @@
         <h2>I. Introduction</h2>
 
         <p>
-          Optimization problems can generally be categorized into two types: numerical optimization problems, which involve continuous real-valued variables, and combinatorial optimization problems, which deal with discrete decision variables such as selection (e.g., choose or not choose) or permutations. Regardless of the type, the primary objective remains the same: to minimize costs while maximizing overall benefits.
+          Optimization problems can generally be categorized into two types: numerical optimization problems, which involve continuous real-valued variables, and combinatorial optimization problems, which deal with discrete decision variables such as binary selections (e.g., inclusion or exclusion of an element) or permutations. Regardless of the type, the primary objective remains the same to achieve an optimal trade-off between competing objectives, such as minimizing cost and maximizing performance.
         </p>
 
         <p>
-          In the business industry, a wide variety of optimization problems are encountered, ranging from well-known combinatorial problems like the 0/1 knapsack problem and the traveling salesman problem (TSP), to more domain-specific applications such as the wireless sensor network deployment [<a href="#ref_4">4</a>], stock selection problem [<a href="#ref_2">2</a>] and circuit synthesis problem. These problems often involve complex decision-making under constraints.
+          In various real world domains, optimization problems across different application areas and levels of complexity are frequently encountered, including the 0/1 knapsack problem and the traveling salesman problem (TSP), to more domain-specific applications such as the wireless sensor network deployment [<a href="#ref_1">1</a>], stock selection problem [<a href="#ref_2">2</a>] and circuit synthesis problem. These problems often involve complex decision-making under constraints.
         </p>
 
         <div style="display: flex; justify-content: center; gap: 20px;">
@@ -186,11 +186,11 @@
         </div>
 
         <p>
-          Take the problem of stock selection as an example, as show in Figure 1. When considering three stocks, each stock can either be selected or not selected, resulting in $2^3 = 8$ possible combinations which ranging from selecting none (000) to selecting all (111). With four stocks, the number of combinations increases to $2^4 = 16$. However, as the number of stocks increases to fifty, the number of possible combinations explodes to $2^{50}$, which exceeds one quadrillion. This exponential growth in complexity renders exhaustive search computationally infeasible within a reasonable timeframe. This makes such problems ideal candidates for advanced optimization techniques, such as metaheuristic algorithms, which are specifically designed to efficiently explore large and complex solution spaces.
+          Take the problem of stock selection as an example, as show in Figure 1. When considering three stocks, each stock can either be selected or not, resulting in $2^3 = 8$ possible combinations which ranging from selecting none (000) to selecting all (111). With four stocks, the number of combinations increases to $2^4 = 16$. However, as the number of stocks increases to fifty, the number of possible combinations explodes to $2^{50}$, which exceeds one quadrillion. This exponential growth in complexity renders exhaustive search computationally infeasible within a reasonable timeframe. This makes such problems ideal candidates for advanced optimization techniques, such as metaheuristic algorithms, which are specifically designed to efficiently explore large and complex solution spaces.
         </p>
 
         <p>
-          Metaheuristic algorithms, such as genetic algorithm (GA)[<a href="#ref_6">6</a>], particle swarm optimization (PSO)[<a href="#ref_7">7</a>], ant colony optimization (ACO)[<a href="#ref_8">8</a>], estimation of the distribution algorithm (EDA)[<a href="#ref_9">9</a>], quantum-inspired evolutionary algorithm (QEA)[<a href="#ref_10">10</a>], and quantum-inspired tabu search algorithm (QTS)[<a href="#ref_11">11</a>], are widely applied to address complex real-world optimization problems. Most metaheuristic algorithms are population-based and iterative in nature. By adapting encoding strategies and problem representations, they can be tailored to solve a variety of problem types and are capable of finding near-optimal solutions within a finite amount of time.
+          Metaheuristic algorithms, such as genetic algorithm (GA)[<a href="#ref_3">3</a>], particle swarm optimization (PSO)[<a href="#ref_4">4</a>], ant colony optimization (ACO)[<a href="#ref_5">5</a>], estimation of the distribution algorithm (EDA)[<a href="#ref_6">6</a>], quantum-inspired evolutionary algorithm (QEA)[<a href="#ref_7">7</a>], and quantum-inspired tabu search algorithm (QTS)[<a href="#ref_8">8</a>], are widely applied to address complex real-world optimization problems. Most metaheuristic algorithms are population-based and operate iteratively to progressively improve candidate solutions. By adapting encoding strategies and problem representations, they can be tailored to solve a variety of problem types and are capable of finding near-optimal solutions within a finite amount of time.
         </p>
 
         <figure id="num_function" class="text-center" style="text-align: center;">
@@ -219,18 +219,18 @@
           <div style="display: flex; justify-content: center; gap: 80px;">
             <div style="text-align: center;">
               <img src="img/Introduction/cmd.svg" style="height: 270px; width: auto;">
-              <p>(a) Text-based log files</p>
+              <p>(a) Text-based log file</p>
             </div>
             <div style="text-align: center;">
               <img src="img/Introduction/excel.svg" style="height: 270px; width: auto;">
-              <p>(b)</p>
+              <p>(b) Excel file</p>
             </div>
           </div>
-          <figcaption style="text-align: left;"><strong>Figure 3:</strong> Traditional methods for analyzing optimization algorithms using (a) text-based log and (b) Excel files. These approaches are commonly employed to track algorithmic performance, but they are often difficult to interpret and inefficient for large-scale or long-term analyses. </figcaption>
+          <figcaption style="text-align: left;"><strong>Figure 3:</strong> Traditional methods to analyzing the results of optimization algorithms using (a) text-based log and (b) Excel files. These approaches are commonly employed to track algorithmic performance, but they are often difficult to interpret and inefficient for large-scale or long-term analyses. </figcaption>
         </figure>
 
         <p>
-          Traditional approaches for analyzing algorithmic performance are illustrated in Figure 3. In earlier studies, researchers typically analyzed the behavior and performance of optimization algorithms through text-based interfaces such as command-line environments, terminal consoles, or the traditional DOS interface, often referred to as the "black window". These environments displayed the optimization process step by step in real time. Alternatively, results were frequently exported to Excel files or other spreadsheet software, where additional analysis could be conducted using log files and manual interpretation.
+          Traditional approaches for analyzing algorithmic performance are illustrated in Figure 3. In earlier studies, researchers typically analyzed the behavior and performance of optimization algorithms through text-based log files such as command-line environments, terminal consoles, or the traditional DOS interface, often referred to as the "black window". These environments displayed the optimization process step by step in real time. Alternatively, results were frequently exported to Excel files or other spreadsheet software, where additional analysis could be conducted using log files and manual interpretation.
         </p>
 
         <div class="framed">
@@ -255,11 +255,11 @@
         </div>
 
         <p>
-          However, analyzing particle movement through command-line outputs often requires manually checking and comparing particle coordinates across iterations.Even with a relatively small setup, such as 100 generations with 20 particles each, this results in 2,000 data points quickly become difficult to analyze, as shown in Figure 4. Determining the direction of movement for each particle becomes time-consuming, unintuitive, and practically infeasible.
+          However, analyzing particle movement through command-line outputs often requires manually checking and comparing particle coordinates across iterations.Even with a relatively small experimental setup, such as 100 generations with 20 particles each, this results in 2,000 data that become difficult to analyze, as shown in Figure 4. Determining the direction of movement for each particle becomes time-consuming, unintuitive, and practically infeasible.
         </p>
 
         <p>
-          To address this challenge, this paper developed a dynamic visualization tool, Evo-Panel2.0, that graphically presents the optimization process in real time. While the previous example illustrates the issue in numerical optimization, similar challenges also occur in combinatorial optimization problems, where the solution space is discrete and exponentially large, making the analysis of search behavior even more difficult. Therefore, this study focuses on developing an interactive visualization interface specifically designed for combinatorial optimization, enabling users to observe and interpret the algorithm’s decision process more intuitively. By facilitating a clearer understanding of how candidate solutions evolve and interact, the interface not only enhances analytical insight but also supports more effective algorithm evaluation, comparison, and improvement.
+          To address this challenge, this paper developed a dynamic visualization tool, Evo-Panel2.0, that graphically presents the optimization process in real time. While the previous example illustrates the issue in numerical optimization, similar challenges also occur in combinatorial optimization problems, where the solution space is discrete and exponentially large, making the analysis of search behavior even more difficult. Therefore, this study focuses on developing an interactive visualization interface specifically designed for combinatorial optimization, enabling users to observe and interpret the algorithm’s decision process more intuitively. By providing a clearer view of how candidate solutions evolve and interact, the interface enhances analytical insight and facilitates more effective algorithm evaluation, comparison, and improvement.
         </p>
         
       </section>
@@ -535,7 +535,7 @@
           <div class="inside">
             <!-- 上方標題 -->
             <div class="eyebrow">
-              You can interact with the map by clicking on grid points to add or remove sensors and toggle between the "Detection Probability" and "Threshold" views using the corresponding button. The goal is to place the minimum number of sensors required to ensure all grid points meet the minimum threshold 0.3.
+              You can interact with the map by clicking on grid points to add or remove sensors. The interface allows testing different map sizes (e.g., 5×5, 10×10, 20×20) with varying sensor counts. The goal is to place the **minimum number of sensors** required to ensure all grid points meet the minimum detection probability threshold of 0.3.
             </div>
             <!-- 主內容區塊 -->
             <div class="interactive-panel">
@@ -574,7 +574,7 @@
             </div>
 
             <div class="caption"><b>Figure 12:</b> 
-              Evo-Panel 2.0: Example of Deployment Optimization for Sensor Placement.
+              Evo-Panel 2.0 Deployment Optimization Interface. This example illustrates the sensor placement problem on three distant map size. Black squares represent deployed sensors, and the color gradient (from red/high to blue/low) indicates the overall detection probability at each grid point. The interface tracks the 'Sensor Count' and 'Map Check' status in real time.
             </div>
           </div>
 
@@ -604,7 +604,7 @@
           <div class="inside">
             <!-- 上方標題 -->
             <div class="eyebrow">
-              You can interact with the map by clicking on grid points to add or remove sensors and toggle between the "Threshold" and "Detection Probability" views using the corresponding button. The goal is to place the minimum number of sensors required to ensure all grid points meet the minimum threshold 0.3.
+              You can interact with the map by clicking on grid points to add or remove sensors to manually refine the solution. The interface supports dynamic analysis by allowing users to "Play/Pause" and step through the optimization process across generations. Users can also toggle between the "Threshold" view (showing pass/fail status) and the "Detection Probability" view (showing the color gradient) to gain deeper insight into the coverage status. The ultimate goal is to place the minimum number of sensors required to ensure all grid points meet the minimum threshold of 0.3.
             </div>
             <!-- 主內容區塊 -->
             <div class="interactive-panel-5050">
@@ -621,7 +621,7 @@
                   <label for="solution"></label>
                   <select id="solution-5050">
                     <option value="1">Self-Optimize</option>
-                    <option value="2">Entanglement-QTS Optimal Process</option>
+                    <option value="2">Sensor Deployment Process Demo</option>
                   </select>
                 </div>
                 <!-- 記錄數字 -->
@@ -660,11 +660,9 @@
             </div>
 
             <div class="caption"><b>Figure 13:</b> 
-              someword to explain.
+              Evo-Panel 2.0 Deployment Optimization Interface on a 50×50 grid displaying the near-optimal solution of 62 sensors found by the Entanglement-QTS algorithm. The interface allows users to manually analyze and refine this solution by adding or removing sensors. The color gradient indicates the overall detection probability (red/high to blue/low), while the objective remains to maintain a 100% coverage rate with the minimum sensors.
             </div>
           </div>
-=
-
           <script src="./panel/map_model_5050.js"></script>
         </div>
 
@@ -679,7 +677,7 @@
             </div>
           </div>
           <figcaption>
-            <strong>Figure 14:</strong> An illustration of a deployment problem in Evo-Panel 2.0. (a) In the early stage of the Entanglement-QTS search, this map is almost red due to the sensor's high density and extensive overlap. (b) In the middle stage, the number of sensors decreases, and some positions display a green color detection probability. (c) At the end of Entanglement-QTS, Evo-Panel 2.0 shows that the entire color of all positions is mostly green, indicating that Entanglement-QTS reduces the cost of the sensor and finds an optimal solution for 62 sensors. (d) Evo-Panel 2.0 shows a demonstration of the connectivity of sensors within a distance of five. (e) Utilizing Evo-Panel 2.0, users have the capacity to manually refine the algorithm's optimal solution. By removing a sensor within the white box, a successful reduction in sensor count is achieved while maintaining adherence to the constraints. (f) Observing <a href="#Deploy_example_50x50">Figure 9f</a>, we identified overcrowding in the black box, prompting the removal of three sensors, resulting in an incomplete map check. (g) Afterward, two sensors were placed within the black box to fulfill the threshold requirement across the entire map, marking the map check status as "complete" once more. Evo-Panel 2.0 enabled users to save data with the final optimized result.
+            <strong>Figure 14:</strong> Human-in-the-Loop Refinement for the Deployment Optimization Problem. This animated GIF illustrates a case study where a user manually refines an algorithm-derived, near-optimal solution (e.g., the 62-sensor configuration on the 50×50 grid). By analyzing the visualized coverage map, the user identifies and corrects instances of sensor redundancy. This interactive process successfully reduces the total sensor count (e.g., to 61 or 60) while maintaining the mandatory 100% coverage constraint (Map Check compliance), demonstrating the tool's capability for post-algorithmic optimization and validation.
           </figcaption>
         </figure>
 
@@ -704,12 +702,11 @@
         <h2>References</h2>
         <ol>
           <li id="ref_1">
-            A Meet-in-the-Middle Algorithm for Fast Synthesis of Depth-Optimal Quantum Circuits
-            <br>
+            Particle Swarm Optimization in Wireless-Sensor Networks: A Brief Survey
             <span>
-              Amy, M.; Maslov, D.; Mosca, M.; Roetteler, M., 2013. 
-              IEEE Transactions on Computer-Aided Design of Integrated Circuits and Systems, 32(6), pp. 818--830. 
-              DOI: 10.1109/TCAD.2013.2244643
+              Kulkarni, R. V.; Venayagamoorthy, G. K., 2011. 
+              IEEE Transactions on Systems, Man, and Cybernetics, Part C (Applications and Reviews), 41(2), pp. 262--267. 
+              DOI: 10.1109/TSMCC.2010.2054080
             </span>
           </li>
           <li id="ref_2">
@@ -722,278 +719,47 @@
             </span>
           </li>
           <li id="ref_3">
-            Optimization method of linear barrier coverage deployment for multistatic radar
-            <br>
-            <span>
-              Li, H.; Feng, D.; Wang, X., 2022. 
-              Journal of Systems Engineering and Electronics, pp. 1--13. 
-              DOI: 10.23919/JSEE.2022.000124
-            </span>
-          </li>
-          <li id="ref_4">
-            Particle Swarm Optimization in Wireless-Sensor Networks: A Brief Survey
-            <span>
-              Kulkarni, R. V.; Venayagamoorthy, G. K., 2011. 
-              IEEE Transactions on Systems, Man, and Cybernetics, Part C (Applications and Reviews), 41(2), pp. 262--267. 
-              DOI: 10.1109/TSMCC.2010.2054080
-            </span>
-          </li>
-          <li id="ref_5">
-            Deep Reinforcement Learning Based Optimization Algorithm for Permutation Flow-Shop Scheduling
-            <span>
-              Pan, Z.; Wang, L.; Wang, J.; Lu, J., 2021. 
-              IEEE Transactions on Emerging Topics in Computational Intelligence, pp. 1--12. 
-              DOI: 10.1109/TETCI.2021.3098354
-            </span>
-          </li>
-          <li id="ref_6">
             Adaptation in Natural and Artificial Systems
             <span>
               Holland, J.H., 1975. 
               The University of Michigan Press.
             </span>
           </li>
-          <li id="ref_7">
+          <li id="ref_4">
             Particle Swarm Optimization
             <span>
               Kennedy, J.; Eberhart, R., 1995. 
               In IEEE International Conference on Neural Networks, pp. 1942--1948.
             </span>
           </li>
-          <li id="ref_8">
+          <li id="ref_5">
             Ant System: Optimization by a Colony of Cooperating Agents
             <span>
               Dorigo, M.; Maniezzo, V.; Colorni, A., 1996. 
               IEEE Transactions on Systems, Man, and Cybernetics, Part B: Cybernetics, 26(1), pp. 29--41.
             </span>
           </li>
-          <li id="ref_9">
+          <li id="ref_6">
             An Introduction and Survey of Estimation of Distribution Algorithms
             <span>
               Hauschild, M.; Pelikan, M., 2011. 
               Swarm and Evolutionary Computation, 1(3), pp. 111--128. Elsevier.
             </span>
           </li>
-          <li id="ref_10">
+          <li id="ref_7">
             Quantum-inspired Evolutionary Algorithm for a Class of Combinatorial Optimization
             <span>
               Han, K.-H.; Kim, J.-H., 2002. 
               IEEE Transactions on Evolutionary Computation, 6(6), pp. 580--593.
             </span>
           </li>
-          <li id="ref_11">
+          <li id="ref_8">
             A Quantum-inspired Tabu Search Algorithm for Solving Combinatorial Optimization Problems
             <span>
               Chiang, H.-P.; Chou, Y.-H.; Chiu, C.-H.; Kuo, S.-Y.; Huang, Y.-M., 2014. 
               Soft Computing, 18(9), pp. 1771--1781.
             </span>
           </li>
-          <li id="ref_12">
-            Explainable Artificial Intelligence (XAI): Concepts, Taxonomies, Opportunities and Challenges Toward Responsible AI
-            <span>
-              Barredo Arrieta, A.; Díaz-Rodríguez, N.; Del Ser, J.; Bennetot, A.; Tabik, S.; Barbado, A.; Garcia, S.; Gil-Lopez, S.; Molina, D.; Benjamins, R.; Chatila, R.; Herrera, F., 2020. 
-              Information Fusion, 58, pp. 82--115.
-            </span>
-          </li>
-          <li id="ref_13">
-            Explainable AI for the Choquet Integral
-            <span>
-              Murray, B. J.; Islam, M. A.; Pinar, A. J.; Anderson, D. T.; Scott, G. J.; Havens, T. C.; Keller, J. M., 2021. 
-              IEEE Transactions on Emerging Topics in Computational Intelligence, 5(4), pp. 520--529. DOI: 10.1109/TETCI.2020.3005682.
-            </span>
-          </li>
-          <li id="ref_14">
-            A Novel Explainable Nature-Inspired Metaheuristic: Jaguar Algorithm with Precision Hunting Behavior
-            <span>
-              Wu, C.-H.; Shen, J.-Y.; Huang, P.-S.; Hua, C.-Y.; Jiang, Y.-C.; Kuo, S.-Y.; Chou, Y.-H., 2022. 
-              In 2022 IEEE International Conference on Systems, Man, and Cybernetics, pp. 1494--1499. DOI: 10.1109/SMC53654.2022.9945207.
-            </span>
-          </li>
-          <li id="ref_15">
-            Semiology of Graphics
-            <span>
-              Bertin, J., 1983. 
-              University of Wisconsin Press. ISBN: 0299090604.
-            </span>
-          </li>
-          <li id="ref_16">
-            A Discrete Binary Version of the Particle Swarm Algorithm
-            <span>
-              Kennedy, J.; Eberhart, R. C., 1997. 
-              In 1997 IEEE International Conference on Systems, Man, and Cybernetics. Computational Cybernetics and Simulation, 5, pp. 4104--4108. DOI: 10.1109/ICSMC.1997.637339.
-            </span>
-          </li>
-          <li id="ref_17">
-            Modeltracker: Redesigning Performance Analysis Tools for Machine Learning
-            <span>
-              Amershi, S.; Chickering, M.; Drucker, S. M.; Lee, B.; Simard, P.; Suh, J., 2015. 
-              In 33rd Annual ACM Conference on Human Factors in Computing Systems, pp. 337--346.
-            </span>
-          </li>
-          <li id="ref_18">
-            The What-If Tool: Interactive Probing of Machine Learning Models
-            <span>
-              Wexler, J.; Pushkarna, M.; Bolukbasi, T.; Wattenberg, M.; Viégas, F.; Wilson, J., 2019. 
-              IEEE Transactions on Visualization and Computer Graphics, 26(1), pp. 56--65. IEEE.
-            </span>
-          </li>
-          <li id="ref_19">
-            StratomeX: Visual Analysis of Large-Scale Heterogeneous Genomics Data for Cancer Subtype Characterization
-            <span>
-              Lex, A.; Streit, M.; Schulz, H.-J.; Partl, C.; Schmalstieg, D.; Park, P. J.; Gehlenborg, N., 2012. 
-              In Computer Graphics Forum, 31(3pt3), pp. 1175--1184. Wiley Online Library.
-            </span>
-          </li>
-          <li id="ref_20">
-            Geono-cluster: Interactive Visual Cluster Analysis for Biologists
-            <span>
-              Das, S.; Saket, B.; Kwon, B. C.; Endert, A., 2020. 
-              IEEE Transactions on Visualization and Computer Graphics, 27(12), pp. 4401--4412. IEEE.
-            </span>
-          </li>
-          <li id="ref_21">
-            PeckVis: A Visual Analytics Tool to Analyze Dominance Hierarchies in Small Groups
-            <span>
-              Coelho, D.; Chase, I.; Mueller, K., 2020. 
-              IEEE Transactions on Visualization and Computer Graphics, 26(4), pp. 1650--1660. IEEE.
-            </span>
-          </li>
-          <li id="ref_22">
-            Visualizing Dynamic Hierarchies in Graph Sequences
-            <span>
-              Vehlow, C.; Beck, F.; Weiskopf, D., 2015. 
-              IEEE Transactions on Visualization and Computer Graphics, 22(10), pp. 2343--2357. IEEE.
-            </span>
-          </li>
-          <li id="ref_23">
-            Optimization Toolbox
-            <span>
-              Matlab, Available at <a href="https://ww2.mathworks.cn/products/optimization.html">https://ww2.mathworks.cn/products/optimization.html</a>.
-            </span>
-          </li>
-          <li id="ref_24">
-            Global Optimization Toolbox
-            <span>
-              Matlab, Available at <a href="https://www.mathworks.com/products/global-optimization.html">https://www.mathworks.com/products/global-optimization.html</a>.
-            </span>
-          </li>
-          <li id="ref_25">
-            Gavel - A New Tool for Genetic Algorithm Visualization
-            <span>
-              Hart, E.; Ross, P., 2001. 
-              IEEE Transactions on Evolutionary Computation, 5(4), pp. 335--348. IEEE.
-            </span>
-          </li>
-          <li id="ref_26">
-            Visualization for Genetic Algorithms
-            <span>
-              Cruz, A. M. L. da, 2014. 
-              PhD thesis, Universidade de Coimbra.
-            </span>
-          </li>
-          <li id="ref_27">
-            Visualizing Genetic Programming Ancestries
-            <span>
-              McPhee, N. F.; Casale, M. M.; Finzel, M.; Helmuth, T.; Spector, L., 2016. 
-              In 2016 on Genetic and Evolutionary Computation Conference Companion, pp. 1419--1426.
-            </span>
-          </li>
-          <li id="ref_28">
-            Viz: A Visual Analysis Suite for Explaining Local Search Behavior
-            <span>
-              Halim, S.; Yap, R. H. C.; Lau, H. C., 2006. 
-              In 19th Annual ACM Symposium on User Interface Software and Technology, pp. 57--66.
-            </span>
-          </li>
-          <li id="ref_29">
-            Visualization System Requirements for Data Processing Pipeline Design and Optimization
-            <span>
-              Von Landesberger, T.; Fellner, D. W.; Ruddle, R. A., 2016. 
-              IEEE Transactions on Visualization and Computer Graphics, 23(8), pp. 2028--2041. IEEE.
-            </span>
-          </li>
-          <li id="ref_30">
-            Visualization and Performance Metric in Many-Objective Optimization
-            <span>
-              He, Z.; Yen, G. G., 2015. 
-              IEEE Transactions on Evolutionary Computation, 20(3), pp. 386--402. IEEE.
-            </span>
-          </li>
-          <li id="ref_31">
-            A Visualization Tool for Observing Metaheuristic Algorithm: Epanel
-            <span>
-              Chou, Y. H.; Kuo, S. Y.; Lai, W. J.; Lai, W. B., 2017. 
-              In 2017 IEEE International Conference on Systems, Man, and Cybernetics, pp. 2826--2831. IEEE.
-            </span>
-          </li>
-          <li id="ref_32">
-            Low-Dimensional Euclidean Embedding for Visualization of Search Spaces in Combinatorial Optimization
-            <span>
-              Michalak, K., 2019. 
-              In Genetic and Evolutionary Computation Conference Companion, pp. 27--28.
-            </span>
-          </li>
-          <li id="ref_33">
-            A Library for Visualizing Combinatorial Structures
-            <span>
-              Najork, M. A.; Brown, M. H., 1994. 
-              In Proceedings Visualization'94, pp. 164--171. IEEE.
-            </span>
-          </li>
-          <li id="ref_34">
-            EPanel 2.0: The Visualization Tool for Combinatorial Optimization and Deployment Problem
-            <span>
-              Yang, C. Y.; Yang, L. S.; Kuo, S. Y.; Chou, Y. H., 2018. 
-              In 2018 IEEE International Conference on Systems, Man, and Cybernetics, pp. 1558--1563. IEEE.
-            </span>
-          </li>
-          <li id="ref_35">
-            Entanglement-Enhanced Quantum-Inspired Tabu Search Algorithm for Function Optimization
-            <span>
-              Kuo, S. Y.; Chou, Y. H., 2017. 
-              IEEE Access, 5, pp. 13236--13252. 
-              DOI: 10.1109/ACCESS.2017.2723538.
-            </span>
-          </li>
-          <li id="ref_36">
-            Quantum-Inspired Algorithm for Cyber-Physical Visual Surveillance Deployment Systems
-            <span>
-              Kuo, S. Y.; Chou, Y. H.; Chen, C. Y., 2017. 
-              Computer Networks, 117, pp. 5--18. ISSN: 1389-1286.
-            </span>
-          </li>
-          <li id="ref_37">
-            TSP LIB: A Library of Benchmark Instances for the Traveling Salesman Problem
-            <span>
-              Office Research Group Discrete Optimization, Heidelberg University, 1995. 
-              Available at <a href="http://comopt.ifi.uni-heidelberg.de/software/TSPLIB95/">http://comopt.ifi.uni-heidelberg.de/software/TSPLIB95/</a>.
-            </span>
-          </li>
-          <li id="ref_38">
-            A Novel Portfolio Optimization with Short Selling Using GNQTS and Trend Ratio
-            <span>
-              Jiang, Y.; Cheam, X.J.; Chen, C.Y.; Kuo, S.Y.; Chou, Y.H., 2018. 
-              In 2018 IEEE International Conference on Systems, Man, and Cybernetics, pp. 1564--1569. IEEE.
-            </span>
-          </li>
-          <li id="ref_39">
-            Portfolio Optimization Considering Diversified Investment Methods Using GNQTS and Trend Ratio
-            <span>
-              Kuo, S.Y.; Jiang, Y.C.; Yeoh, W.L.; Chou, Y.H., 2018. 
-              In 2018 IEEE International Conference on Systems, Man, and Cybernetics, pp. 3938--3943. IEEE.
-            </span>
-          </li>
-          <li id="ref_40">
-            A Novel Portfolio Optimization Model Based on Trend Ratio and Evolutionary Computation
-            <span>
-              Chou, Y.H.; Kuo, S.Y.; Jiang, Y.C., 2019. 
-              IEEE Transactions on Emerging Topics in Computational Intelligence, 3(4), pp. 337--350. 
-              DOI: 10.1109/TETCI.2018.2868939.
-            </span>
-          </li>
-          
-          
-
         </ol>
       </section>
     </div>
