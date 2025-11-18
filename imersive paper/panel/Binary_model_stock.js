@@ -725,6 +725,7 @@ document.addEventListener('DOMContentLoaded', function () {
   toggleViewBtn.addEventListener('click', () => {
     showAllParticles = !showAllParticles;
     toggleViewBtn.textContent = showAllParticles ? 'View Generations' : 'View Particles';
+    yLabel.textContent = showAllParticles ? 'Iter.' : 'Gen.';
     updateGrid();
   });
   // 顯示或隱藏粒子資訊
