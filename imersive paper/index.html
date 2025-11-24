@@ -235,11 +235,11 @@
 
         <div class="framed">
           <div class="inside">
-            <!-- 上方標題 -->
+            <!-- 上方標�? -->
             <div class="eyebrow">
               Click the video to observe how particle information is densely displayed across generations. This interactive clip demonstrates the difficulty of manually analyzing optimization processes using traditional text-based outputs.
             </div>
-            <!-- 主內容區塊 -->
+            <!-- 主內容�?�?-->
             <div style="display: flex; justify-content: center;">
               <figure id="Cmd_text_log_file" class="text-center" style="text-align: center;">
                 <video controls style="max-width: 60%; height: auto;">
@@ -247,7 +247,7 @@
                 </video>
               </figure>
             </div>
-            <!-- 圖說 -->
+            <!-- ?�說 -->
             <div class="caption"><b>Figure 4:</b> 
               A video frame showing the text-based output of an optimization algorithm, where each generation includes the coordinates and fitness values of multiple particles. As the number of generations and particles increases, interpreting such outputs becomes visually overwhelming and analytically inefficient, emphasizing the need for more intuitive visualization tools.
             </div>
@@ -259,58 +259,58 @@
         </p>
 
         <p>
-          To address this challenge, this paper developed a dynamic visualization tool, Evo-Panel2.0, that graphically presents the optimization process in real time. While the previous example illustrates the issue in numerical optimization, similar challenges also occur in combinatorial optimization problems, where the solution space is discrete and exponentially large, making the analysis of search behavior even more difficult. Therefore, this study focuses on developing an interactive visualization interface specifically designed for combinatorial optimization, enabling users to observe and interpret the algorithm’s decision process more intuitively. By providing a clearer view of how candidate solutions evolve and interact, the interface enhances analytical insight and facilitates more effective algorithm evaluation, comparison, and improvement.
+          To address this challenge, this paper developed a dynamic visualization tool, Evo-Panel2.0, that graphically presents the optimization process in real time. While the previous example illustrates the issue in numerical optimization, similar challenges also occur in combinatorial optimization problems, where the solution space is discrete and exponentially large, making the analysis of search behavior even more difficult. Therefore, this study focuses on developing an interactive visualization interface specifically designed for combinatorial optimization, enabling users to observe and interpret the algorithm?�s decision process more intuitively. By providing a clearer view of how candidate solutions evolve and interact, the interface enhances analytical insight and facilitates more effective algorithm evaluation, comparison, and improvement.
         </p>
         
       </section>
 
       <section id="proposed visualization tool">
 
-        <!-- 組合最佳化的介面 -->
-        <h2>III. Proposed Visualization Tool</h2>
+        <!-- 組�??�佳�??��???-->
+        <h2>II. Proposed Visualization Tool</h2>
         <p>
           This section presents Evo-Panel 2.0, a unified visualization tool designed to make the behavior of metaheuristic algorithms more interpretable and interactive. The tool provides real-time graphical feedback that transforms complex numerical results into intuitive visual representations, allowing users to observe how candidate solutions evolve and interact during the search process. The visualization tool integrates three interfaces, each targeting a specific type of combinatorial optimization problem. The following subsections describe these interfaces in detail, highlighting their functions and visualization benefits.
         </p>
 
         <h3>General Combinatorial Optimization Interface</h3>
 
-        <!--第一張evo-panel互動圖片-->
+        <!--第�?張evo-panel互�??��?-->
         <div class="framed">
           <div class="inside">
-            <!-- 上方標題 -->
+            <!-- 上方標�? -->
             <div class="eyebrow">
-              You can interact with the visualization by using the control panel below the interface. The Play/Pause button allows you to start or stop the animation, while the speed controls let you adjust the playback rate. You can also drag the progress bar to navigate to a specific generation of interest. To support deeper analysis, the interface provides additional tools: clicking “View Particles” shows all individuals in the selected generation, with the local best solution highlighted in red and the local worst in blue; clicking “Show Information” reveals detailed attributes for each particle, offering further insights into the algorithm’s behavior.
+              You can interact with the visualization by using the control panel below the interface. The Play/Pause button allows you to start or stop the animation, while the speed controls let you adjust the playback rate. You can also drag the progress bar to navigate to a specific generation of interest. To support deeper analysis, the interface provides additional tools: clicking ?�View Particles??shows all individuals in the selected generation, with the local best solution highlighted in red and the local worst in blue; clicking ?�Show Information??reveals detailed attributes for each particle, offering further insights into the algorithm?�s behavior.
             </div>
-            <!-- 主內容區塊 -->
+            <!-- 主內容�?�?-->
             <div class="interactive-panel-Binary">
               <!-- Left Clickable Box -->
               <div id="DynVisBox" class="DynVis-box-Binary">
-                <!-- 顯示粒子資訊 -->
+                <!-- 顯示粒�?資�? -->
                 <div id="particle-info-overlay" class="particle-info-overlay"></div>
               </div>
-              <!-- bit 資訊顯示 -->
+              <!-- bit 資�?顯示 -->
               <div id="bit-tooltip" class="bit-tooltip"></div>
 
-              <!-- Fitness 顯示區 -->
+              <!-- Fitness 顯示?� -->
               <div id="fitness-container"></div>
       
               <!-- Status Bar -->
               <div id="status-bar-Binary" class="status-bar-Binary" style="display: none;"></div>
             </div>
 
-            <!-- 拖拉進度條&進度條顯示區 -->
+            <!-- ?��??�度�??�度條顯示�? -->
             <div id="generation-progress-container" class="generation-progress-container">
               <div id="generation-progress-bar" class="generation-progress-bar"></div>
               <div id="generation-progress-text" class="generation-progress-text">1 / 1000 (generation)</div>
             </div>
 
-            <!-- 下方控制按鈕 -->
+            <!-- 下方?�制?��? -->
             <div class="control-panel">
-              <!-- 輸入檔案 -->
+              <!-- 輸入檔�? -->
               <input type="file" id="file-input-Binary" accept=".epin" />
-              <!-- 播放暫停 -->
+              <!-- ?�放?��? -->
               <button id="play-pause-btn-Binary">Play</button>
-              <!-- 播放加速減速 -->
+              <!-- ?�放?�速�???-->
               <div class="speed-control-container">
                 <button id="speed-up-btn-Binary">+</button>
                 <span id="speed-display-Binary">Speed: 32x</span>
@@ -318,23 +318,23 @@
               </div>
             </div>
             <div class="button-panel">
-              <!-- 機率模式 -->
+              <!-- 機�?模�? -->
               <!-- <button id="toggle-status-bar">Probability Model</button> -->
-              <!-- 查看粒子 -->
+              <!-- ?��?粒�? -->
               <button id="toggle-view-particles">View Particles</button>
-              <!-- 顯示資訊模式 -->
+              <!-- 顯示資�?模�? -->
               <button id="toggle-particle-info">Show Information</button>
             </div>
 
             <!-- Label -->
-            <!-- Y 軸標籤 (Generation) -->
+            <!-- Y 軸�?�?(Generation) -->
             <div id="y-axis-label" class="axis-label">Gen.</div>
-            <!-- X 軸標籤 (Bit) -->
+            <!-- X 軸�?�?(Bit) -->
             <div id="x-axis-label" class="axis-label">Bit</div>
-            <!-- Fitness 軸標籤 -->
+            <!-- Fitness 軸�?�?-->
             <div id="fitness-axis-label" class="axis-label">Fitness</div>
-            <!-- Fitness 標籤上方的顏色說明 -->
-            <div id="fitness-color-legend" class="axis-label">□ :0  ■ :1</div>
+            <!-- Fitness 標籤上方?��??�說??-->
+            <div id="fitness-color-legend" class="axis-label">??:0  ??:1</div>
 
             <div class="caption"><b>Figure 5:</b> 
               Combinatorial optimization visualization interface applied to the 0/1 knapsack problem using a genetic algorithm. This interface enables users to trace solution evolution across generations.
@@ -365,40 +365,40 @@
 
         <div class="framed">
           <div class="inside">
-            <!-- 上方標題 -->
+            <!-- 上方標�? -->
             <div class="eyebrow">
               You can interact with the visualization by clicking the "Probability / General Model" button to display selection probabilities for each bit. The color gradient reflects how likely an item is to be selected: red indicates high probability, blue indicates low probability, and green indicates uncertainty (around 0.5). As the algorithm evolves, observe how these colors shift, revealing how the algorithm learns to favor or avoid certain items to satisfy constraints and improve fitness.
             </div>
-            <!-- 主內容區塊 -->
+            <!-- 主內容�?�?-->
             <div class="interactive-panel-Binary-stock">
               <!-- Left Clickable Box -->
               <div id="DynVisBox-stock" class="DynVis-box-Binary-stock">
-                <!-- 顯示粒子資訊 -->
+                <!-- 顯示粒�?資�? -->
                 <div id="particle-info-overlay-stock" class="particle-info-overlay-stock"></div>
               </div>
-              <!-- bit 資訊顯示 -->
+              <!-- bit 資�?顯示 -->
               <div id="bit-tooltip-stock" class="bit-tooltip-stock"></div>
 
-              <!-- Fitness 顯示區 -->
+              <!-- Fitness 顯示?� -->
               <div id="fitness-container-stock"></div>
       
               <!-- Status Bar -->
               <div id="status-bar-Binary-stock" class="status-bar-Binary-stock" style="display: block;"></div>
             </div>
 
-            <!-- 拖拉進度條&進度條顯示區 -->
+            <!-- ?��??�度�??�度條顯示�? -->
             <div id="generation-progress-container-stock" class="generation-progress-container-stock">
               <div id="generation-progress-bar-stock" class="generation-progress-bar-stock"></div>
               <div id="generation-progress-text-stock" class="generation-progress-text-stock">1 / 60 (generation)</div>
             </div>
 
-            <!-- 下方控制按鈕 -->
+            <!-- 下方?�制?��? -->
             <div class="control-panel-stock">
-              <!-- 輸入檔案 -->
+              <!-- 輸入檔�? -->
               <input type="file" id="file-input-Binary-stock" accept=".epin" />
-              <!-- 播放暫停 -->
+              <!-- ?�放?��? -->
               <button id="play-pause-btn-Binary-stock">Play</button>
-              <!-- 播放加速減速 -->
+              <!-- ?�放?�速�???-->
               <div class="speed-control-container-stock">
                 <button id="speed-up-btn-Binary-stock">+</button>
                 <span id="speed-display-Binary-stock">Speed: 16x</span>
@@ -406,23 +406,23 @@
               </div>
             </div>
             <div class="button-panel-stock">
-              <!-- 機率模式 -->
+              <!-- 機�?模�? -->
               <button id="toggle-status-bar-stock">General Model</button>
-              <!-- 機率模式 -->
+              <!-- 機�?模�? -->
               <button id="toggle-view-particles-stock">View Particles</button>
-              <!-- 顯示資訊模式 -->
+              <!-- 顯示資�?模�? -->
               <button id="toggle-particle-info-stock">Show Information</button>
             </div>
 
             <!-- Label -->
-            <!-- Y 軸標籤 (Generation) -->
+            <!-- Y 軸�?�?(Generation) -->
             <div id="y-axis-label-stock" class="axis-label">Gen.</div>
-            <!-- X 軸標籤 (Bit) -->
+            <!-- X 軸�?�?(Bit) -->
             <div id="x-axis-label-stock" class="axis-label">Bit</div>
-            <!-- Fitness 軸標籤 -->
+            <!-- Fitness 軸�?�?-->
             <div id="fitness-axis-label-stock" class="axis-label">Fitness</div>
-            <!-- Fitness 標籤上方的顏色說明 -->
-            <div id="fitness-color-legend-stock" class="axis-label">□ :0  ■ :1</div>
+            <!-- Fitness 標籤上方?��??�說??-->
+            <div id="fitness-color-legend-stock" class="axis-label">??:0  ??:1</div>
 
             <div class="caption"><b>Figure 7:</b> 
               Visualization of selection probabilities in a probabilistic optimization model. A color gradient from red to blue represents the likelihood of item selection, enabling users to track how the algorithm gradually shifts from randomness to confident selection decisions across generations.
@@ -433,7 +433,7 @@
         </div>
 
         <p>
-          In addition to binary selection (0 or 1), some algorithms incorporate probabilistic decision-making mechanisms. For example, several algorithms determine item selection based on probability values rather than fixed binary choices. By clicking the "Probability" button in the interface, users can visualize each particle’s probability using a color gradient ranging from red to blue.
+          In addition to binary selection (0 or 1), some algorithms incorporate probabilistic decision-making mechanisms. For example, several algorithms determine item selection based on probability values rather than fixed binary choices. By clicking the "Probability" button in the interface, users can visualize each particle?�s probability using a color gradient ranging from red to blue.
         </p>
 
         <p>
@@ -455,16 +455,16 @@
           To further demonstrate the interpretive strength of the probability model, Figure 8 presents a representative case that reveals behavioral changes not easily captured from numerical outputs. In this example, a bit's probability flips from below 0.3 to above 0.7, marking a decisive change in the algorithm's behavior. This reversal may indicate that the algorithm has escaped a local optimum and shifted toward a new search region. Such turning points, which are difficult to capture from numerical data alone, become immediately apparent through color transitions in the probability matrix.
         </p>
 
-        <!-- 排列最佳化的介面 -->
+        <!-- ?��??�佳�??��???-->
         <h3>Permutation Combinatorial Optimization Interface</h3>
 
         <div class="framed">
           <div class="inside">
-            <!-- 上方標題 -->
+            <!-- 上方標�? -->
             <div class="eyebrow">
-              You can interact with the path visualization by playing the animation, which shows how the algorithm iteratively explores and refines routes over generations. Each color-coded line represents a candidate solution at a specific stage, with color intensity indicating path length, where red represents the longest paths and blue represents the shortest ones. As the animation progresses, observe how the paths gradually stabilize as the algorithm converges toward the optimal tour.
+              You can interact with the path visualization by playing the animation, which illustrates how the algorithm iteratively explores and refines routes across generations. Each color-coded line represents a candidate solution at a specific stage, with the color indicating the relative path length,red denoting the longest paths and blue representing the shortest ones. As the animation progresses, the color and path shape show minimal change in the final stages, indicating that the optimization process gradually stabilizes as the algorithm converges toward the optimal tour.
             </div>
-            <!-- 主內容區塊 -->
+            <!-- 主內容�?�?-->
             <div style="display: flex; justify-content: center; gap: 20px;">
               <figure id="burma14" class="text-center" style="text-align: center;">
                 <video controls style="max-width: 60%; height: auto;">
@@ -472,23 +472,23 @@
                 </video>
               </figure>
             </div>
-            <!-- 圖說 -->
+            <!-- ?�說 -->
             <div class="caption"><b>Figure 9:</b> 
-              Visualization of the optimization process for the burma14 instance in the Traveling Salesman Problem (TSP), using the ant colony optimization algorithm. The interface dynamically displays evolving routes across generations, with color gradients representing path lengths, where red indicates longer paths and blue indicates shorter paths. This enables users to observe the algorithm's convergence toward the optimal solution.
+              This visualization illustrates the optimization process for the burma14 instance in the Traveling Salesman Problem (TSP) using the Ant Colony Optimization (ACO) algorithm. The interface dynamically presents the evolution of routes across generations, with distinct colors indicating ranked path lengths, including red, orange, green, and blue representing the longest to shortest paths, respectively. This visualization allows users to observe how the algorithm explores the solution space and gradually converges toward the optimal route.
             </div>
           </div>
         </div>
 
         <p>
-          This section presents a visualization interface designed for analyzing permutation-based optimization problems, using the Traveling Salesman Problem (TSP) as an example. This interface allows users to observe how the algorithm searches for the optimal route through dynamic path visualization. For demonstration purposes, we utilize classic benchmark data from the TSP Library, which provides a variety of well-known problem instances.
+          This section presents a visualization interface designed for analyzing permutation-based optimization problems, using the Traveling Salesman Problem (TSP) as an example. This interface allows users to observe how the algorithm searches for the optimal route through dynamic path visualization. For demonstration purposes, we utilize classic benchmark data from the TSP Library, burma 14, which provides a variety of well-known problem instances.
         </p>
 
         <p>
-          In this case, we selected the burma14 instance for ease of observation. The system plots a map of 14 cities in Myanmar, and the evolving routes are displayed with a color gradient representing path length—red for longer paths and blue for shorter ones. Through this visualization, users can clearly observe the algorithm’s progress, and in this instance, it has already converged to the shortest known path for the problem.
+          The system plots a map of 14 cities in Myanmar, and the evolving routes are displayed with a color gradient representing path length?�red for longer paths and blue for shorter ones. Through this visualization, users can clearly observe the algorithm?�s progress, and in this instance, it has already converged to the shortest known path for the problem.
         </p>
 
         <p>
-          However, as the number of cities increases, the solution space grows factorially, significantly increasing the complexity of the problem. To further engage users and provide an intuitive understanding of the algorithm’s behavior in such complex cases, we have also developed an interactive game mode interface in addition to the analysis mode.
+          However, as the number of cities increases, the solution space grows factorially, significantly increasing the complexity of the problem. To further engage users and provide an intuitive understanding of the algorithm?�s behavior in such complex cases, we have also developed an interactive game mode interface in addition to the analysis mode.
         </p>
 
         <figure id="Permutation_game_mod" class="text-center" style="text-align: left;">
@@ -503,7 +503,7 @@
         </figure>
 
         <p>
-          Upon selecting the Taiwan map, the interface begins by allowing users to connect cities. As connections are made, the system displays the travel cost—for example, from Taitung to Kaohsiung—on the right side of the screen. To facilitate intuitive observation, the connecting lines are color-coded based on distance or cost: red indicates a longer or more expensive route, while blue represents a shorter or more economical one. If a high-cost route is chosen and appears in red, users are encouraged to reconsider and select a more efficient path.
+          Upon selecting the Taiwan map, the interface begins by allowing users to connect cities. As connections are made, the system displays the travel cost?�for example, from Taitung to Kaohsiung?�on the right side of the screen. To facilitate intuitive observation, the connecting lines are color-coded based on distance or cost: red indicates a longer or more expensive route, while blue represents a shorter or more economical one. If a high-cost route is chosen and appears in red, users are encouraged to reconsider and select a more efficient path.
         </p>
 
         <p>
@@ -525,19 +525,19 @@
         </figure>
 
         <p>
-          As the number of cities increases—such as in the United States or Europe map—the problem quickly escalates into a highly complex optimization task. By leveraging the power of the crowd, the interactive game interface not only enhances user engagement but also contributes to the discovery of high-quality or even optimal solutions. The more participants engage with the game, the more collective effort is directed toward solving the problem, effectively transforming gameplay into a form of distributed research collaboration.
+          As the number of cities increases?�such as in the United States or Europe map?�the problem quickly escalates into a highly complex optimization task. By leveraging the power of the crowd, the interactive game interface not only enhances user engagement but also contributes to the discovery of high-quality or even optimal solutions. The more participants engage with the game, the more collective effort is directed toward solving the problem, effectively transforming gameplay into a form of distributed research collaboration.
         </p>
 
-        <!-- 擺放最佳化的介面 -->
+        <!-- ?�放?�佳�??��???-->
         <h3>Deployment Optimization Interface</h3>
 
         <div id="sensor-deployment-panel" class="framed">
           <div class="inside">
-            <!-- 上方標題 -->
+            <!-- 上方標�? -->
             <div class="eyebrow">
-              You can interact with the map by clicking on grid points to add or remove sensors. The interface allows testing different map sizes (e.g., 5×5, 10×10, 20×20) with varying sensor counts. The goal is to place the **minimum number of sensors** required to ensure all grid points meet the minimum detection probability threshold of 0.3.
+              You can interact with the map by clicking on grid points to add or remove sensors. The interface allows testing different map sizes (e.g., 5?5, 10?10, 20?20) with varying sensor counts. The goal is to place the **minimum number of sensors** required to ensure all grid points meet the minimum detection probability threshold of 0.3.
             </div>
-            <!-- 主內容區塊 -->
+            <!-- 主內容�?�?-->
             <div class="interactive-panel">
               <!-- Left Clickable Box -->
               <div id="clickable-box" class="clickable-box"></div>
@@ -550,14 +550,14 @@
                 <div>
                   <label for="solution">Map Size: </label>
                   <select id="solution">
-                    <option value="1">5 × 5 map 1 sensor</option>
-                    <option value="2">10 × 10 map 4 sensor</option>
-                    <option value="3">20 × 20 map 16 sensor</option>
-                    <option value="4">20 × 20 map 12 sensor</option>
+                    <option value="1">5 ? 5 map 1 sensor</option>
+                    <option value="2">10 ? 10 map 4 sensor</option>
+                    <option value="3">20 ? 20 map 16 sensor</option>
+                    <option value="4">20 ? 20 map 12 sensor</option>
                   </select>
                 </div>
       
-                <!-- 記錄數字 -->
+                <!-- 記�??��? -->
                 <div>Sensor Count: <span id="gbest" class="bold-text"></span></div>
                 <div>Map Check: <span id="map-check" class="bold-text"></span></div>
                 <!-- 標籤 (Legend) -->
@@ -582,11 +582,11 @@
         </div>
 
         <p>
-          The last interface focuses on deployment-based optimization, commonly encountered in scenarios involving large-scale public events, such as New Year’s Eve concerts or political rallies. In such situations, a critical question arises: How many mobile base stations are needed, and where should they be placed to ensure adequate communication quality for all attendees? In <a href="#sensor-deployment-panel">Figure 12</a>, black squares indicate the positions of deployed base stations (or sensors), while the color gradient from red to blue represents varying levels of detection or signal coverage probability.
+          The last interface focuses on deployment-based optimization, commonly encountered in scenarios involving large-scale public events, such as New Year?�s Eve concerts or political rallies. In such situations, a critical question arises: How many mobile base stations are needed, and where should they be placed to ensure adequate communication quality for all attendees? In <a href="#sensor-deployment-panel">Figure 12</a>, black squares indicate the positions of deployed base stations (or sensors), while the color gradient from red to blue represents varying levels of detection or signal coverage probability.
         </p>
 
         <p>
-          For example, on a 5×5 grid, a single sensor can sufficiently satisfy the monitoring requirements. On a 10×10 grid, only four sensors are required. However, when the grid size increases to 20×20—which is 16 times larger in area—one might assume that 16 sensors are necessary. In reality, the overall coverage probability is determined by subtracting the probability that a given point is not detected by any sensor from 1:
+          For example, on a 5?5 grid, a single sensor can sufficiently satisfy the monitoring requirements. On a 10?10 grid, only four sensors are required. However, when the grid size increases to 20?20?�which is 16 times larger in area?�one might assume that 16 sensors are necessary. In reality, the overall coverage probability is determined by subtracting the probability that a given point is not detected by any sensor from 1:
         </p>
 
         <div class="equation">
@@ -597,16 +597,16 @@
         </div>
 
         <p>
-          where $\mathcal{P}_p$ represents the overall detection probability of grid $p$, $P_p^s$ denotes the probability that sensor $s$ detects grid $p$, and $V_p$ is the set of all sensors capable of detecting grid $p$. For instance, when a grid is monitored by two or more sensors, its detection probability increases—visually transitioning from blue to green on the map. As a result, only 12 sensors are required to satisfy the coverage conditions for the entire grid.
+          where $\mathcal{P}_p$ represents the overall detection probability of grid $p$, $P_p^s$ denotes the probability that sensor $s$ detects grid $p$, and $V_p$ is the set of all sensors capable of detecting grid $p$. For instance, when a grid is monitored by two or more sensors, its detection probability increases?�visually transitioning from blue to green on the map. As a result, only 12 sensors are required to satisfy the coverage conditions for the entire grid.
         </p>
 
         <div id="sensor-deployment-50x50panel" class="framed">
           <div class="inside">
-            <!-- 上方標題 -->
+            <!-- 上方標�? -->
             <div class="eyebrow">
               You can interact with the map by clicking on grid points to add or remove sensors to manually refine the solution. The interface supports dynamic analysis by allowing users to "Play/Pause" and step through the optimization process across generations. Users can also toggle between the "Threshold" view (showing pass/fail status) and the "Detection Probability" view (showing the color gradient) to gain deeper insight into the coverage status. The ultimate goal is to place the minimum number of sensors required to ensure all grid points meet the minimum threshold of 0.3.
             </div>
-            <!-- 主內容區塊 -->
+            <!-- 主內容�?�?-->
             <div class="interactive-panel-5050">
               <!-- Left Clickable Box -->
               <div id="clickable-box-5050" class="clickable-box-5050"></div>
@@ -624,7 +624,7 @@
                     <option value="2">Sensor Deployment Process Demo</option>
                   </select>
                 </div>
-                <!-- 記錄數字 -->
+                <!-- 記�??��? -->
                 <div>Sensor Count: <span id="gbest-5050" class="bold-text"></span></div>
                 <div>Map Check: <span id="map-check-5050" class="bold-text"></span></div>
                 <!-- 標籤 (Legend) -->
@@ -660,14 +660,14 @@
             </div>
 
             <div class="caption"><b>Figure 13:</b> 
-              Evo-Panel 2.0 Deployment Optimization Interface on a 50×50 grid displaying the near-optimal solution of 62 sensors found by the Entanglement-QTS algorithm. The interface allows users to manually analyze and refine this solution by adding or removing sensors. The color gradient indicates the overall detection probability (red/high to blue/low), while the objective remains to maintain a 100% coverage rate with the minimum sensors.
+              Evo-Panel 2.0 Deployment Optimization Interface on a 50?50 grid displaying the near-optimal solution of 62 sensors found by the Entanglement-QTS algorithm. The interface allows users to manually analyze and refine this solution by adding or removing sensors. The color gradient indicates the overall detection probability (red/high to blue/low), while the objective remains to maintain a 100% coverage rate with the minimum sensors.
             </div>
           </div>
           <script src="./panel/map_model_5050.js"></script>
         </div>
 
         <p>
-          When the grid size increases to 50×50, the problem complexity escalates to $2^{2500}$ possible combinations, making exhaustive search computationally infeasible. In such cases, optimization algorithms become essential for identifying high-quality solutions within a reasonable time. In previous studies, international researchers successfully submitted a solution using 63 sensors to the IEEE International Conference on Communications (ICC). Later, a more refined solution using only 62 sensors was accepted and published in the journal Computer Networks, demonstrating the effectiveness of algorithmic approaches in tackling such large-scale deployment problems.
+          When the grid size increases to 50?50, the problem complexity escalates to $2^{2500}$ possible combinations, making exhaustive search computationally infeasible. In such cases, optimization algorithms become essential for identifying high-quality solutions within a reasonable time. In previous studies, international researchers successfully submitted a solution using 63 sensors to the IEEE International Conference on Communications (ICC). Later, a more refined solution using only 62 sensors was accepted and published in the journal Computer Networks, demonstrating the effectiveness of algorithmic approaches in tackling such large-scale deployment problems.
         </p>
 
         <figure id="Deploy_example_50x50" class="text-center" style="text-align: left;">
@@ -677,7 +677,7 @@
             </div>
           </div>
           <figcaption>
-            <strong>Figure 14:</strong> Human-in-the-Loop Refinement for the Deployment Optimization Problem. This animated GIF illustrates a case study where a user manually refines an algorithm-derived, near-optimal solution (e.g., the 62-sensor configuration on the 50×50 grid). By analyzing the visualized coverage map, the user identifies and corrects instances of sensor redundancy. This interactive process successfully reduces the total sensor count (e.g., to 61 or 60) while maintaining the mandatory 100% coverage constraint (Map Check compliance), demonstrating the tool's capability for post-algorithmic optimization and validation.
+            <strong>Figure 14:</strong> Human-in-the-Loop Refinement for the Deployment Optimization Problem. This animated GIF illustrates a case study where a user manually refines an algorithm-derived, near-optimal solution (e.g., the 62-sensor configuration on the 50?50 grid). By analyzing the visualized coverage map, the user identifies and corrects instances of sensor redundancy. This interactive process successfully reduces the total sensor count (e.g., to 61 or 60) while maintaining the mandatory 100% coverage constraint (Map Check compliance), demonstrating the tool's capability for post-algorithmic optimization and validation.
           </figcaption>
         </figure>
 
@@ -686,15 +686,23 @@
         </p>
 
         <p>
-          This approach highlights the potential of crowdsourced computation, where individuals without formal research training—but with strong problem-solving intuition through gameplay—can contribute to discovering improved solutions and assist researchers in addressing complex optimization challenges.
+          This approach highlights the potential of crowdsourced computation, where individuals without formal research training?�but with strong problem-solving intuition through gameplay?�can contribute to discovering improved solutions and assist researchers in addressing complex optimization challenges.
         </p>
 
       </section>
      
       <section id="conclusion">
-        <h2>V. Conclusion</h2>
+        <h2>III. Conclusion</h2>
         <p>
-          Evo-Panel 2.0 stands as an invaluable and precise tool, providing dynamic visual representations of metaheuristic algorithms solving combinatorial optimization problems. Firstly, it replaces extensive textual data with a visualization interface, streamlining algorithms and optimization problem analyses through vivid graphical depictions. Visualization expedites analytical processes, renders tedious tasks more engaging, deepens user comprehension of metaheuristic concepts and optimization problems, and liberates mental resources for future algorithmic enhancements. Secondly, Evo-Panel 2.0 offers versatile interfaces catering to distinct characteristics of combinatorial optimization problems, including general 'choose or not' interfaces, deployment interfaces for solutions with strong dependencies, and permutation interfaces for sequential solutions. Additionally, it incorporates a probability model tailored for probabilistic metaheuristics. Thirdly, our visualization tool offers interactive features, such as media player control bars for meticulous algorithmic observation and sensor manipulation within the deployment interface to refine metaheuristic solutions. Fourthly, Evo-Panel 2.0's compatibility with all metaheuristics and optimization technologies, sans the need for specific programming knowledge for analysis file generation, underscores its flexibility. Lastly, the visualization tool helps eXplainable Artificial Intelligence (XAI) by making it easier to understand how computational intelligence works and revealing hidden insights that can help developers make better, easier to understand metaheuristics that can be used to solve a wide range of business optimization problems.
+         Evo-Panel 2.0 provides a dynamic visualization tool designed to support the analysis of metaheuristic algorithms in combinatorial optimization problems. Firstly, it replaces extensive textual data with a visualization interface, facilitating the analysis of algorithms and optimization processes through vivid interactive and dynamic visual representations. Visualization expedites analytical processes, improves the interpretability of algorithmic outputs, enhances users’ comprehension of metaheuristic concepts and optimization processes.
+         Secondly, Evo-Panel 2.0 offers versatile interfaces catering to distinct characteristics of combinatorial optimization problems, including general 'choose or not' interfaces, deployment interfaces for solutions with strong spatial or structural dependencies, and permutation interfaces for sequential solutions. Additionally, it incorporates a probability model tailored for probabilistic metaheuristics. 
+         Thirdly, our visualization tool offers interactive features, such as media player control bars for in-depth algorithmic observation and sensor manipulation within the deployment interface to refine metaheuristic solutions. 
+         Fourthly, Evo-Panel 2.0 is compatible with all metaheuristics and optimization frameworks and does not require programming expertise to generate analytical outputs, highlighting its practicality and broad applicability for researchers employing diverse optimization approaches.
+         Lastly, the visualization tool helps eXplainable Artificial Intelligence (XAI) improve the interpretability of computational intelligence models.
+         By presenting algorithmic behavior in an intuitive visual form, Evo-Panel 2.0 assists researchers and developers in effectively evaluating and refining metaheuristic strategies.
+         <!--problems--><!--, and liberates mental resources for future algorithmic enhancements--><!--meticulous--><!--file generation, underscores its flexibility.-->
+         <!-- making it easier to understand how computational intelligence works and revealing hidden insights that can help developers make better, easier to understand metaheuristics that can be used to solve a wide range of business optimization problems.--><!-- the need for-->
+         <!--Evo-Panel 2.0 stands as an invaluable and precise tool, providing dynamic visual representations of metaheuristic algorithms solving combinatorial optimization problems. -->  <!--streamlining algorithms and optimization problem analyses--> <!--graphical depictions--><!--renders tedious tasks more engaging, deepens user-->
         </p>
       </section>
       <!-- References section -->
