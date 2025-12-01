@@ -171,26 +171,26 @@
         <h2>I. Introduction</h2>
 
         <p>
-          Optimization problems can generally be categorized into two types: numerical optimization problems, which involve continuous real-valued variables, and combinatorial optimization problems, which deal with discrete decision variables such as binary selections (e.g., inclusion or exclusion of an element) or permutations. Regardless of the type, the primary objective remains the same to achieve an optimal trade-off between competing objectives, such as minimizing cost and maximizing performance.
+          Optimization problems can generally be categorized into two types: numerical optimization problems, which involve continuous real-valued variables, and combinatorial optimization problems, which deal with discrete decision variables such as binary selections (e.g., inclusion or exclusion of an element) or permutations. Regardless of the type, the primary objective remains the same: to achieve an optimal trade-off between competing objectives, such as minimizing cost and maximizing profit.
         </p>
 
         <p>
-          In various real world domains, optimization problems across different application areas and levels of complexity are frequently encountered, including the 0/1 knapsack problem and the traveling salesman problem (TSP), to more domain-specific applications such as the wireless sensor network deployment [<a href="#ref_1">1</a>], stock selection problem [<a href="#ref_2">2</a>] and circuit synthesis problem. These problems often involve complex decision-making under constraints.
+          In various real-world domains, optimization problems across different application areas and levels of complexity are frequently encountered, including the 0/1 knapsack problem [<a href="#ref_1">1</a>] and the traveling salesman problem (TSP) [<a href="#ref_2">2</a>], to more domain-specific applications such as the wireless sensor network deployment [<a href="#ref_3">3</a>], stock selection problem [<a href="#ref_4">4</a>] and circuit synthesis problem [<a href="#ref_5">5</a>]. These problems often involve complex decision-making under constraints.
         </p>
 
         <div style="display: flex; justify-content: center; gap: 20px;">
           <figure id="DJIA_stock_example" style="text-align: center;">
             <img src="img/Stock_example.svg" style="max-width: 90%; height: auto;">
-            <figcaption style="text-align: left;"><strong>Figure 1:</strong> Exponential growth of combinatorial possibilities in stock selection. The figure illustrates how the number of combinations expands rapidly with the number of available stocks. Even a moderate increase from three to fifty stocks results in an astronomical growth in possible selections, highlighting the phenomenon of combinatorial explosion. </figcaption>
+            <figcaption style="text-align: left;"><strong>Figure 1:</strong> Exponential growth of combinatorial possibilities in stock selection. The figure illustrates how the number of combinations expands rapidly with the number of available stocks. Even a moderate increase from three to fifty stocks, results in an astronomical growth in possible selections, highlighting the phenomenon of combinatorial explosion. </figcaption>
           </figure>
         </div>
 
         <p>
-          Take the problem of stock selection as an example, as show in Figure 1. When considering three stocks, each stock can either be selected or not, resulting in $2^3 = 8$ possible combinations which ranging from selecting none (000) to selecting all (111). With four stocks, the number of combinations increases to $2^4 = 16$. However, as the number of stocks increases to fifty, the number of possible combinations explodes to $2^{50}$, which exceeds one quadrillion. This exponential growth in complexity renders exhaustive search computationally infeasible within a reasonable timeframe. This makes such problems ideal candidates for advanced optimization techniques, such as metaheuristic algorithms, which are specifically designed to efficiently explore large and complex solution spaces.
+          Take the problem of stock selection as an example, as shown in Figure 1. When considering three stocks, each stock can either be selected or not, resulting in $2^3 = 8$ possible combinations ranging from selecting none (000) to selecting all (111). With four stocks, the number of combinations increases to $2^4 = 16$. However, as the number of stocks increases to fifty, the number of possible combinations explodes to $2^{50}$, which exceeds one quadrillion. This exponential growth in complexity renders exhaustive search computationally infeasible within a reasonable timeframe. This makes such problems ideal candidates for advanced optimization techniques, such as metaheuristic algorithms, which are specifically designed to efficiently explore large and complex solution spaces.
         </p>
 
         <p>
-          Metaheuristic algorithms, such as genetic algorithm (GA)[<a href="#ref_3">3</a>], particle swarm optimization (PSO)[<a href="#ref_4">4</a>], ant colony optimization (ACO)[<a href="#ref_5">5</a>], estimation of the distribution algorithm (EDA)[<a href="#ref_6">6</a>], quantum-inspired evolutionary algorithm (QEA)[<a href="#ref_7">7</a>], and quantum-inspired tabu search algorithm (QTS)[<a href="#ref_8">8</a>], are widely applied to address complex real-world optimization problems. Most metaheuristic algorithms are population-based and operate iteratively to progressively improve candidate solutions. By adapting encoding strategies and problem representations, they can be tailored to solve a variety of problem types and are capable of finding near-optimal solutions within a finite amount of time.
+          Metaheuristic algorithms, such as genetic algorithm (GA)[<a href="#ref_6">6</a>], particle swarm optimization (PSO)[<a href="#ref_7">7</a>], ant colony optimization (ACO)[<a href="#ref_8">8</a>], estimation of the distribution algorithm (EDA)[<a href="#ref_9">9</a>], quantum-inspired evolutionary algorithm (QEA)[<a href="#ref_10">10</a>], and quantum-inspired tabu search algorithm (QTS)[<a href="#ref_11">11</a>], are widely applied to address complex real-world optimization problems. Most metaheuristic algorithms are population-based and operate iteratively to progressively improve candidate solutions. By adapting encoding strategies and problem formulations, they can be tailored to solve a variety of problem types and are capable of finding near-optimal solutions within a finite amount of time.
         </p>
 
         <figure id="num_function" class="text-center" style="text-align: center;">
@@ -226,7 +226,7 @@
               <p>(b) Excel file</p>
             </div>
           </div>
-          <figcaption style="text-align: left;"><strong>Figure 3:</strong> Traditional methods to analyzing the results of optimization algorithms using (a) text-based log and (b) Excel files. These approaches are commonly employed to track algorithmic performance, but they are often difficult to interpret and inefficient for large-scale or long-term analyses. </figcaption>
+          <figcaption style="text-align: left;"><strong>Figure 3:</strong> Traditional methods for analyzing the results of optimization algorithms using (a) text-based log and (b) Excel files. These approaches are commonly employed to track algorithmic performance, but they are often difficult to interpret and inefficient for large-scale or long-term analyses. </figcaption>
         </figure>
 
         <p>
@@ -249,17 +249,17 @@
             </div>
             <!-- 圖說 -->
             <div class="caption"><b>Figure 4:</b> 
-              A video frame showing the text-based output of an optimization algorithm, where each generation includes the coordinates and fitness values of multiple particles. As the number of generations and particles increases, interpreting such outputs becomes visually overwhelming and analytically inefficient, emphasizing the need for more intuitive visualization tools.
+              A full video showing the text-based output of an optimization algorithm, where each generation includes the coordinates and fitness values of multiple particles. As the number of generations and particles increases, interpreting such outputs becomes visually overwhelming and analytically inefficient, emphasizing the need for more intuitive visualization tools.
             </div>
           </div>
         </div>
 
         <p>
-          However, analyzing particle movement through command-line outputs often requires manually checking and comparing particle coordinates across iterations.Even with a relatively small experimental setup, such as 100 generations with 20 particles each, this results in 2,000 data that become difficult to analyze, as shown in Figure 4. Determining the direction of movement for each particle becomes time-consuming, unintuitive, and practically infeasible.
+          However, analyzing particle movement through command-line outputs often requires manually checking and comparing particle coordinates across iterations. Even with a relatively small experimental setup, such as 100 generations with 20 particles each, this results in 2,000 data points that become difficult to analyze, as shown in Figure 4. Determining the direction of movement for each particle is time-consuming, unintuitive, and practically infeasible.
         </p>
 
         <p>
-          To address this challenge, this paper developed a dynamic visualization tool, Evo-Panel2.0, that graphically presents the optimization process in real time. While the previous example illustrates the issue in numerical optimization, similar challenges also occur in combinatorial optimization problems, where the solution space is discrete and exponentially large, making the analysis of search behavior even more difficult. Therefore, this study focuses on developing an interactive visualization interface specifically designed for combinatorial optimization, enabling users to observe and interpret the algorithm's decision process more intuitively. By providing a clearer view of how candidate solutions evolve and interact, the interface enhances analytical insight and facilitates more effective algorithm evaluation, comparison, and improvement.
+          To address this challenge, we developed a dynamic visualization tool, Evo-Panel2.0, that graphically presents the optimization process in real time. While the previous example illustrates the issue in numerical optimization, similar challenges also occur in combinatorial optimization problems, where the solution space is discrete and exponentially large, making the analysis of search behavior even more difficult. This aligns with the growing need for explainable artificial intelligence (XAI) [<a href="#ref_12">12</a>, <a href="#ref_13">13</a>, <a href="#ref_14">14</a>], which emphasizes transparency in algorithmic decision processes. Therefore, this study focuses on developing an interactive visualization interface specifically designed for combinatorial optimization, enabling users to observe and interpret the algorithm's decision process more intuitively. By providing a clearer view of how candidate solutions evolve and interact, the interface enhances analytical insight and facilitates more effective algorithm evaluation, comparison, and improvement.
         </p>
         
       </section>
@@ -268,7 +268,7 @@
 
         <h2>II. Proposed Visualization Tool</h2>
         <p>
-          This section presents Evo-Panel 2.0, a unified visualization tool designed to make the behavior of metaheuristic algorithms more interpretable and interactive. The tool provides real-time graphical feedback that transforms complex numerical results into intuitive visual representations, allowing users to observe how candidate solutions evolve and interact during the search process. The visualization tool integrates three interfaces, each targeting a specific type of combinatorial optimization problem. The following subsections describe these interfaces in detail, highlighting their functions and visualization benefits.
+          Visualization plays a crucial role in helping users interpret complex data from a fresh perspective and understand optimization results more intuitively. As the saying goes, "A picture is worth a thousand words," and graphic representations remain one of the most fundamental cognitive tools developed by the human mind [<a href="#ref_15">15</a>]. This section presents Evo-Panel 2.0, a unified visualization tool designed to make the behavior of metaheuristic algorithms more interpretable and interactive. The tool provides real-time graphical feedback that transforms complex numerical results into intuitive visual representations, allowing users to observe how candidate solutions evolve and interact during the search process. The visualization tool includes three specialized interfaces, each targeting a specific type of combinatorial optimization problem. The following subsections describe these interfaces in detail, highlighting their functions and visualization benefits.
         </p>
 
         <h3>General Combinatorial Optimization Interface</h3>
@@ -277,7 +277,7 @@
           <div class="inside">
             <!-- 上方標題 -->
             <div class="eyebrow">
-              You can interact with the visualization by using the control panel below the interface. The Play/Pause button allows you to start or stop the animation, while the speed controls let you adjust the playback rate. You can also drag the progress bar to navigate to a specific generation of interest. To support deeper analysis, the interface provides additional tools: clicking "View Particles" shows all individuals in the selected generation, with the local best solution highlighted in red and the local worst in blue; clicking "Show Information" reveals detailed attributes for each particle, offering further insights into the algorithm's behavior.
+              You can interact with the visualization by using the control panel below the interface. The Play/Pause button allows you to start or stop the animation, while the speed controls let you adjust the playback rate. You can also drag the progress bar to navigate to a specific generation. To support deeper analysis, the interface provides additional tools: clicking "View Particles" shows selection status of all individuals, with the local best solution highlighted in red and the local worst in blue; clicking "Show Information" reveals detailed informations for each particle, offering further insights into the algorithm's behavior.
             </div>
             <!-- 主內容區域 -->
             <div class="interactive-panel-Binary">
@@ -334,7 +334,7 @@
             <div id="fitness-color-legend" class="axis-label">??:0  ??:1</div>
 
             <div class="caption"><b>Figure 5:</b> 
-              Combinatorial optimization visualization interface applied to the 0/1 knapsack problem using a genetic algorithm. This interface enables users to trace solution evolution across generations.
+              Combinatorial optimization visualization interface applied to the 0/1 knapsack problem using a genetic algorithm. This interface enables users to track solution evolution across generations.
             </div>
           </div>
 
@@ -342,25 +342,25 @@
         </div>
 
         <p>
-          As illustrated in Figure 5, the combinatorial optimization visualization mode displays each candidate solution as a binary grid, where black cells represent selected items and white cells denote unselected items. Each horizontal row corresponds to one generation, with the generation index shown on the left and the associated fitness value on the right. The bottom-most red row highlights the global best solution identified during the evolutionary process. In the early stage of evolution, item selections appear random, but as the genetic algorithm performs selection, crossover, and mutation, the population gradually converges toward higher-quality solutions.
+          As illustrated in Figure 5, the combinatorial optimization visualization mode displays each candidate solution as a row of grid, where black cells represent selected items and white cells denote unselected items. Each horizontal row corresponds to one generation, with the generation index shown on the left and the associated fitness value on the right. The bottom red row under the "View Generation" highlights the global best solution identified during the evolutionary process. In the early stage of evolution, item selections appear random, but after the genetic algorithm performs selection, crossover, and mutation, the population gradually converges toward higher-quality solutions.
         </p>
 
         <div style="display: flex; justify-content: center; gap: 20px;">
           <figure id="DJIA_stock_example" class="text-center" style="text-align: center;">
             <img src="img/01knapsack.svg" style="max-width: 70%; height: auto;">
-            <figcaption style="text-align: left;"><strong>Figure 6:</strong> Item configuration for the 0/1 knapsack problem, where items are arranged in descending order of cost-performance (C/P) ratio from left to right. Each type consists of 10 items with increasing weight and value, resulting in a decreasing C/P ratio from 6.00 to 1.50.</figcaption>
+            <figcaption style="text-align: left;"><strong>Figure 6:</strong> Item configuration for the 0/1 knapsack problem, where items are arranged in descending order of cost-performance (CP) ratio from left to right. Each type contains 10 items with increasing weight and value, resulting in a decreasing CP ratio from 6.00 to 1.50.</figcaption>
           </figure>
         </div>
 
         <p>
-          As shown in Figure 6, the demonstration configures the items in descending order of cost-performance (C/P) ratio, so that items on the left have higher value-to-weight efficiency compared to those on the right. This arrangement makes it easier to observe the algorithm's learning behavior. As illustrated in the later stages of evolution in Figure 5, the black cells, representing selected items, tend to accumulate toward the left side, indicating that the algorithm progressively learns to favor items with higher cost-effectiveness. This visual progression, made observable through Evo-Panel 2.0, allows users to intuitively track how the algorithm shifts its preference toward more cost-effective items.
+          As shown in Figure 6, the demonstration configures the items in descending order of cost-performance (CP) ratio, so that items on the left have higher value-to-weight efficiency compared to items on the right. This arrangement makes it easier to observe the algorithm's learning behavior. As illustrated during the later stages of evolution in Figure 5, the black cells represent the selected items, tend to accumulate toward the left side, indicating that the algorithm progressively learns to favor items with higher CP ratio. This visual progression, visualized by Evo-Panel 2.0, allows users to intuitively track how the algorithm adjusts its preference toward more cost-effective items.
         </p>
 
         <div class="framed">
           <div class="inside">
             <!-- 上方標�? -->
             <div class="eyebrow">
-              You can interact with the visualization by clicking the "Probability / General Model" button to display selection probabilities for each bit. The color gradient reflects how likely an item is to be selected: red indicates high probability, blue indicates low probability, and green indicates uncertainty (around 0.5). As the algorithm evolves, observe how these colors shift, revealing how the algorithm learns to favor or avoid certain items to satisfy constraints and improve fitness.
+              You can interact with the visualization by clicking the "Probability / General Model" button, Probability mode can display selection probabilities for each bit. Moreover, the color gradient reflects how likely an item is to be selected: red indicates high probability, blue indicates low probability, and green indicates uncertainty (around 0.5). As the algorithm evolves, observe how these colors shift, revealing how the algorithm learns to favor or avoid certain items to satisfy constraints and improve fitness.
             </div>
             <!-- 主內容�?�?-->
             <div class="interactive-panel-Binary-stock">
@@ -418,7 +418,7 @@
             <div id="fitness-color-legend-stock" class="axis-label">??:0  ??:1</div>
 
             <div class="caption"><b>Figure 7:</b> 
-              Visualization of selection probabilities in a probabilistic optimization model. A color gradient from red to blue represents the likelihood of item selection, enabling users to track how the algorithm gradually shifts from randomness to confident selection decisions across generations.
+              Visualization of selection probabilities in the Probability Model. A color gradient from red to blue represents the likelihood of item selection, enabling users to track how the algorithm gradually shifts from randomness to confident selection decisions across generations.
             </div>
           </div>
 
@@ -426,15 +426,15 @@
         </div>
 
         <p>
-          In addition to binary selection (0 or 1), some algorithms incorporate probabilistic decision-making mechanisms. For example, several algorithms determine item selection based on probability values rather than fixed binary choices. By clicking the "Probability" button in the interface, users can visualize each particle's probability using a color gradient ranging from red to blue.
+          In addition to binary selection (0 or 1), some algorithms incorporate probabilistic decision-making mechanisms, such as QEA [<a href="#ref_10">10</a>], quantum-inspired differential evolution (QDE) [<a href="#ref_16">16</a>], QTS [<a href="#ref_11">11</a>], and quantum-inspired binary PSO [<a href="#ref_17">17</a>]. These algorithms determine item selection based on probability values rather than fixed binary choices. In the Probability Model interface, users can visualize each particle's probability using a color gradient ranging from red to blue.
         </p>
 
         <p>
-          In the early stages of the evolutionary process shown in Figure 7, the grid appears predominantly green, indicating a probability of 0.5, where the likelihood of selecting or not selecting an item is equal. As the generations progress, the colors gradually shiftl, with probabilities increase toward 1 (red) or decrease toward 0 (blue), reflecting the algorithm's growing certainty in its selections. Redder grids indicate a stronger selection preference, whereas bluer grids suggest a stronger tendency to exclude.
+          In the early stages of the evolutionary process shown in Figure 7, the grid appears predominantly green, indicating a probability of 0.5, where the likelihood of selecting or not selecting an item is equal. As the generations progress, the colors gradually shift, with probabilities increasing toward 1 (red) or decreasing toward 0 (blue), reflecting the algorithm's growing certainty in its selections. Redder grids indicate a stronger selection preference, whereas bluer grids suggest a stronger tendency to exclude.
         </p>
 
         <p>
-          In the later stages of the algorithm, a notable observation is the presence of distinct vertical blue stripes within red-dominated regions, indicating that the algorithm has learned to consistently exclude certain high C/P items on the left. This behavior occurs in order to satisfy the knapsack's capacity constraint, choosing instead lower C/P items from the right to construct a feasible yet optimal combination. This phenomenon exemplifies the inherent complexity of the 0/1 knapsack problem, highlighting its NP-complete nature and the nuanced trade-offs involved in combinatorial decision-making, which are precisely what make the problem both extremely challenging and intellectually intriguing.
+          In the later stages of the algorithm, a notable observation is the presence of distinct vertical blue stripes within the regions that are predominantly red yet correspond to relatively high CP values, indicating that the algorithm has learned to consistently exclude certain high C/P items on the left. This behavior occurs in order to satisfy the knapsack's capacity constraint, leading to the choice of lower C/P items from the right to construct a feasible yet optimal combination. This phenomenon exemplifies the inherent complexity of the 0/1 knapsack problem and highlights its NP-complete nature. The nuanced trade-offs in combinatorial decision-making make the problem both challenging and intellectually intriguing.
         </p>
         
         <div style="display: flex; justify-content: center; gap: 20px;">
@@ -445,7 +445,7 @@
         </div>
 
         <p>
-          To further demonstrate the interpretive strength of the probability model, Figure 8 presents a representative case that reveals behavioral changes not easily captured from numerical outputs. In this example, a bit's probability flips from below 0.3 to above 0.7, marking a decisive change in the algorithm's behavior. This reversal may indicate that the algorithm has escaped a local optimum and shifted toward a new search region. Such turning points, which are difficult to capture from numerical data alone, become immediately apparent through color transitions in the probability matrix.
+          To further highlight the interpretability of the probability model, Figure 8 presents a representative case that reveals behavioral changes not easily captured from text log files. In this example, a bit's probability flips from below 0.3 to above 0.7 across generation from 1488 to 1489, marking a decisive change in the algorithm's behavior. This reversal may indicate that the algorithm has escaped a local optimum and shifted toward a new search region. Such turning points are difficult to capture from numerical data alone but are instead made immediately apparent through color transitions in our visualization tool.
         </p>
 
 
@@ -453,35 +453,35 @@
 
         <div class="framed">
           <div class="inside">
-            <!-- 上方標�? -->
+            <!-- 上方標示 -->
             <div class="eyebrow">
-              You can interact with the path visualization by playing the animation, which illustrates how the algorithm iteratively explores and refines routes across generations. Each color-coded line represents a candidate solution at a specific stage, with the color indicating the relative path length,red denoting the longest paths and blue representing the shortest ones. As the animation progresses, the color and path shape show minimal change in the final stages, indicating that the optimization process gradually stabilizes as the algorithm converges toward the optimal tour.
+              You can play the animation to visualize the path, which illustrates how the algorithm iteratively explores and refines routes across generations. Each connected sequence of colorful lines represents a candidate solution at a specific stage, with the color indicating the relative path length, red denoting the longest paths and blue representing the shortest ones. As the animation progresses, the color and path shape show minimal change in the final stages, indicating that the optimization process gradually stabilizes as the algorithm converges toward the optimal tour.
             </div>
-            <!-- 主內容�?�?-->
+            <!-- 主內容-->
             <div style="display: flex; justify-content: center; gap: 20px;">
-              <figure id="burma14" class="text-center" style="text-align: center;">
+              <figure id="Burma14" class="text-center" style="text-align: center;">
                 <video controls style="max-width: 60%; height: auto;">
                   <source src="img/Permutation interface.mp4" type="video/mp4">
                 </video>
               </figure>
             </div>
-            <!-- ?�說 -->
+            <!-- 圖說 -->
             <div class="caption"><b>Figure 9:</b> 
-              This visualization illustrates the optimization process for the burma14 instance in the Traveling Salesman Problem (TSP) using the Ant Colony Optimization (ACO) algorithm. The interface dynamically presents the evolution of routes across generations, with distinct colors indicating ranked path lengths, including red, orange, green, and blue representing the longest to shortest paths, respectively. This visualization allows users to observe how the algorithm explores the solution space and gradually converges toward the optimal route.
+              This visualization illustrates the optimization process for the Burma14 instance in the TSP using the ACO algorithm. The interface dynamically presents the evolution of routes across generations, with distinct colors indicating ranked path lengths, including red, orange, green, and blue representing the longest to shortest paths, respectively. This visualization allows users to observe how the algorithm explores the solution space and gradually converges toward the optimal route.
             </div>
           </div>
         </div>
 
         <p>
-          This section presents a visualization interface designed for analyzing permutation-based optimization problems, using the Traveling Salesman Problem (TSP) as an example. This interface allows users to observe how the algorithm searches for the optimal route through dynamic path visualization. For demonstration purposes, we utilize classic benchmark data from the TSP Library, burma 14, which provides a variety of well-known problem instances.
+          This section presents a visualization interface designed for analyzing permutation-based optimization problems, using the Traveling Salesman Problem (TSP) as an example. This interface allows users to observe how the algorithm searches for the optimal route through dynamic path visualization. For demonstration purposes, we utilize classic benchmark data from the TSP Library [<a href="#ref_18">18</a>], Burma 14, which provides a variety of well-known problem instances.
         </p>
 
         <p>
-          The system plots a map of 14 cities in Myanmar, and the evolving routes are displayed with a color gradient representing path length?�red for longer paths and blue for shorter ones. Through this visualization, users can clearly observe the algorithm?�s progress, and in this instance, it has already converged to the shortest known path for the problem.
+          Evo-Panel 2.0 plots a map of 14 cities in Myanmar, as shown in Figure 9, the evolving routes are displayed with a color gradient representing path length, red for longer paths and blue for shorter ones. Through this visualization, users can easily observe the algorithm’s progress, which in this case has converged to the shortest known path.
         </p>
 
         <p>
-          However, as the number of cities increases, the solution space grows factorially, significantly increasing the complexity of the problem. To further engage users and provide an intuitive understanding of the algorithm?�s behavior in such complex cases, we have also developed an interactive game mode interface in addition to the analysis mode.
+          However, as the number of cities increases, the solution space grows factorially, significantly increasing the complexity of the problem. To further engage users and provide an intuitive understanding of the algorithm's behavior in such complex cases, we have also developed an interactive game mode interface alongside the analysis mode.
         </p>
 
         <figure id="Permutation_game_mod" class="text-center" style="text-align: left;">
@@ -491,16 +491,16 @@
             </div>
           </div>
           <figcaption>
-            <strong>Figure 10:</strong> The interface presents a map of Taiwan where users connect cities by selecting routes. Travel costs are shown on the right, and path colors provide visual cues, with blue indicating efficient routes and red representing less favorable ones. Certain paths may be blocked due to constraints, encouraging users to revise their choices to complete all required connections.
+            <strong>Figure 10:</strong> The interface displays a map of Taiwan where users connect cities by selecting routes. Travel costs are shown on the right, and the colors of the paths serve as visual cues, with blue indicating efficient routes and red representing less favorable ones. Certain paths may be blocked due to constraints, encouraging users to adjust their selections in order to complete all required connections.
           </figcaption>
         </figure>
 
         <p>
-          Upon selecting the Taiwan map, the interface begins by allowing users to connect cities. As connections are made, the system displays the travel cost?�for example, from Taitung to Kaohsiung?�on the right side of the screen. To facilitate intuitive observation, the connecting lines are color-coded based on distance or cost: red indicates a longer or more expensive route, while blue represents a shorter or more economical one. If a high-cost route is chosen and appears in red, users are encouraged to reconsider and select a more efficient path.
+          Upon selecting the Taiwan map, the interface allows users to connect cities. As connections are made, the system displays the travel cost, for example, from Taitung to Kaohsiung, on the right side of the screen is 78.58. To facilitate intuitive observation, the connecting lines are colored based on distance or cost: red indicates a longer or more expensive route, while blue represents a shorter or more economical one. If a high-cost route is chosen and appears in red, users are encouraged to reconsider and select a more efficient path.
         </p>
 
         <p>
-          In addition, the system simulates real-world traffic constraints. For instance, a landslide between Nantou and Hualien may prevent direct travel, mirroring real-life industrial scenarios involving constraint-based optimization. These features not only enhance the realism of the problem but also increase the game's engagement and educational value. Once the user successfully completes all the connections within the given constraints, the system displays a "Good job" message.
+          In addition, the system simulates real-world traffic constraints. For instance, a landslide between Nantou and Hualien may prevent direct travel, mirroring real-life industrial scenarios involving constraint-based optimization. These features not only enhance the realism of the problem but also increase the game's engagement and educational value. When the user successfully completes all the connections within the given constraints, the system displays a "Good job" message.
         </p>
         
         <figure id="USA_EUR_game_mods" class="text-center" style="text-align: center;">
@@ -518,19 +518,18 @@
         </figure>
 
         <p>
-          As the number of cities increases?�such as in the United States or Europe map?�the problem quickly escalates into a highly complex optimization task. By leveraging the power of the crowd, the interactive game interface not only enhances user engagement but also contributes to the discovery of high-quality or even optimal solutions. The more participants engage with the game, the more collective effort is directed toward solving the problem, effectively transforming gameplay into a form of distributed research collaboration.
+          As the number of cities increases, such as in the United States or Europe map, the problem quickly escalates into a highly complex optimization task. By leveraging the power of the crowd, the interactive game interface not only enhances user engagement but also contributes to the discovery of high-quality or even optimal solutions. The more participants engage with the game, the more collective effort is directed toward solving the problem, effectively transforming gameplay into a form of distributed research collaboration.
         </p>
 
-        <!-- ?�放?�佳�??��???-->
         <h3>Deployment Optimization Interface</h3>
 
         <div id="sensor-deployment-panel" class="framed">
           <div class="inside">
-            <!-- 上方標�? -->
+            <!-- 上方標示 -->
             <div class="eyebrow">
-              You can interact with the map by clicking on grid points to add or remove sensors. The interface allows testing different map sizes (e.g., 5?5, 10?10, 20?20) with varying sensor counts. The goal is to place the **minimum number of sensors** required to ensure all grid points meet the minimum detection probability threshold of 0.3.
+              You can interact with the map by clicking on grid points to add or remove sensors. The interface allows testing different map sizes (e.g., 5 &times; 5, 10 &times; 10, 20 &times; 20) with varying sensor counts. The goal is to place the minimum number of sensors required to ensure all grid points meet the minimum detection probability threshold of 0.3.
             </div>
-            <!-- 主內容�?�?-->
+            <!-- 主內容-->
             <div class="interactive-panel">
               <!-- Left Clickable Box -->
               <div id="clickable-box" class="clickable-box"></div>
@@ -567,7 +566,7 @@
             </div>
 
             <div class="caption"><b>Figure 12:</b> 
-              Evo-Panel 2.0 Deployment Optimization Interface. This example illustrates the sensor placement problem on three distant map size. Black squares represent deployed sensors, and the color gradient (from red/high to blue/low) indicates the overall detection probability at each grid point. The interface tracks the 'Sensor Count' and 'Map Check' status in real time.
+              Evo-Panel 2.0 Deployment Optimization Interface. This example illustrates the sensor placement problem on three distinct map sizes. Black squares represent deployed sensors, and the color gradient (from red/high to blue/low) indicates the overall detection probability at each grid point. The interface tracks the 'Sensor Count' and 'Map Check' status in real time.
             </div>
           </div>
 
@@ -575,11 +574,11 @@
         </div>
 
         <p>
-          The last interface focuses on deployment-based optimization, commonly encountered in scenarios involving large-scale public events, such as New Year?�s Eve concerts or political rallies. In such situations, a critical question arises: How many mobile base stations are needed, and where should they be placed to ensure adequate communication quality for all attendees? In <a href="#sensor-deployment-panel">Figure 12</a>, black squares indicate the positions of deployed base stations (or sensors), while the color gradient from red to blue represents varying levels of detection or signal coverage probability.
+        The last interface focuses on deployment-based optimization, commonly encountered in scenarios involving large-scale public events, such as New Year's Eve concerts or political rallies. In such situations, a critical question arises: How many mobile base stations are required, and where should they be located to ensure adequate communication quality for all attendees? In <a href="#sensor-deployment-panel">Figure 12</a>, black squares indicate the positions of deployed base stations (or sensors), while the color gradient from red to blue represents varying levels of detection or signal coverage probability.
         </p>
 
         <p>
-          For example, on a 5 &times; 5 grid, a single sensor can sufficiently satisfy the monitoring requirements. On a 10?10 grid, only four sensors are required. However, when the grid size increases to 20 &times; 20?�which is 16 times larger in area?�one might assume that 16 sensors are necessary. In reality, the overall coverage probability is determined by subtracting the probability that a given point is not detected by any sensor from 1:
+          For example, on a 5 &times; 5 grid, a single sensor can sufficiently satisfy the monitoring requirements. On a 10 &times; 10 grid, only four sensors are required. However, when the grid size increases to 20 &times; 20, which is 16 times larger in area, one might assume that 16 sensors are necessary. In reality, the overall coverage probability is determined by 1 minus the probability that a given point is not detected by any sensor, as detailed in the related distance-probabilistic detection model [<a href="#ref_19">19</a>]:
         </p>
 
         <div class="equation">
@@ -590,7 +589,7 @@
         </div>
 
         <p>
-          where $\mathcal{P}_p$ represents the overall detection probability of grid $p$, $P_p^s$ denotes the probability that sensor $s$ detects grid $p$, and $V_p$ is the set of all sensors capable of detecting grid $p$. For instance, when a grid is monitored by two or more sensors, its detection probability increases?�visually transitioning from blue to green on the map. As a result, only 12 sensors are required to satisfy the coverage conditions for the entire grid.
+          where $\mathcal{P}_p$ represents the overall detection probability of grid point $p$, $P_p^s$ denotes the probability that sensor $s$ detects grid point $p$, and $V_p$ is the set of all sensors capable of detecting grid point $p$. For instance, when a grid point is monitored by two or more sensors, its detection probability increases, visually transitioning from blue to green on the map. As a result, only 12 sensors are required to satisfy the coverage conditions for the entire grid.
         </p>
 
         <div id="sensor-deployment-50x50panel" class="framed">
@@ -660,9 +659,12 @@
         </div>
 
         <p>
-          In Fig. 13, Evo-Panel 2.0 offers two visualization modes Self-Optimize and Sensor Deployment Process Demo, each designed to support intuitive understanding of the deployment optimization problem.
-         In the Self-Optimize mode, the interface initially presents one of the near-optimal deployment solutions generated by the Entanglement-QTS algorithm. Users may interact directly with the interface by adding or removing sensors, thereby refining the layout while referencing the color gradient map that indicates the overall detection probability (red for high and blue for low). This interactive configuration significantly enhances user engagement and provides an intuitive means for exploring how sensor placement affects overall coverage performance.
-         trajectory.The Sensor Deployment Process Demo mode, in contrast, visualizes the evolutionary search trajectory. It illustrates how a population of candidate solutions transitions from random initialization to convergence. Throughout the process, Evo-Panel 2.0 makes it straightforward to observe changes in sensor count, positional adjustments, and convergence behaviors, even within large-scale solution spaces. For instance, when the grid size expands to 50 × 50, the problem complexity escalates to 2<sup>2500</sup> possible combinations, rendering exhaustive search infeasible. In such cases, advanced optimization algorithms are indispensable for identifying high-quality solutions within practical time constraints. Notably, prior work reported a competitive solution using 63 sensors, submitted to the IEEE International Conference on Communications (ICC), underscoring the difficulty and significance of achieving efficient coverage in large-area sensor-deployment scenarios.
+         In Fig. 13, Evo-Panel 2.0 offers two visualization examples, Self-Optimize and Sensor Deployment Process Demo, each designed to support intuitive understanding of the deployment optimization problem.
+         In the Self-Optimize mode, the interface initially presents one of the near-optimal deployment solutions generated by the Entanglement-QTS algorithm [<a href="#ref_20">20</a>]. Users may interact directly with the interface by adding or removing sensors, thereby refining the layout while referencing the color gradient map that indicates the overall detection probability (red/high to blue/low). This interactive configuration significantly enhances user engagement and provides an intuitive means for exploring how sensor placement affects overall coverage performance.
+        </p>
+
+        <p>
+         The Sensor Deployment Process Demo mode can visualize the evolutionary search trajectory. It illustrates how a population of candidate solutions transitions from random initialization to convergence. Throughout the process, Evo-Panel 2.0 makes it straightforward to observe changes in sensor count, positional adjustments, and convergence behaviors, even within large-scale solution spaces. For instance, when the grid size expands to 50 &times; 50, the problem complexity escalates to 2<sup>2,500</sup> possible combinations, rendering exhaustive search infeasible. In such cases, advanced optimization algorithms are indispensable for identifying high-quality solutions within practical time constraints. Notably, prior work reported a competitive solution using 63 sensors, submitted to the IEEE International Conference on Communications. Later, a more refined solution using only 62 sensors was accepted and published in the journal Computer Networks [<a href="#ref_21">21</a>], demonstrating the effectiveness of algorithmic approaches in tackling such large-scale deployment, underscoring the difficulty and significance of achieving efficient coverage in large-area sensor-deployment scenarios.
         </p>
 
         <figure id="Deploy_example_50x50" class="text-center" style="text-align: left;">
@@ -672,16 +674,16 @@
             </div>
           </div>
           <figcaption>
-            <strong>Figure 14:</strong> Human-in-the-Loop Refinement for the Deployment Optimization Problem. This animated GIF illustrates a case study where a user manually refines an algorithm-derived, near-optimal solution (e.g., the 62-sensor configuration on the 50 × 50 grid). By analyzing the visualized coverage map, the user identifies and corrects instances of sensor redundancy. This interactive process successfully reduces the total sensor count (e.g., to 61 or 60) while maintaining the mandatory 100% coverage constraint (Map Check compliance), demonstrating the tool's capability for post-algorithmic optimization and validation.
+            <strong>Figure 14:</strong> Human-assisted improvement of solution generated deployment optimization algorithm. This animated GIF illustrates a case study where a user manually refines an algorithm-derived, near-optimal solution (e.g., the 62-sensor configuration on the 50 × 50 grid). By analyzing the visualized coverage map, the user identifies and corrects instances of sensor redundancy. This interactive process successfully reduces the total sensor count, while maintaining the 100% coverage constraint (Map Check compliance). This demonstrates the tool’s usefulness for refining and validating solutions after algorithmic optimization.
           </figcaption>
         </figure>
 
         <p>
-          However, analyzing such results through traditional text-based outputs or log files is often difficult and unintuitive. By leveraging a visualization interface designed in the form of an interactive game, users can easily identify potential improvements. For instance, Fig. 14 clearly reveals <!--it becomes visually apparent-->that one sensor in the lower-left corner can be removed, and in the densely covered central area, three sensors can be replaced with two, effectively reducing the total number of sensors to 61 or even 60, while still satisfying the overall coverage probability across the entire map.
+          However, analyzing such results through traditional text-based outputs or log files is often difficult and unintuitive. By leveraging a visualization interface designed in the form of an interactive game, users can easily identify potential improvements. For instance, Fig. 14 clearly reveals that one sensor in the lower-left corner can be removed, and in the densely covered central area, three sensors can be replaced with two, effectively reducing the total number of sensors to 61 or even 60, while still satisfying the overall coverage probability across the entire map.
         </p>
 
         <p>
-          This approach underscores the potential of crowdsourced computation, demonstrating that individuals without formal research training but with strong problem-solving intuition developed through gameplay can help identify improved solutions and support researchers in tackling complex optimization challenges.
+          This observation underscores the potential of user-assisted optimization, demonstrating that individuals without formal research training but with strong problem-solving intuition developed through gameplay can help identify improved solutions and support researchers in tackling complex optimization challenges.
         </p>
 
       </section>
@@ -689,15 +691,19 @@
       <section id="conclusion">
         <h2>III. Conclusion</h2>
         <p>
-         Evo-Panel 2.0 provides a dynamic visualization tool designed to support the analysis of metaheuristic algorithms in combinatorial optimization problems. Firstly, it replaces extensive textual data with a visualization interface, facilitating the analysis of algorithms and optimization processes through vivid interactive and dynamic visual representations. Visualization expedites analytical processes, improves the interpretability of algorithmic outputs, enhances users’ comprehension of metaheuristic concepts and optimization processes.
-         Secondly, Evo-Panel 2.0 offers versatile interfaces catering to distinct characteristics of combinatorial optimization problems, including general 'choose or not' interfaces, deployment interfaces for solutions with strong spatial or structural dependencies, and permutation interfaces for sequential solutions. Additionally, it incorporates a probability model tailored for probabilistic metaheuristics. 
-         Thirdly, our visualization tool offers interactive features, such as media player control bars for in-depth algorithmic observation and sensor manipulation within the deployment interface to refine metaheuristic solutions. 
-         Fourthly, Evo-Panel 2.0 is compatible with all metaheuristics and optimization frameworks and does not require programming expertise to generate analytical outputs, highlighting its practicality and broad applicability for researchers employing diverse optimization approaches.
-         Lastly, the visualization tool helps eXplainable Artificial Intelligence (XAI) improve the interpretability of computational intelligence models.
+         Evo-Panel 2.0 provides a dynamic visualization tool designed to support the analysis of metaheuristic algorithms in combinatorial optimization problems. 
+         
+         First, it replaces extensive textual log data with vivid interactive and dynamic visual representations, which fundamentally improves the interpretability of algorithmic outputs and expedites the analytical process. This visual approach enhances users' comprehension of complex metaheuristic concepts and optimization processes.
+         
+         Second, Evo-Panel 2.0 offers versatile interfaces catering to distinct characteristics of combinatorial optimization problems: a general combinatorial optimization interface for binary problems, a permutation combinatorial optimization interface for sequential solutions, and a deployment optimization interface for solutions with strong spatial dependencies. It also incorporates a probability model tailored for probabilistic metaheuristics.
+
+         Third, our visualization tool offers robust interactive features, such as media player control bars for in-depth algorithmic observation and the direct manipulation of solutions within the deployment interface, which facilitates the human-assisted refinement of metaheuristic solutions.
+
+         Furthermore, Evo-Panel 2.0 is compatible with a wide range of metaheuristics and optimization frameworks and does not require specialized programming expertise to generate analytical outputs, highlighting its practicality and broad applicability for researchers employing diverse optimization approaches.
+
+         Crucially, by offering a transparent view into the algorithmic search trajectory and decision logic, Evo-Panel 2.0 significantly advances the goals of XAI, enhancing the interpretability of computational intelligence models.
+
          By presenting algorithmic behavior in an intuitive visual form, Evo-Panel 2.0 assists researchers and developers in effectively evaluating and refining metaheuristic strategies.
-         <!--problems--><!--, and liberates mental resources for future algorithmic enhancements--><!--meticulous--><!--file generation, underscores its flexibility.-->
-         <!-- making it easier to understand how computational intelligence works and revealing hidden insights that can help developers make better, easier to understand metaheuristics that can be used to solve a wide range of business optimization problems.--><!-- the need for-->
-         <!--Evo-Panel 2.0 stands as an invaluable and precise tool, providing dynamic visual representations of metaheuristic algorithms solving combinatorial optimization problems. -->  <!--streamlining algorithms and optimization problem analyses--> <!--graphical depictions--><!--renders tedious tasks more engaging, deepens user-->
         </p>
       </section>
       <!-- References section -->
@@ -705,64 +711,155 @@
         <h2>References</h2>
         <ol>
           <li id="ref_1">
-            Particle Swarm Optimization in Wireless-Sensor Networks: A Brief Survey
+            Nature-inspired Algorithms for 0-1 Knapsack Problem: A Survey.
+            <span>
+              Zhou, Y.; Shi, Y.; Wei, Y.; Luo, Q.; Tang, Z., 2023.
+              Neurocomputing, 554, pp. 126630.
+          </span>
+          </li>
+          <li id="ref_2">
+            The Traveling Salesman Problem.
+            <span>
+              Jünger, M.; Reinelt, G.; Rinaldi, G., 1995.
+              Handbooks in Operations Research and Management Science, vol. 7, pp. 225--330.
+            </span>
+          </li>
+          <li id="ref_3">
+            Particle Swarm Optimization in Wireless-Sensor Networks: A Brief Survey.
             <span>
               Kulkarni, R. V.; Venayagamoorthy, G. K., 2011. 
               IEEE Transactions on Systems, Man, and Cybernetics, Part C (Applications and Reviews), 41(2), pp. 262--267. 
               DOI: 10.1109/TSMCC.2010.2054080
             </span>
           </li>
-          <li id="ref_2">
-            A Rule-Based Dynamic Decision-Making Stock Trading System Based on Quantum-Inspired Tabu Search Algorithm
-            <br>
+          <li id="ref_4">
+            A Rule-Based Dynamic Decision-Making Stock Trading System Based on Quantum-Inspired Tabu Search Algorithm.
             <span>
               Chou, Y.-H.; Kuo, S.-Y.; Chen, C.-Y.; Chao, H.-C., 2014. 
               IEEE Access, 2, pp. 883--896. 
               DOI: 10.1109/ACCESS.2014.2352261
             </span>
           </li>
-          <li id="ref_3">
-            Adaptation in Natural and Artificial Systems
+          <li id="ref_5">
+            Reversible Circuit Synthesis using Evolutionary Algorithms.
+            <span>
+              Sasamal, T.N.; Gaur, H.M.; Singh, A.K.; Mohan, A., 2019.
+              Design and Testing of Reversible Logic, Springer, pp. 115--128.
+            </span>
+          </li>
+          <li id="ref_6">
+            Adaptation in Natural and Artificial Systems.
             <span>
               Holland, J.H., 1975. 
               The University of Michigan Press.
             </span>
           </li>
-          <li id="ref_4">
-            Particle Swarm Optimization
+          <li id="ref_7">
+            Particle Swarm Optimization.
             <span>
               Kennedy, J.; Eberhart, R., 1995. 
               In IEEE International Conference on Neural Networks, pp. 1942--1948.
             </span>
           </li>
-          <li id="ref_5">
-            Ant System: Optimization by a Colony of Cooperating Agents
+          <li id="ref_8">
+            Ant System: Optimization by a Colony of Cooperating Agents.
             <span>
               Dorigo, M.; Maniezzo, V.; Colorni, A., 1996. 
               IEEE Transactions on Systems, Man, and Cybernetics, Part B: Cybernetics, 26(1), pp. 29--41.
             </span>
           </li>
-          <li id="ref_6">
-            An Introduction and Survey of Estimation of Distribution Algorithms
+          <li id="ref_9">
+            An Introduction and Survey of Estimation of Distribution Algorithms.
             <span>
               Hauschild, M.; Pelikan, M., 2011. 
               Swarm and Evolutionary Computation, 1(3), pp. 111--128. Elsevier.
             </span>
           </li>
-          <li id="ref_7">
-            Quantum-inspired Evolutionary Algorithm for a Class of Combinatorial Optimization
+          <li id="ref_10">
+            Quantum-inspired Evolutionary Algorithm for a Class of Combinatorial Optimization.
             <span>
               Han, K.-H.; Kim, J.-H., 2002. 
               IEEE Transactions on Evolutionary Computation, 6(6), pp. 580--593.
             </span>
           </li>
-          <li id="ref_8">
-            A Quantum-inspired Tabu Search Algorithm for Solving Combinatorial Optimization Problems
+          <li id="ref_11">
+            A Quantum-inspired Tabu Search Algorithm for Solving Combinatorial Optimization Problems.
             <span>
               Chiang, H.-P.; Chou, Y.-H.; Chiu, C.-H.; Kuo, S.-Y.; Huang, Y.-M., 2014. 
               Soft Computing, 18(9), pp. 1771--1781.
             </span>
           </li>
+          <li id="ref_12">
+            Explainable Artificial Intelligence (XAI): Concepts, Taxonomies, Opportunities and Challenges Toward Responsible AI
+            <span>
+              Barredo Arrieta, A.; Díaz-Rodríguez, N.; Del Ser, J.; Bennetot, A.; Tabik, S.; Barbado, A.; Garcia, S.; Gil-Lopez, S.; Molina, D.; Benjamins, R.; Chatila, R.; Herrera, F., 2020. 
+              Information Fusion, 58, pp. 82--115.
+            </span>
+          </li>
+          <li id="ref_13">
+            Explainable AI for the Choquet Integral
+            <span>
+              Murray, B. J.; Islam, M. A.; Pinar, A. J.; Anderson, D. T.; Scott, G. J.; Havens, T. C.; Keller, J. M., 2021. 
+              IEEE Transactions on Emerging Topics in Computational Intelligence, 5(4), pp. 520--529.
+            </span>
+          </li>
+          <li id="ref_14">
+            A Novel Explainable Nature-Inspired Metaheuristic: Jaguar Algorithm with Precision Hunting Behavior
+            <span>
+              Wu, C.-H.; Shen, J.-Y.; Huang, P.-S.; Hua, C.-Y.; Jiang, Y.-C.; Kuo, S.-Y.; Chou, Y.-H., 2022. 
+              In 2022 IEEE International Conference on Systems, Man, and Cybernetics, pp. 1494--1499.
+            </span>
+          </li>
+          <li id="ref_15">
+            Semiology of Graphics.
+            <span>
+              Bertin, J., 1983. 
+              University of Wisconsin Press. ISBN: 0299090604.
+            </span>
+          </li>
+          <li id="ref_16">
+            An Adaptive Quantum-inspired Differential Evolution Algorithm for 0--1 Knapsack Problem.
+            <span>
+              Hota, A.R.; Pat, A., 2010. 
+              In 2010 Second World Congress on Nature and Biologically Inspired Computing (NaBIC), IEEE, pp. 703--708.
+            </span>
+          </li>
+          <li id="ref_17">
+            A New Quantum-inspired Binary PSO: Application to Unit Commitment Problems for Power Systems.
+            <span>
+              Jeong, Y.-W.; Park, J.-B.; Jang, S.-H.; Lee, K.Y., 2010.
+              IEEE Transactions on Power Systems, 25(3), pp. 1486--1495.
+            </span>
+          </li>
+          <li id="ref_18">
+            TSP LIB: A Library of Benchmark Instances for the Traveling Salesman Problem.
+            <span>
+              Office Research Group Discrete Optimization, Heidelberg University, 1995. 
+              Available at <a href="http://comopt.ifi.uni-heidelberg.de/software/TSPLIB95/">http://comopt.ifi.uni-heidelberg.de/software/TSPLIB95/</a>.
+            </span>
+          </li>
+          <li id="ref_19">
+            Quantum-Inspired Algorithm for Cyber-Physical Visual Surveillance Deployment Systems.
+            <span>
+              Kuo, S. Y.; Chou, Y. H.; Chen, C. Y., 2017. 
+              Computer Networks, 117, pp. 5--18. ISSN: 1389-1286.
+            </span>
+          </li>
+          <li id="ref_20">
+            Entanglement-Enhanced Quantum-Inspired Tabu Search Algorithm for Function Optimization.
+            <span>
+              Kuo, S. Y.; Chou, Y. H., 2017. 
+              IEEE Access, 5, pp. 13236--13252. 
+            </span>
+          </li>
+          <li id="ref_21">
+            Quantum-inspired Algorithm for Cyber-physical Visual Surveillance Deployment Systems.
+            <span>
+              Kuo, S.-Y.; Chou, Y.-H.; Chen, C.-Y., 2017.
+              Computer Networks, 117, pp. 5--18.
+            </span>
+          </li>
+
         </ol>
       </section>
     </div>
